@@ -36,7 +36,8 @@ public class Player_Movement : MonoBehaviour
     {
         ChangingPlayerPosition();
     }
-//Update
+    //Update
+    #region Movement Input
     private void InputPlayerMovement()
     {
         Vector3 forward = transform.TransformDirection(Vector3.forward);
@@ -53,11 +54,14 @@ public class Player_Movement : MonoBehaviour
         rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
     }
-//FIXED UPDATE
+    #endregion
+    //FIXED UPDATE
+    #region Player Movement
     private void ChangingPlayerPosition()
     {
         characterController.Move(moveDirection * Time.deltaTime);
         cam.transform.localRotation = Quaternion.Euler(rotationX, transform.eulerAngles.y, 0);
         transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
     }
+    #endregion
 }
