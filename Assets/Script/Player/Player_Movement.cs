@@ -16,6 +16,7 @@ public class Player_Movement : MonoBehaviour
 
     [Header("Camera")]
     public Camera cam;
+    public Transform cameraPivot;
     [SerializeField] private float camSpeed = 5f;
     [SerializeField] private float lookSpeed = 5f;
     [SerializeField] private float lookXLimit = 85f;
@@ -51,6 +52,7 @@ public class Player_Movement : MonoBehaviour
         moveDirection = (forward * currentSpeedX) + (right * currentSpeedY);
         moveDirection.y = movementDirectionY;
 
+        // Yalnızca Pivot objesi üzerinden dikey dönüş
         rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
     }
@@ -59,8 +61,13 @@ public class Player_Movement : MonoBehaviour
     #region Player Movement
     private void ChangingPlayerPosition()
     {
+        //applying movement
         characterController.Move(moveDirection * Time.deltaTime);
-        cam.transform.localRotation = Quaternion.Euler(rotationX, transform.eulerAngles.y, 0);
+
+        // Pivot objesinin X rotasyonunu ayarla (sadece yukarı-aşağı bakış için)
+        cameraPivot.localRotation = Quaternion.Euler(rotationX, 0, 0);
+
+        // Karakterin dönüşünü ayarla (sadece yatay dönüş için)
         transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
     }
     #endregion
