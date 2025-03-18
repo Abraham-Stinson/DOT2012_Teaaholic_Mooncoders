@@ -6,11 +6,11 @@ public class Player_RayCast : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private Transform holdPosition;
 
-    private HeldObject heldObject; // Elinde tutulan objeyi takip etmek için
+    private HeldObject heldObject;
 
     void Update()
     {
-        if (heldObject == null) // Eğer elinde obje yoksa Raycast yap
+        if (heldObject == null)
         {
             RaycastHit hit;
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, rayCastRange, layerMask))
@@ -18,11 +18,11 @@ public class Player_RayCast : MonoBehaviour
                 var hitObjectInteract = hit.collider.GetComponent<IInteractable>();
                 if (hitObjectInteract != null && Input.GetKeyDown(KeyCode.E))
                 {
-                    hitObjectInteract.interact();
+                    hitObjectInteract.interact(); // Küçük harfle çağır
                 }
             }
         }
-        else if (Input.GetKeyDown(KeyCode.E)) // Eğer elinde obje varsa bırak
+        else if (Input.GetKeyDown(KeyCode.E))
         {
             heldObject.Drop();
             heldObject = null;
