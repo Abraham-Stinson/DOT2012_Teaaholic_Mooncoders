@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class HeldObject : MonoBehaviour, IInteractable
 {
-    
     [Header("Pick Up")]
     [SerializeField] private Rigidbody itemRB;
     [SerializeField] private Collider itemCollider;
@@ -38,10 +37,5 @@ public class HeldObject : MonoBehaviour, IInteractable
         transform.parent = originalParent; // Orijinal parent'a geri dön
         itemRB.isKinematic = false;
         itemCollider.enabled = true;
-    }
-    public void Place(Vector3 position, Quaternion rotation)
-    {
-        transform.position = position;
-        transform.rotation = rotation;
     }
 }

@@ -2,11 +2,9 @@ using UnityEngine;
 
 public class Player_RayCast : MonoBehaviour
 {
-    [SerializeField] private PlacementPreview placementPreview;
     [SerializeField] private float rayCastRange = 5f;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private Transform holdPosition;
-    
 
     private HeldObject heldObject;
 
@@ -15,12 +13,12 @@ public class Player_RayCast : MonoBehaviour
         if (heldObject == null)
         {
             RaycastHit hit;
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, rayCastRange, layerMask))
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, rayCastRange, layerMask))
             {
                 var hitObjectInteract = hit.collider.GetComponent<IInteractable>();
                 if (hitObjectInteract != null && Input.GetKeyDown(KeyCode.E))
                 {
-                    hitObjectInteract.interact();
+                    hitObjectInteract.interact(); // Küçük harfle çağır
                 }
             }
         }
@@ -33,7 +31,6 @@ public class Player_RayCast : MonoBehaviour
 
     public void SetHeldObject(HeldObject obj)
     {
-        placementPreview.SetHeldObject(obj);
         heldObject = obj;
     }
 }
