@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class HeldObject : MonoBehaviour, IInteractable
 {
+    
     [Header("Pick Up")]
     [SerializeField] private Rigidbody itemRB;
     [SerializeField] private Collider itemCollider;
@@ -9,6 +10,11 @@ public class HeldObject : MonoBehaviour, IInteractable
     private bool isPick = false;
     private Transform originalParent;
 
+    void Start()
+    {
+        itemRB = GetComponent<Rigidbody>();
+        itemCollider = GetComponent<Collider>();
+    }
     public void interact()
     {
         if (!isPick)
@@ -22,13 +28,22 @@ public class HeldObject : MonoBehaviour, IInteractable
         isPick = true;
         itemRB.isKinematic = true;
         itemCollider.enabled = false;
+    
 
         originalParent = transform.parent; // Orijinal parent'ı sakla
-        transform.parent = GameObject.FindWithTag("Player").transform.Find("HoldPosition");
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+        Transform holdPosition = GameObject.FindWithTag("Player").transform.Find("HoldPosition");
+        if (holdPosition != null)
+        {
+            transform.parent = holdPosition;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
 
-        GameObject.FindWithTag("Player").GetComponent<Player_RayCast>().SetHeldObject(this);
+            GameObject.FindWithTag("Player").GetComponent<Player_RayCast>().SetHeldObject(this);
+        }
+        else
+        {
+            Debug.LogError("HoldPosition not found!");
+        }
     }
 
     public void Drop()
@@ -37,5 +52,15 @@ public class HeldObject : MonoBehaviour, IInteractable
         transform.parent = originalParent; // Orijinal parent'a geri dön
         itemRB.isKinematic = false;
         itemCollider.enabled = true;
+    }
+    public void Place(Vector3 position, Quaternion rotation)
+    {
+        isPick = false; // Artık elde değil
+        transform.parent = null; // Parent'tan çıkar
+        itemRB.isKinematic = false;
+        itemCollider.enabled = true;
+
+        transform.position = position;
+        transform.rotation = rotation;
     }
 }

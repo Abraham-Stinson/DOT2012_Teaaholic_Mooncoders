@@ -23,7 +23,7 @@ public class CupboardDoor : MonoBehaviour, IInteractable
         OpenCupBoard();
     }
 
-    public void interact() // Küçük harfle başlayan metod adı
+    public void interact()
     {
         isOpen = !isOpen;
     }
