@@ -2,11 +2,9 @@ using UnityEngine;
 
 public class Player_RayCast : MonoBehaviour
 {
-    [SerializeField] private PlacementPreview placementPreview;
     [SerializeField] private float rayCastRange = 5f;
-    [SerializeField] private LayerMask layerMask;
+    [SerializeField] private LayerMask interactableLayer;
     [SerializeField] private Transform holdPosition;
-    
 
     private HeldObject heldObject;
 
@@ -15,23 +13,29 @@ public class Player_RayCast : MonoBehaviour
         if (heldObject == null)
         {
             RaycastHit hit;
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, rayCastRange, layerMask))
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, rayCastRange, interactableLayer))
             {
+                Debug.Log("Ray hit: " + hit.collider.gameObject.name); // Debug ekleyelim
+
                 var hitObjectInteract = hit.collider.GetComponent<IInteractable>();
-                if (hitObjectInteract != null && Input.GetKeyDown(KeyCode.E))
+                if (hitObjectInteract != null && Input.GetKeyDown(KeyCode.E)) // E tuşuna basıldığında etkileşim
                 {
-                    hitObjectInteract.interact();
+                    hitObjectInteract.interact(); // objeyi etkile
                 }
             }
         }
         else
         {
-            // Eğer bir nesne tutuluyorsa, etkileşim yapılmamalı
+            if (Input.GetKeyDown(KeyCode.E)) // E tuşuna basılınca objeyi bırak
+            {
+                heldObject.Drop();
+                ClearHeldObject();
+            }
         }
     }
+
     public void SetHeldObject(HeldObject obj)
     {
-        placementPreview.SetHeldObject(obj);
         heldObject = obj;
     }
 

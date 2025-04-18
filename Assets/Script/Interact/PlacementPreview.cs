@@ -1,13 +1,10 @@
 using UnityEngine;
 
-
 public class PlacementPreview : MonoBehaviour
 {
     private Renderer[] previewRenderers;
     private Color validColor = new Color(0f, 1f, 0f, 0.5f);   // Yeşil, yarı şeffaf
     private Color invalidColor = new Color(1f, 0f, 0f, 0.5f);
-
-
 
     public Material previewMaterial;
     public LayerMask placementLayer;
@@ -16,28 +13,15 @@ public class PlacementPreview : MonoBehaviour
     private GameObject currentPreview;
     private HeldObject heldObject;
 
-    private Rigidbody itemRB;
-    private Collider itemCollider;
-
     public bool HasValidPlacement { get; private set; }
 
     void Update()
     {
         if (heldObject == null) return;
 
-        UpdatePreviewPosition();
-
-        if (Input.GetKeyDown(KeyCode.E))
+        if (currentPreview != null)
         {
-            if (HasValidPlacement)
-            {
-                PlacementObject(); // Sadece geçerli bir yer varsa yerleştir
-            }
-            else
-            {
-                // Geçerli yer yoksa hiçbir şey yapma (DropObject çağırma!)
-                Debug.Log("Geçerli bir yerleştirme alanı yok!");
-            }
+            currentPreview.SetActive(true);
         }
     }
 
@@ -47,76 +31,50 @@ public class PlacementPreview : MonoBehaviour
 
         if (heldObject != null)
         {
-            itemRB = heldObject.GetComponent<Rigidbody>();
-            itemCollider = heldObject.GetComponent<Collider>();
+            if (currentPreview != null)
+            {
+                Destroy(currentPreview);
+            }
+            currentPreview = Instantiate(obj.gameObject);
+            MakeTransparent(currentPreview);
         }
-
-        if (currentPreview != null)
-        {
-            Destroy(currentPreview);
-        }
-
-        currentPreview = Instantiate(obj.gameObject);
-        MakeTransparent(currentPreview);
     }
 
-    private void UpdatePreviewPosition()
+    public void UpdatePreviewPosition(Vector3 position, Vector3 normal)
     {
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, maxPlacementDistance, placementLayer))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, maxPlacementDistance, placementLayer))
         {
-            currentPreview.SetActive(true);
-
-            // Nesnenin boyunun yarısını al (Y ekseninde)
             Bounds bounds = GetObjectBounds(currentPreview);
-            Vector3 adjustedPosition = hit.point + new Vector3(0, bounds.extents.y, 0);
+            Vector3 adjustedPosition = hit.point + normal * bounds.extents.y;
 
             currentPreview.transform.position = adjustedPosition;
-            currentPreview.transform.rotation = Quaternion.identity;
+            currentPreview.transform.rotation = Quaternion.LookRotation(normal);
             HasValidPlacement = true;
-
             UpdatePreviewColor(validColor);
         }
         else
         {
-            currentPreview.SetActive(true);
-
-            Bounds bounds = GetObjectBounds(currentPreview);
-            Vector3 fallbackPosition = ray.origin + ray.direction * 3f + new Vector3(0, bounds.extents.y, 0);
-
-            currentPreview.transform.position = fallbackPosition;
-            currentPreview.transform.rotation = Quaternion.identity;
             HasValidPlacement = false;
-
             UpdatePreviewColor(invalidColor);
         }
     }
 
-    private Bounds GetObjectBounds(GameObject obj)
-    {
-        Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
-        Bounds bounds = renderers[0].bounds;
-        foreach (Renderer r in renderers)
-        {
-            bounds.Encapsulate(r.bounds);
-        }
-        return bounds;
-    }
-
-
-    private void PlacementObject()
+    public void PlaceObject()
     {
         if (heldObject != null)
         {
-            heldObject.Place(currentPreview.transform.position, Quaternion.identity);
-            Destroy(currentPreview);
-            currentPreview = null;
-
-            // 🔧 Player'a da haber ver ki heldObject null olsun
-            GameObject.FindWithTag("Player").GetComponent<Player_RayCast>().ClearHeldObject();
-
-            heldObject = null;
+            heldObject.Place(currentPreview.transform.position, currentPreview.transform.rotation);
+            ClearPreview();
         }
+    }
+
+    public void ClearPreview()
+    {
+        if (currentPreview != null)
+        {
+            Destroy(currentPreview);
+        }
+        heldObject = null;
     }
 
     private void MakeTransparent(GameObject previewObj)
@@ -135,17 +93,15 @@ public class PlacementPreview : MonoBehaviour
         }
     }
 
-    private void DropObject()
+    private Bounds GetObjectBounds(GameObject obj)
     {
-        if (heldObject != null)
+        Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
+        Bounds bounds = renderers[0].bounds;
+        foreach (Renderer r in renderers)
         {
-            heldObject.Drop();
-
-            // 🔧 Player tarafındaki heldObject'u da temizle
-            GameObject.FindWithTag("Player").GetComponent<Player_RayCast>().ClearHeldObject();
-
-            heldObject = null;
+            bounds.Encapsulate(r.bounds);
         }
+        return bounds;
     }
 
     private void UpdatePreviewColor(Color color)
@@ -156,5 +112,11 @@ public class PlacementPreview : MonoBehaviour
         }
     }
 
-
+    public void HidePreview()
+    {
+        if (currentPreview != null)
+        {
+            currentPreview.SetActive(false);
+        }
+    }
 }
