@@ -38,27 +38,45 @@ public class TrashSpawner : MonoBehaviour
     // Ana fonksiyon: eski çöpleri temizle, yeni çöpleri spawn et
     public void HandleNewDayTrash()
     {
-        ClearOldTrash();
         SpawnTrashForNewDay();
     }
 
-    // Yeni çöpleri rastgele yerleştir
     void SpawnTrashForNewDay()
+{
+    List<Transform> shuffledSpawnPoints = new List<Transform>(trashSpawnPoints);
+    ShuffleList(shuffledSpawnPoints);
+
+    int spawnedCount = 0;
+
+    foreach (Transform spawnPoint in shuffledSpawnPoints)
     {
-        List<Transform> shuffledSpawnPoints = new List<Transform>(trashSpawnPoints);
-        ShuffleList(shuffledSpawnPoints);
+        // Bu noktada çöp var mı kontrol et
+        Collider[] colliders = Physics.OverlapSphere(spawnPoint.position, 1f);
+        bool spotOccupied = false;
 
-        int count = Mathf.Min(trashCountPerDay, shuffledSpawnPoints.Count);
-
-        for (int i = 0; i < count; i++)
+        foreach (Collider col in colliders)
         {
-            Transform spawnPoint = shuffledSpawnPoints[i];
-            GameObject selectedTrash = trashPrefabs[Random.Range(0, trashPrefabs.Count)];
-
-            GameObject spawned = Instantiate(selectedTrash, spawnPoint.position, Quaternion.identity);
-            spawned.tag = "Trash";
+            if (col.CompareTag("Trash"))
+            {
+                spotOccupied = true;
+                break;
+            }
         }
+
+        if (spotOccupied) continue;
+
+        // Boşsa çöp spawn et
+        GameObject selectedTrash = trashPrefabs[Random.Range(0, trashPrefabs.Count)];
+        GameObject spawned = Instantiate(selectedTrash, spawnPoint.position, Quaternion.identity);
+        spawned.tag = "Trash";
+
+        spawnedCount++;
+
+        if (spawnedCount >= trashCountPerDay)
+            break;
     }
+}
+
 
     // Önceki çöpleri sil
     void ClearOldTrash()
