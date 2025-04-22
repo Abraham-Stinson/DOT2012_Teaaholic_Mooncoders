@@ -2,15 +2,23 @@ using UnityEngine;
 
 public class Kettle : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("About Kettle")]
+    [SerializeField] private float maxKettleMagazine=10f;
+    [SerializeField] private float minKettleMagazine=0f;
+    [SerializeField] private float currentKettleMagazine;
     void Start()
+    {
+        currentKettleMagazine=minKettleMagazine;
+    }
+
+    
+    void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void PourTea(){
+        currentKettleMagazine-=1;
+        Debug.Log("Çay verildi");
     }
 }
