@@ -8,6 +8,7 @@ TagManager:
   - Kettle
   - Tea_Cup
   - CinemachineTarget
+  - Tray
   layers:
   - Default
   - TransparentFX

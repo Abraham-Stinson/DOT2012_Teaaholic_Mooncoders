@@ -124,7 +124,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         }
     }
 
-    private void PickUp(InputAction.CallbackContext context)
+    private void PickUp(InputAction.CallbackContext context)//PİCK UP
     {
         //Debug.Log(hit.collider.gameObject.name);
         if(hit.collider!=null){
@@ -132,12 +132,16 @@ public class NewMonoBehaviourScript : MonoBehaviour
             
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,interactionLayer)&&!isPicked){
                 isPicked=true;
-                if(hit.collider.GetComponent<Tea_Cup>()!=null&&hit.collider.GetComponent<Tea_Cup>().isOnTray){
+                if(hit.collider.GetComponent<Tea_Cup>()!=null&&hit.collider.GetComponent<Tea_Cup>().isOnTray){//PİCK UP TEPSİDEN
+                    
                     hit.collider.GetComponent<Tea_Cup>().isOnTray=false;
                     inHandItem=hit.collider.gameObject;
                     //inHandItem.transform.position=Vector3.zero;
                     inHandItem.transform.rotation=Quaternion.identity;
                     inHandItem.transform.SetParent(firstPersonHand.transform,false);
+
+                    
+                    
                 }
                 /*else if(DİĞER BARDAKLAR EKLENEBİLİR)*/
                 else{
@@ -213,10 +217,18 @@ public class NewMonoBehaviourScript : MonoBehaviour
         }
         else if(didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&&isPicked){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
-                if(inHandItem.gameObject.tag=="Tea_Cup"&&hit.collider.gameObject.tag=="Tray"){
+                if(inHandItem.gameObject.tag=="Tea_Cup"&&!inHandItem.GetComponent<Tea_Cup>().isOnTray&&hit.collider.gameObject.tag=="Tray")
+                {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = null;
                     putOnTray.SetActive(true);
+                    Debug.Log("Parlıyorum");
+                }
+                else{
+                    Debug.Log("Söndüm");
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                    lastHighlightedObject = null;
+                    putOnTray.SetActive(false);
                 }
             }
 
