@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class HeldObject : MonoBehaviour, IInteractable
 {
+    public bool isMop = false;
     [Header("References")]
     [SerializeField] private Rigidbody itemRB;
     [SerializeField] private Collider itemCollider;

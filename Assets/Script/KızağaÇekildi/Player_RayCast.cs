@@ -43,4 +43,10 @@ public class Player_RayCast : MonoBehaviour
     {
         heldObject = null;
     }
+
+    // 🧠 Eklenen kısım: Elimizdeki objeyi dışarıdan alabilmek için
+    public HeldObject GetHeldObject()
+    {
+        return heldObject;
+    }
 }
