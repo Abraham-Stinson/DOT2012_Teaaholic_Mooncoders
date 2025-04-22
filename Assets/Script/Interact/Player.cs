@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
+using Microsoft.Unity.VisualStudio.Editor;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Player")]
     [SerializeField] private Transform playerCam;
@@ -15,6 +18,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     [SerializeField] private GameObject useUI;
     [SerializeField] private GameObject pourUI;
     [SerializeField] private GameObject putOnTray;
+    public UnityEngine.UI.Image thrashCleanProgressBar;
     
     [Header("Layers")]
     [SerializeField] private LayerMask interactionLayer;
@@ -28,6 +32,12 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
     [Header("Inputs")]
     [SerializeField] private InputActionReference pickUpInput, putDownInput, useInput;
+
+    [Header("Trash Clean")]
+    [SerializeField] private float cleaningTime = 3f;
+    [SerializeField] private float cleaningRadius = 2f;
+    private Coroutine cleaningCoroutine;
+    private bool isCleaning = false;
     void Start()
     {
         pickUpInput.action.performed+=PickUp;
@@ -37,6 +47,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
     private void Use(InputAction.CallbackContext context)
     {
+        Debug.Log("Nigga");
         if(hit.collider!=null){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,useableLayer)&&!isPicked){//INTERACT SİSTEMİ
                 hit.collider.GetComponent<IInteractable>().interact();
@@ -50,9 +61,12 @@ public class NewMonoBehaviourScript : MonoBehaviour
                     }
                 }
             }
+            else if (inHandItem != null && inHandItem.CompareTag("Mop") && !isCleaning && LookingAtTrash())
+            {
+                cleaningCoroutine = StartCoroutine(CleanTrash());
+            }
 
         }
-
     }
 
     private void PutDown(InputAction.CallbackContext context)
@@ -233,5 +247,53 @@ public class NewMonoBehaviourScript : MonoBehaviour
             }
 
         }
+    }
+
+    private IEnumerator CleanTrash()
+    {
+        isCleaning = true;
+        float timeElapsed = 0f;
+        thrashCleanProgressBar.gameObject.SetActive(true);
+        thrashCleanProgressBar.fillAmount = 0f;
+
+        while (timeElapsed < cleaningTime)
+        {
+            if (!Mouse.current.leftButton.isPressed || !LookingAtTrash())
+            {
+                StopCleaning();
+                yield break;
+            }
+
+            timeElapsed += Time.deltaTime;
+            thrashCleanProgressBar.fillAmount = timeElapsed / cleaningTime;
+
+            yield return null;
+        }
+
+        Collider[] trashInRange = Physics.OverlapSphere(playerCam.position, cleaningRadius, LayerMask.GetMask("Trash"));
+        foreach (var trash in trashInRange)
+        {
+            Destroy(trash.gameObject);
+        }
+
+        StopCleaning();
+    }
+
+    private void StopCleaning()
+    {
+        isCleaning = false;
+        thrashCleanProgressBar.fillAmount = 0f;
+        thrashCleanProgressBar.gameObject.SetActive(false);
+
+        if (cleaningCoroutine != null)
+        {
+            StopCoroutine(cleaningCoroutine);
+            cleaningCoroutine = null;
+        }
+    }
+
+    private bool LookingAtTrash()
+    {
+        return Physics.Raycast(playerCam.position, playerCam.forward, out RaycastHit hitInfo, cleaningRadius, LayerMask.GetMask("Trash"));
     }
 }
