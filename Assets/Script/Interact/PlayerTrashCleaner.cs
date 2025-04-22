@@ -12,86 +12,91 @@ public class PlayerTrashCleaner : MonoBehaviour
     public float cleaningRadius = 2f;
 
     [Header("Held Object")]
-    public Player_RayCast rayCast; // Raycast üzerinden HeldObject'e ulaşacağız
+    public Player_RayCast rayCast;
 
     [Header("UI")]
-    public Image progressBar; // İlerleme çubuğu için Image türünde bir alan ekledik
+    public Image progressBar;
 
-    private bool canCleanTrash = false; // Çöp temizleme işlemi başlatılabilir mi?
-
-    void Start()
-    {
-        progressBar.gameObject.SetActive(false); // Başlangıçta progress bar'ı gizle
-    }
+    private Coroutine cleaningCoroutine;
 
     void Update()
     {
-        HeldObject held = rayCast.GetHeldObject(); // Elindeki objeyi al
+        HeldObject held = rayCast.GetHeldObject();
 
-        // Eğer süpürgeyi tutuyorsa
-        if (held != null && held.isMop) 
+        // Süpürge eldeyse barı göster, değilse gizle
+        if (held != null && held.isMop)
         {
-            // Süpürgeyi aldığında barı göster
-            if (!progressBar.gameObject.activeSelf) // Eğer bar aktif değilse
-            {
-                progressBar.gameObject.SetActive(true); // Barı göster
-            }
+            progressBar.gameObject.SetActive(true);
 
-            // Çöp kontrolü yap ve temizleme işlemi başlatılmadan önce barı kontrol et
-            Collider[] trashInRange = Physics.OverlapSphere(transform.position, cleaningRadius, LayerMask.GetMask("Trash"));
-            canCleanTrash = trashInRange.Length > 0; // Çöp var mı kontrolü
-
-            // Eğer sol tıklama yapıyorsa ve çöp varsa işlemi başlat
-            if (Input.GetMouseButton(0) && !isCleaning && canCleanTrash)
+            // Sol tık basılıysa ve henüz temizlik başlamadıysa
+            if (Input.GetMouseButton(0) && !isCleaning)
             {
-                StartCoroutine(CleanTrash(trashInRange));
+                // Kameranın baktığı yerde çöp var mı kontrol et
+                if (LookingAtTrash())
+                {
+                    cleaningCoroutine = StartCoroutine(CleanTrash());
+                }
             }
-            else if (!canCleanTrash) // Çöp yoksa barı sıfırla
+            // Sol tık bırakılırsa temizlik iptal edilir
+            else if (Input.GetMouseButtonUp(0) && isCleaning)
             {
-                progressBar.fillAmount = 0f;
+                StopCleaning();
             }
         }
         else
         {
-            // Süpürgeyi bırakınca barı gizle
-            if (progressBar.gameObject.activeSelf)
-            {
-                progressBar.gameObject.SetActive(false); // Barı gizle
-            }
+            progressBar.gameObject.SetActive(false);
+            if (isCleaning) StopCleaning();
         }
     }
 
-    private IEnumerator CleanTrash(Collider[] trashInRange)
+    private IEnumerator CleanTrash()
     {
         isCleaning = true;
         float timeElapsed = 0f;
+        progressBar.fillAmount = 0f;
 
         while (timeElapsed < cleaningTime)
         {
-            // Eğer sol tıklama bırakılırsa işlemi iptal et
-            if (!Input.GetMouseButton(0))
+            // Sol tık bırakılırsa ya da artık çöpün üstüne bakılmıyorsa iptal et
+            if (!Input.GetMouseButton(0) || !LookingAtTrash())
             {
-                isCleaning = false;
-                progressBar.gameObject.SetActive(false); // Barı gizle
-                yield break; // İşlem durduruluyor
+                StopCleaning();
+                yield break;
             }
 
             timeElapsed += Time.deltaTime;
-            progressBar.fillAmount = timeElapsed / cleaningTime; // Çubuğun dolmasını sağla
-
-            // Çöp temizleme işlemi sırasında çöpleri sil
-            if (timeElapsed >= cleaningTime)
-            {
-                foreach (var trash in trashInRange)
-                {
-                    Destroy(trash.gameObject);
-                }
-            }
+            progressBar.fillAmount = timeElapsed / cleaningTime;
 
             yield return null;
         }
 
+        // Temizleme tamamlandıysa çöpleri sil
+        Collider[] trashInRange = Physics.OverlapSphere(transform.position, cleaningRadius, LayerMask.GetMask("Trash"));
+
+        foreach (var trash in trashInRange)
+        {
+            Destroy(trash.gameObject);
+        }
+
+        StopCleaning();
+    }
+
+    private void StopCleaning()
+    {
         isCleaning = false;
-        progressBar.gameObject.SetActive(false); // Temizleme tamamlandığında barı gizle
+        progressBar.fillAmount = 0f;
+
+        if (cleaningCoroutine != null)
+        {
+            StopCoroutine(cleaningCoroutine);
+            cleaningCoroutine = null;
+        }
+    }
+
+    private bool LookingAtTrash()
+    {
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        return Physics.Raycast(ray, out RaycastHit hit, cleaningRadius, LayerMask.GetMask("Trash"));
     }
 }
