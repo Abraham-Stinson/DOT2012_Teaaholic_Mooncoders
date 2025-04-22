@@ -8,6 +8,7 @@ public class Tea_Cup : MonoBehaviour
     [SerializeField] private float minTeaCupMagazine = 0f;
     [SerializeField] private float currentTeaCupMagazine;
     [SerializeField] private float currentTeaCupTeaMagazine;
+    [SerializeField] public bool isOnTray=false;
     
     void Start()
     {
