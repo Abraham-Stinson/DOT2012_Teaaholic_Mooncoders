@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Microsoft.Unity.VisualStudio.Editor;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,6 +19,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject useUI;
     [SerializeField] private GameObject pourUI;
     [SerializeField] private GameObject putOnTray;
+    [SerializeField] private GameObject cleanTrashUI;
     public UnityEngine.UI.Image thrashCleanProgressBar;
     
     [Header("Layers")]
@@ -31,7 +33,10 @@ public class Player : MonoBehaviour
     private GameObject lastHighlightedObject;
 
     [Header("Inputs")]
-    [SerializeField] private InputActionReference pickUpInput, putDownInput, useInput;
+    [SerializeField] private InputActionReference pickUpInput;
+    [SerializeField] private InputActionReference putDownInput;
+    [SerializeField] private InputActionReference useInput;
+    [SerializeField] private InputActionReference useHoldInput;
 
     [Header("Trash Clean")]
     [SerializeField] private float cleaningTime = 3f;
@@ -43,13 +48,23 @@ public class Player : MonoBehaviour
         pickUpInput.action.performed+=PickUp;
         putDownInput.action.performed+=PutDown;
         useInput.action.performed+=Use;
+        useHoldInput.action.performed+=UseHold;
+    }
+
+    private void UseHold(InputAction.CallbackContext context)
+    {
+        Debug.Log("Nigga");
+        if (inHandItem != null && inHandItem.CompareTag("Mop") && hit.collider.gameObject.tag=="Trash")
+            {
+                Debug.Log("Crayz Nigga");
+                Destroy(hit.collider.gameObject);
+            }
     }
 
     private void Use(InputAction.CallbackContext context)
     {
-        Debug.Log("Nigga");
         if(hit.collider!=null){
-            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,useableLayer)&&!isPicked){//INTERACT SİSTEMİ
+            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,useableLayer)&&!isPicked&&hit.collider.GetComponent<IInteractable>()!=null){//INTERACT SİSTEMİ
                 hit.collider.GetComponent<IInteractable>().interact();
             }
 
@@ -61,10 +76,7 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-            else if (inHandItem != null && inHandItem.CompareTag("Mop") && !isCleaning && LookingAtTrash())
-            {
-                cleaningCoroutine = StartCoroutine(CleanTrash());
-            }
+            
 
         }
     }
@@ -201,6 +213,8 @@ public class Player : MonoBehaviour
         useUI.SetActive(false);
         pourUI.SetActive(false);
         putOnTray.SetActive(false);
+        cleanTrashUI.SetActive(false);
+        
 
         if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {
@@ -214,32 +228,46 @@ public class Player : MonoBehaviour
             lastHighlightedObject = null;
             putDownUI.SetActive(true);
         }
-        else if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked)
+        else if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked&&hit.collider.GetComponent<IInteractable>()!=null)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = null;
+            lastHighlightedObject = hit.collider.gameObject;
             useUI.SetActive(true);
         }
         else if(didHit && inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
                 if(hit.collider.CompareTag("Tea_Cup")){
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = null;
+                    lastHighlightedObject = hit.collider.gameObject;
                     pourUI.SetActive(true);
                 }
             }
+        }
+        else if(didHit&&hit.collider.gameObject.tag=="Trash"){
+                Debug.Log(inHandItem.gameObject.tag);
+                //if(inHandItem!=null){
+                    if(inHandItem.gameObject.tag=="Mop"){
+                        cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="Hold E to clean this thrash";
+                    }
+                //}
+                else{
+                    cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="You need to hand Mob to clean thrash";
+                }
+
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                lastHighlightedObject = hit.collider.gameObject;
+                
+                cleanTrashUI.SetActive(true);
         }
         else if(didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&&isPicked){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
                 if(inHandItem.gameObject.tag=="Tea_Cup"&&!inHandItem.GetComponent<Tea_Cup>().isOnTray&&hit.collider.gameObject.tag=="Tray")
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = null;
+                    lastHighlightedObject = hit.collider.gameObject;
                     putOnTray.SetActive(true);
-                    Debug.Log("Parlıyorum");
                 }
                 else{
-                    Debug.Log("Söndüm");
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
                     lastHighlightedObject = null;
                     putOnTray.SetActive(false);
@@ -247,53 +275,6 @@ public class Player : MonoBehaviour
             }
 
         }
-    }
-
-    private IEnumerator CleanTrash()
-    {
-        isCleaning = true;
-        float timeElapsed = 0f;
-        thrashCleanProgressBar.gameObject.SetActive(true);
-        thrashCleanProgressBar.fillAmount = 0f;
-
-        while (timeElapsed < cleaningTime)
-        {
-            if (!Mouse.current.leftButton.isPressed || !LookingAtTrash())
-            {
-                StopCleaning();
-                yield break;
-            }
-
-            timeElapsed += Time.deltaTime;
-            thrashCleanProgressBar.fillAmount = timeElapsed / cleaningTime;
-
-            yield return null;
-        }
-
-        Collider[] trashInRange = Physics.OverlapSphere(playerCam.position, cleaningRadius, LayerMask.GetMask("Trash"));
-        foreach (var trash in trashInRange)
-        {
-            Destroy(trash.gameObject);
-        }
-
-        StopCleaning();
-    }
-
-    private void StopCleaning()
-    {
-        isCleaning = false;
-        thrashCleanProgressBar.fillAmount = 0f;
-        thrashCleanProgressBar.gameObject.SetActive(false);
-
-        if (cleaningCoroutine != null)
-        {
-            StopCoroutine(cleaningCoroutine);
-            cleaningCoroutine = null;
-        }
-    }
-
-    private bool LookingAtTrash()
-    {
-        return Physics.Raycast(playerCam.position, playerCam.forward, out RaycastHit hitInfo, cleaningRadius, LayerMask.GetMask("Trash"));
+        
     }
 }

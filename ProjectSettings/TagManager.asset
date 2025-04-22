@@ -9,6 +9,8 @@ TagManager:
   - Tea_Cup
   - CinemachineTarget
   - Tray
+  - Trash
+  - Mop
   layers:
   - Default
   - TransparentFX

@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "UseHold",
+                    "type": "Button",
+                    "id": "c3fb20a0-6929-4e0e-ad1a-ccf4b475c493",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -276,6 +285,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Use",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "78881317-61ac-4809-9514-85c8f12c911b",
+                    "path": "<Keyboard>/e",
+                    "interactions": "Hold(duration=0.4)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UseHold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
