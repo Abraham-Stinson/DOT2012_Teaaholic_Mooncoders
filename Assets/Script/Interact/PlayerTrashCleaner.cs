@@ -9,7 +9,7 @@ public class PlayerTrashCleaner : MonoBehaviour
     private bool isCleaning = false;
 
     [Header("Çöp Temizleme Ayarları")]
-    public float cleaningRadius = 2f;
+    public float cleaningRadius = 9f;
 
     [Header("Held Object")]
     public Player_RayCast rayCast;
@@ -97,6 +97,6 @@ public class PlayerTrashCleaner : MonoBehaviour
     private bool LookingAtTrash()
     {
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        return Physics.Raycast(ray, out RaycastHit hit, cleaningRadius, LayerMask.GetMask("Trash"));
+        return Physics.Raycast(ray, out RaycastHit hit, 9f, LayerMask.GetMask("Trash"));
     }
 }
