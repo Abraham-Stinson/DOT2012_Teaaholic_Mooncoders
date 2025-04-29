@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject pourUI;
     [SerializeField] private GameObject putOnTray;
     [SerializeField] private GameObject cleanTrashUI;
+    [SerializeField] private GameObject CleanTheDirt;
     public UnityEngine.UI.Image thrashCleanProgressBar;
     
     [Header("Layers")]
@@ -53,10 +54,8 @@ public class Player : MonoBehaviour
 
     private void UseHold(InputAction.CallbackContext context)
     {
-        Debug.Log("Nigga");
         if (inHandItem != null && inHandItem.CompareTag("Mop") && hit.collider.gameObject.tag=="Trash")
             {
-                Debug.Log("Crayz Nigga");
                 Destroy(hit.collider.gameObject);
             }
     }
@@ -75,6 +74,18 @@ public class Player : MonoBehaviour
                         inHandItem.GetComponent<Kettle>().PourTea();
                     }
                 }
+            }
+            else if(inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null/*DİĞER BARDAKLARDA OLABİLİR*/&&isPicked){
+                if(Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)){
+                    if(hit.collider.CompareTag("Water")){
+                        var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
+                        if(isDirtyinHandItem.isDirty){
+                            
+                            isDirtyinHandItem.CleanDirt();
+                        }
+                    }
+                }
+
             }
             
 
@@ -214,6 +225,7 @@ public class Player : MonoBehaviour
         pourUI.SetActive(false);
         putOnTray.SetActive(false);
         cleanTrashUI.SetActive(false);
+        CleanTheDirt.SetActive(false);
         
 
         if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
@@ -243,16 +255,23 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        else if(didHit&&hit.collider.gameObject.tag=="Trash"){
-                Debug.Log(inHandItem.gameObject.tag);
+        
+        else if(didHit && inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null&&isPicked){
+            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
+                if(hit.collider.CompareTag("Water")){
+                    lastHighlightedObject = hit.collider.gameObject;
+                    CleanTheDirt.SetActive(true);
+                }
+        }
+        else if(didHit&&hit.collider.gameObject.tag=="Trash"){//THRASH UI
                 //if(inHandItem!=null){
                     if(inHandItem.gameObject.tag=="Mop"){
                         cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="Hold E to clean this thrash";
                     }
                 //}
-                else{
-                    cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="You need to hand Mob to clean thrash";
-                }
+                    else{
+                        cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="You need to hand Mob to clean thrash";
+                    }
 
                 hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                 lastHighlightedObject = hit.collider.gameObject;
@@ -273,8 +292,8 @@ public class Player : MonoBehaviour
                     putOnTray.SetActive(false);
                 }
             }
-
         }
         
+    }
     }
 }

@@ -11,6 +11,8 @@ TagManager:
   - Tray
   - Trash
   - Mop
+  - Tap
+  - Water
   layers:
   - Default
   - TransparentFX
