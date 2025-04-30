@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 550c6887d8a5aef4ab2a33196264cec1
+guid: 57033ef135e6f7e4e8efa42e1489a32f
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,13 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: dark_tea
-    second: {fileID: 2100000, guid: bdbdb9186032d894e97fdb120fabe719, type: 2}
+      name: glass
+    second: {fileID: 2100000, guid: 9d2126d0d8d484781bf9fe54b03fe18b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: glass
-    second: {fileID: 2100000, guid: bc66744305eb37143b25649883850a49, type: 2}
+      name: normal_tea
+    second: {fileID: 2100000, guid: bdbdb9186032d894e97fdb120fabe719, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

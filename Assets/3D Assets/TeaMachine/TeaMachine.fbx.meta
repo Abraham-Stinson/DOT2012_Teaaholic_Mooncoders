@@ -3,7 +3,42 @@ guid: a4eca66245c08c24ab3f0c3f0f48b74a
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Black
+    second: {fileID: 2100000, guid: 08ad3f0533e1a224bb4b7c48acf06659, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bronze metal
+    second: {fileID: 2100000, guid: 50d21a4462b17c045982708c7f91b4f5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bronze metal.001
+    second: {fileID: 2100000, guid: 50d21a4462b17c045982708c7f91b4f5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bronze metal.002
+    second: {fileID: 2100000, guid: 31c5ae2217240444298c08a81a6a385b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Frozen white metal
+    second: {fileID: 2100000, guid: 40122bdab91c1af46af653d179413749, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: green
+    second: {fileID: 2100000, guid: afdbae882302f7b4398280bc1805bb06, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: red
+    second: {fileID: 2100000, guid: 3ceff7cd406d9434eb0c7430ff5fcb6b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
