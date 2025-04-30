@@ -42,18 +42,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "PickUp",
+                    "name": "PickAndPut",
                     "type": "Button",
                     "id": "efb6d862-0779-4085-9629-9c0f800d9950",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "PutDown",
-                    "type": "Button",
-                    "id": "0129126a-162c-4242-b5b7-11b10d150b4c",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -258,29 +249,18 @@
                 {
                     "name": "",
                     "id": "b825e0f9-d117-498d-a3e2-f3a2498802e6",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PickUp",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "3a2fc00d-4089-4b72-b220-a2972660b9dd",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "PutDown",
+                    "action": "PickAndPut",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "229875ee-7cb8-40cd-a97b-19bab73ab1b3",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -291,7 +271,7 @@
                 {
                     "name": "",
                     "id": "78881317-61ac-4809-9514-85c8f12c911b",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/f",
                     "interactions": "Hold(duration=0.4)",
                     "processors": "",
                     "groups": "",

@@ -3,6 +3,7 @@ using System.Collections;
 using Microsoft.Unity.VisualStudio.Editor;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -14,14 +15,16 @@ public class Player : MonoBehaviour
     [SerializeField] [Min(1)] private float rayCastRange =10f;
     [SerializeField] private bool isPicked=false; //aaa
     [Header("UI")]
-    [SerializeField] private GameObject pickUpUI;
+    [SerializeField] private GameObject mainInfoUI;
+    [SerializeField] private TextMeshProUGUI mainInfoUIText;
+    /*[SerializeField] private GameObject pickUpUI;
     [SerializeField] private GameObject putDownUI;
     [SerializeField] private GameObject useUI;
     [SerializeField] private GameObject pourUI;
     [SerializeField] private GameObject putOnTray;
     [SerializeField] private GameObject cleanTrashUI;
     [SerializeField] private GameObject CleanTheDirt;
-    public UnityEngine.UI.Image thrashCleanProgressBar;
+    public UnityEngine.UI.Image thrashCleanProgressBar;*/
     
     [Header("Layers")]
     [SerializeField] private LayerMask interactionLayer;
@@ -34,8 +37,7 @@ public class Player : MonoBehaviour
     private GameObject lastHighlightedObject;
 
     [Header("Inputs")]
-    [SerializeField] private InputActionReference pickUpInput;
-    [SerializeField] private InputActionReference putDownInput;
+    [SerializeField] private InputActionReference pickAndPutInput;
     [SerializeField] private InputActionReference useInput;
     [SerializeField] private InputActionReference useHoldInput;
 
@@ -46,12 +48,13 @@ public class Player : MonoBehaviour
     private bool isCleaning = false;
     void Start()
     {
-        pickUpInput.action.performed+=PickUp;
-        putDownInput.action.performed+=PutDown;
+        pickAndPutInput.action.performed+=PickAndPut;
+        //putDownInput.action.performed+=PutDown;
         useInput.action.performed+=Use;
         useHoldInput.action.performed+=UseHold;
     }
 
+#region USE HOLD (THRASH)
     private void UseHold(InputAction.CallbackContext context)
     {
         if (inHandItem != null && inHandItem.CompareTag("Mop") && hit.collider.gameObject.tag=="Trash")
@@ -59,8 +62,9 @@ public class Player : MonoBehaviour
                 Destroy(hit.collider.gameObject);
             }
     }
-
-    private void Use(InputAction.CallbackContext context)
+#endregion
+#region USE INPUT
+    private void Use(InputAction.CallbackContext context)//F
     {
         if(hit.collider!=null){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,useableLayer)&&!isPicked&&hit.collider.GetComponent<IInteractable>()!=null){//INTERACT SİSTEMİ
@@ -78,6 +82,7 @@ public class Player : MonoBehaviour
             else if(inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null/*DİĞER BARDAKLARDA OLABİLİR*/&&isPicked){
                 if(Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)){
                     if(hit.collider.CompareTag("Water")){
+                        Debug.Log("Water'ı gördü");
                         var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
                         if(isDirtyinHandItem.isDirty){
                             
@@ -85,89 +90,55 @@ public class Player : MonoBehaviour
                         }
                     }
                 }
-
             }
             
 
         }
     }
-
-    private void PutDown(InputAction.CallbackContext context)
+#endregion
+#region pick and put and tray
+    private void PickAndPut(InputAction.CallbackContext context)//E
     {
-        
-        if(hit.collider!=null){
-            if (Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)&&isPicked){//TEPSİ SİSTEMİ
-                if(inHandItem.gameObject.tag=="Tea_Cup"&&hit.collider.gameObject.tag=="Tray"){
-                    Debug.Log("aaaaaa");
-                    isPicked=false;
-                    if(inHandItem.GetComponent<Tea_Cup>()!=null&&!inHandItem.GetComponent<Tea_Cup>().isOnTray){
-                        Debug.Log("Elinde bardakla Tepsiye bakıyor");
-                        inHandItem.GetComponent<Tea_Cup>().isOnTray=true;
-                        Transform trayTransform = hit.collider.transform.root;
-                        inHandItem.transform.SetParent(trayTransform,true);
-                        //inHandItem.transform.position=Vector3.zero;
-                        inHandItem.transform.rotation=Quaternion.identity;
-                    }
-                    /*else if(DİĞER BARDAKLAR EKLENEBİLİR)*/
-                    else{
-                        Debug.Log("YOOOOOK");
-                    }
 
-                    Collider col = inHandItem.GetComponent<Collider>();
-                    if (col != null)
-                    {
-                        float heightOffset = col.bounds.extents.y;
-                        inHandItem.transform.position = hit.point + Vector3.up * heightOffset;
-                    }
-                    else
-                    {
-                        inHandItem.transform.position = hit.point;
-                    }
-                    
-                    //inHandItem.transform.SetParent(null);
-                    
-                    Rigidbody rb = inHandItem.GetComponent<Rigidbody>();
-                    if(rb!=null){
-                        rb.useGravity=true;
-                        rb.isKinematic=false;
-                    } 
+        if(!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)){
+            return;
+        }
+        GameObject target = hit.collider.gameObject;
+        if(isPicked){
+            //TEPSİ SİSTEMİ
+            if(inHandItem.gameObject.tag=="Tea_Cup"&&target.tag=="Tray"){
+                Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
+                if(teaCup!=null && !teaCup.isOnTray){
+                    teaCup.isOnTray=true;
+                    isPicked=false;
+                    //Tepsiye sabitle
+                    Transform trayTransform = hit.collider.transform.root;
+                    inHandItem.transform.SetParent(trayTransform,true);
+                    inHandItem.transform.rotation=Quaternion.identity;
+
+                    SetItemPositionOnSurface(inHandItem, hit.point);
+
+                    EnablePhysics(inHandItem,true);
+
+                    DisablePhysics();
+
                     inHandItem=null;
                     return;
                 }
             }
-            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,placementLayer)&&isPicked){   //BIRAKMA SİSTEMİ  
+            
+            if(((1<<target.layer)&placementLayer)!=0){//BIRAKMA SİSTEMİ  
                 isPicked=false;
-                Collider col = inHandItem.GetComponent<Collider>();
-                if (col != null)
-                {
-                    float heightOffset = col.bounds.extents.y;
-                    inHandItem.transform.position = hit.point + Vector3.up * heightOffset;
-                }
-                else
-                {
-                    inHandItem.transform.position = hit.point;
-                }
+
                 inHandItem.transform.SetParent(null);
+                SetItemPositionOnSurface(inHandItem, hit.point);
                 
-                Rigidbody rb = inHandItem.GetComponent<Rigidbody>();
-                if(rb!=null){
-                    rb.useGravity=true;
-                    rb.isKinematic=false;
-                } 
+                EnablePhysics(inHandItem,true);
                 inHandItem=null;
                 return;
             }
-            
-        }
-    }
 
-    private void PickUp(InputAction.CallbackContext context)//PİCK UP
-    {
-        //Debug.Log(hit.collider.gameObject.name);
-        if(hit.collider!=null){
-            
-            
-            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,interactionLayer)&&!isPicked){
+            /*if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,interactionLayer)&&!isPicked){
                 isPicked=true;
                 if(hit.collider.GetComponent<Tea_Cup>()!=null&&hit.collider.GetComponent<Tea_Cup>().isOnTray){//PİCK UP TEPSİDEN
                     
@@ -176,11 +147,8 @@ public class Player : MonoBehaviour
                     //inHandItem.transform.position=Vector3.zero;
                     inHandItem.transform.rotation=Quaternion.identity;
                     inHandItem.transform.SetParent(firstPersonHand.transform,false);
-
-                    
-                    
                 }
-                /*else if(DİĞER BARDAKLAR EKLENEBİLİR)*/
+                /*else if(DİĞER BARDAKLAR EKLENEBİLİR)//
                 else{
                     inHandItem=hit.collider.gameObject;
                     inHandItem.transform.position=Vector3.zero;
@@ -195,22 +163,37 @@ public class Player : MonoBehaviour
                     rb.isKinematic=true;
                 }
                 return;
+            }*/
+            
+        }
+
+        else{
+            if(((1<<target.layer)&interactionLayer)!=0){
+                Tea_Cup teaCup=target.GetComponent<Tea_Cup>();
+
+                if(teaCup!=null && teaCup.isOnTray){
+                    teaCup.isOnTray=false;
+                }
+
+                isPicked = true;
+                inHandItem = target;
+                inHandItem.transform.SetParent(firstPersonHand.transform, false);
+                inHandItem.transform.localPosition = Vector3.zero;
+                inHandItem.transform.localRotation = Quaternion.identity;
+
+                EnablePhysics(inHandItem, false);
             }
         }
-
     }
-
+#endregion
     void Update()
     {
-        /*if(inHandItem!=null){
-            Debug.Log("Elimde: "+inHandItem.gameObject.name);
-        }
-        
-        if(hit.collider!=null){
-            Debug.Log("Görüyorum: "+hit.collider.gameObject.name);
-        }*/
-        Debug.DrawRay(playerCam.position, playerCam.forward * rayCastRange, Color.red);
 
+        UpdateUIAndHighlight();
+        Debug.DrawRay(playerCam.position, playerCam.forward * rayCastRange, Color.red);
+    }
+#region UpdateUI
+    void UpdateUIAndHighlight(){
         bool didHit = Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange);
 
         if (lastHighlightedObject != null && (didHit == false || hit.collider.gameObject != lastHighlightedObject))
@@ -219,81 +202,112 @@ public class Player : MonoBehaviour
             lastHighlightedObject = null;
         }
 
-        pickUpUI.SetActive(false);
-        putDownUI.SetActive(false);
-        useUI.SetActive(false);
-        pourUI.SetActive(false);
-        putOnTray.SetActive(false);
-        cleanTrashUI.SetActive(false);
-        CleanTheDirt.SetActive(false);
+        mainInfoUI.SetActive(false);
         
 
         if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
             lastHighlightedObject = hit.collider.gameObject;
-            pickUpUI.SetActive(true);
+            ShowUIMessage("Press E to Pick Up");
         }
-        else if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked)
+         if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            putDownUI.SetActive(true);
+            ShowUIMessage("Press E to Put Down");
         }
-        else if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked&&hit.collider.GetComponent<IInteractable>()!=null)
+         if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked&&hit.collider.GetComponent<IInteractable>()!=null)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = hit.collider.gameObject;
-            useUI.SetActive(true);
+            ShowUIMessage("Press F to Use");
         }
-        else if(didHit && inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){
-            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
-                if(hit.collider.CompareTag("Tea_Cup")){
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    pourUI.SetActive(true);
-                }
-            }
-        }
-        
-        else if(didHit && inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null&&isPicked){
-            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
-                if(hit.collider.CompareTag("Water")){
-                    lastHighlightedObject = hit.collider.gameObject;
-                    CleanTheDirt.SetActive(true);
-                }
-        }
-        else if(didHit&&hit.collider.gameObject.tag=="Trash"){//THRASH UI
-                //if(inHandItem!=null){
-                    if(inHandItem.gameObject.tag=="Mop"){
-                        cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="Hold E to clean this thrash";
-                    }
-                //}
-                    else{
-                        cleanTrashUI.GetComponentInChildren<TextMeshProUGUI>().text="You need to hand Mob to clean thrash";
-                    }
 
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                lastHighlightedObject = hit.collider.gameObject;
-                
-                cleanTrashUI.SetActive(true);
-        }
-        else if(didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&&isPicked){
+         if(didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&&isPicked){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
                 if(inHandItem.gameObject.tag=="Tea_Cup"&&!inHandItem.GetComponent<Tea_Cup>().isOnTray&&hit.collider.gameObject.tag=="Tray")
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    putOnTray.SetActive(true);
+                    ShowUIMessage("Press E to Put on Tray");
                 }
                 else{
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
                     lastHighlightedObject = null;
-                    putOnTray.SetActive(false);
+                }
+            }
+        }
+
+         if(didHit && inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){//KETTLE DAN ÇAY KOYMA UI
+            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
+                if(hit.collider.CompareTag("Tea_Cup")){
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Pour Tea");
                 }
             }
         }
         
+         if(didHit && inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null&&isPicked){
+            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
+                if(hit.collider.CompareTag("Water")&&inHandItem.GetComponent<DirtyStatus>().isDirty){
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Wash");
+                }
+            }
+        }
+         if(didHit&&hit.collider.gameObject.tag=="Trash"){//THRASH UI
+            if(inHandItem!=null&&inHandItem.gameObject.tag=="Mop"){
+                    ShowUIMessage("Hold the F to Clean Trash");
+            }
+            else{
+                ShowUIMessage("You need mop to clean thrash");
+            }
+
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+            lastHighlightedObject = hit.collider.gameObject;
+        }
     }
+#endregion
+
+    void ShowUIMessage(string message){
+        mainInfoUI.SetActive(true);
+        mainInfoUIText.text=message;
+    }
+
+    private void SetItemPositionOnSurface(GameObject item, Vector3 hitPoint){
+        Collider col = item.GetComponent<Collider>();
+        if(col!=null){
+            float heightOffset = col.bounds.extents.y;
+            item.transform.position=hitPoint+Vector3.up* heightOffset;
+        }
+
+        else{
+            item.transform.position=hitPoint;
+        }
+    }
+
+    private void EnablePhysics(GameObject item, bool enable){
+        Rigidbody rb = item.GetComponent<Rigidbody>();
+
+        if(rb!=null){
+            rb.useGravity=enable;
+            rb.isKinematic=!enable;
+        }
+    }
+    private void DisablePhysics(){
+        Rigidbody rb = inHandItem.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+
+        /*Collider col = inHandItem.GetComponent<Collider>();
+        if (col != null)
+        {
+            col.enabled = false;
+        }*/
     }
 }
