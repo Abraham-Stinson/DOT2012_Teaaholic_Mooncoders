@@ -14,7 +14,9 @@ public class DirtyStatus : MonoBehaviour
     }
     public void CleanDirt(){
         Debug.Log("Yıkandı");
-
+        if(GetComponent<Tea_Cup>()!=null){
+            GetComponent<Tea_Cup>().EmptyCup();
+        }
         isDirty=false;
     }
 }

@@ -1493,6 +1493,11 @@ MonoBehaviour:
   currentTeaCupMagazine: 0
   currentTeaCupTeaMagazine: 0
   isOnTray: 0
+  isFillOralet: 0
+  isFillTea: 0
+  isFullTea: 0
+  isFullOralet: 0
+  teaMeshList: []
 --- !u!114 &1097103827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1643,6 +1648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  isPourAnimation: 0
   maxKettleMagazine: 10
   minKettleMagazine: 0
   currentKettleMagazine: 0
@@ -1847,6 +1853,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 564088134252239248, guid: 784a966fbf76f424a8078ebca65b0ddc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1525877655}
+    - targetCorrespondingSourceObject: {fileID: 564088134252239248, guid: 784a966fbf76f424a8078ebca65b0ddc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1525877659}
     - targetCorrespondingSourceObject: {fileID: -7171018784557741059, guid: 784a966fbf76f424a8078ebca65b0ddc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 670142877}
@@ -2205,6 +2214,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!54 &1525877659
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525877646}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1563888855
 GameObject:
   m_ObjectHideFlags: 0
@@ -3970,9 +4006,10 @@ GameObject:
   - component: {fileID: 8959162801797697254}
   - component: {fileID: 5454857737498894175}
   - component: {fileID: 5177664132590890793}
+  - component: {fileID: 8959162801797697255}
   m_Layer: 0
   m_Name: Tap
-  m_TagString: Untagged
+  m_TagString: Hot_Water
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5954,6 +5991,11 @@ MonoBehaviour:
   currentTeaCupMagazine: 0
   currentTeaCupTeaMagazine: 0
   isOnTray: 0
+  isFillOralet: 0
+  isFillTea: 0
+  isFullTea: 0
+  isFullOralet: 0
+  teaMeshList: []
 --- !u!114 &6478341717746841863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6523,6 +6565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 8828927957175187964}
+  isPourAnimation: 0
   maxKettleMagazine: 10
   minKettleMagazine: 0
   currentKettleMagazine: 0
@@ -6582,6 +6625,27 @@ Transform:
   - {fileID: 1275355207001429493}
   m_Father: {fileID: 543450653215721405}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8959162801797697255
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626479828910027559}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0006932664, y: 0.001458508, z: 0.0017582932}
+  m_Center: {x: -0.004628507, y: -0.0043008863, z: 0.004253196}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

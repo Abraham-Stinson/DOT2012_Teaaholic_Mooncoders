@@ -13,6 +13,7 @@ TagManager:
   - Mop
   - Tap
   - Water
+  - Hot_Water
   layers:
   - Default
   - TransparentFX

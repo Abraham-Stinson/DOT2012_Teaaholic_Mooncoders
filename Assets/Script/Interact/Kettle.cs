@@ -8,7 +8,7 @@ public class Kettle : MonoBehaviour
     [SerializeField] private bool isPourAnimation;
     [SerializeField] private float maxKettleMagazine=10f;
     [SerializeField] private float minKettleMagazine=0f;
-    [SerializeField] private float currentKettleMagazine;
+    [SerializeField] public float currentKettleMagazine;
     void Start()
     {
         currentKettleMagazine=minKettleMagazine;
@@ -21,11 +21,16 @@ public class Kettle : MonoBehaviour
     }
 
     public void PourTea(){
-        isPourAnimation=true;
-        animator.SetBool("isPour",isPourAnimation);
-        currentKettleMagazine-=1;
-        Debug.Log("Çay verildi");
-        StartCoroutine(WaitForPourAnimation());
+        if(currentKettleMagazine>0){
+            isPourAnimation=true;
+            animator.SetBool("isPour",isPourAnimation);
+            currentKettleMagazine-=1;
+            StartCoroutine(WaitForPourAnimation());
+        }
+        else{
+            Debug.Log("Kettle çayı bitti");
+        }
+        
     }
 
     private IEnumerator WaitForPourAnimation(){

@@ -66,6 +66,11 @@ public class Player : MonoBehaviour
 #region USE INPUT
     private void Use(InputAction.CallbackContext context)//F
     {
+        if(!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)){
+            return;
+        }
+        GameObject target = hit.collider.gameObject;
+
         if(hit.collider!=null){
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange,useableLayer)&&!isPicked&&hit.collider.GetComponent<IInteractable>()!=null){//INTERACT SİSTEMİ
                 hit.collider.GetComponent<IInteractable>().interact();
@@ -73,15 +78,31 @@ public class Player : MonoBehaviour
 
             else if(inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){//ÇAY DÖKME SİSTEMİ
                 if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
-                    if(hit.collider.CompareTag("Tea_Cup")){
+                    if(target.CompareTag("Tea_Cup")&&target.GetComponent<Tea_Cup>().isFullTea==false&&inHandItem.GetComponent<Kettle>().currentKettleMagazine>0){
                         hit.collider.GetComponent<Tea_Cup>().AddTea();
                         inHandItem.GetComponent<Kettle>().PourTea();
+                        Debug.Log("Çay eklendi");
+                    }
+                    else{
+                        Debug.Log("Dolduramazsın");
+                    }
+                }
+            }
+            else if(inHandItem!=null&&inHandItem.tag=="Tea_Cup"){
+                if (Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)){
+                    if(target.CompareTag("Hot_Water")){
+                        if(inHandItem.GetComponent<Tea_Cup>().isFillTea){
+                            inHandItem.GetComponent<Tea_Cup>().FillHotWater();
+                        }
+                        else{
+                            Debug.Log("Sıcak su dolduramazsın Dolduramazsın");
+                        }
                     }
                 }
             }
             else if(inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null/*DİĞER BARDAKLARDA OLABİLİR*/&&isPicked){
                 if(Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)){
-                    if(hit.collider.CompareTag("Water")){
+                    if(target.CompareTag("Water")){
                         Debug.Log("Water'ı gördü");
                         var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
                         if(isDirtyinHandItem.isDirty){
@@ -239,12 +260,22 @@ public class Player : MonoBehaviour
             }
         }
 
-         if(didHit && inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){//KETTLE DAN ÇAY KOYMA UI
+        if(didHit && inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){//KETTLE DAN ÇAY KOYMA UI
             if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
                 if(hit.collider.CompareTag("Tea_Cup")){
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
                     ShowUIMessage("Press F to Pour Tea");
+                }
+            }
+        }
+
+        if(didHit && inHandItem!=null&&inHandItem.tag=="Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){//KETTLE DAN ÇAY KOYMA UI
+            if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
+                if(hit.collider.CompareTag("Hot_Water")){
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Fill the Hot Water");
                 }
             }
         }
