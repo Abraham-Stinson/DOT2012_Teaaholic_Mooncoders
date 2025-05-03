@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 181bae2f6e4b84b44878b2f8fb6def3d
+guid: b3770391e02a7cf469d82c6b2cc0c68d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TeaCoater
+    second: {fileID: 2100000, guid: 30a07bc06ad863042975559b2b6e530a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -12,7 +17,7 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: normal_tea
+      name: light_tea
     second: {fileID: 2100000, guid: 668533a5c6de2d6439e5f72b809e0a55, type: 2}
   materials:
     materialImportMode: 2

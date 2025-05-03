@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 929d01ee10ecab1498858e8e85246867
+guid: a83cb2b560930744bac65ba5c0f96e9c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TeaCoater
+    second: {fileID: 2100000, guid: 30a07bc06ad863042975559b2b6e530a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
