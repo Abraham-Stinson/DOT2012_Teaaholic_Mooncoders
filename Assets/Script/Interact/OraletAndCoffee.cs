@@ -1,85 +1,102 @@
-using System.Net.Http.Headers;
 using UnityEngine;
 
 public class OraletAndCoffee : MonoBehaviour
 {
-    [SerializeField] int fullMagazine=10;
-    public int currentMagazine=10;
-    public string typeOfProduct="";
+    [SerializeField] int fullMagazine = 10;
+    public int currentMagazine = 10;
+    public string typeOfProduct = "";
 
-    [Header ("Products Game Objects")]
-    [SerializeField] private GameObject[] productParts; //0 kapak, 1 birinci seviye, 2 ikici seviye, 3 ucuncu seviye, 4 dorduncu seviye, 5 ise dibi
+    [Header("Products Game Objects")]
+    [SerializeField] private GameObject[] productParts; //0 kapak, 1 birinci seviye, 2 ikinci seviye, 3 üçüncü seviye, 4 dördüncü seviye, 5 dibi
 
     [SerializeField] private GameObject spoon;
+
+    private int currentActivePartIndex = -1; // Track which product part is currently active
+
     void Start()
     {
-        currentMagazine=fullMagazine;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void reduceProduct(){
-        currentMagazine-=1;
+        currentMagazine = fullMagazine;
         ChangeAppearanceOfProduct();
     }
 
-    void ChangeAppearanceOfProduct(){
-        if(currentMagazine>8){
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(false);
-            }
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(true);
-            }
+    void Update()
+    {
+        /*if (Input.GetKeyDown(KeyCode.Space))
+        {
+            reduceProduct();
+        }*/
+    }
+
+    public void reduceProduct()
+    {
+        if (currentMagazine > 0)
+        {
+            currentMagazine -= 1;
+            ChangeAppearanceOfProduct();
         }
-        else if (currentMagazine>6){
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(false);
-            }
-            for (int i=2; i<productParts.Length;i++){
-                productParts[i].SetActive(true);
-            }
-        }
-        else if (currentMagazine>4){
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(false);
-            }
-            for (int i=3; i<productParts.Length;i++){
-                productParts[i].SetActive(true);
-            }
-        }
-        else if (currentMagazine>2){
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(false);
-            }
-            for (int i=4; i<productParts.Length;i++){
-                productParts[i].SetActive(true);
-            }
-        }
-        else if (currentMagazine>0){
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(false);
-            }
-            for (int i=5; i<productParts.Length;i++){
-                productParts[i].SetActive(true);
-            }
-        }
-        else if(currentMagazine==0){
-            for (int i=1; i<productParts.Length;i++){
-                productParts[i].SetActive(false);
-            }
-        }
-        else{
-            Debug.Log("Hata");
+        else
+        {
+            Debug.Log("Ürün tükenmiş.");
         }
     }
 
-    public void CoverPutAndRemove(bool isInHand){
+    void ChangeAppearanceOfProduct()
+    {
+        int newActiveIndex = -1; // no active by default
+
+        if (currentMagazine > 8)
+        {
+            newActiveIndex = 1; // Birinci seviye
+        }
+        else if (currentMagazine > 6)
+        {
+            newActiveIndex = 2; // İkinci seviye
+        }
+        else if (currentMagazine > 4)
+        {
+            newActiveIndex = 3; // Üçüncü seviye
+        }
+        else if (currentMagazine > 2)
+        {
+            newActiveIndex = 4; // Dördüncü seviye
+        }
+        else if (currentMagazine > 0)
+        {
+            newActiveIndex = 5; // Dibi
+        }
+        else if (currentMagazine == 0)
+        {
+            newActiveIndex = -1; // None active
+        }
+        else
+        {
+            Debug.Log("Hata: Geçersiz currentMagazine değeri.");
+            return;
+        }
+
+        // If different from currently active part, update active parts
+        if (currentActivePartIndex != newActiveIndex)
+        {
+            // Disable old active part if any
+            if (currentActivePartIndex != -1 && currentActivePartIndex < productParts.Length)
+            {
+                productParts[currentActivePartIndex].SetActive(false);
+            }
+
+            // Enable new active part if any
+            if (newActiveIndex != -1 && newActiveIndex < productParts.Length)
+            {
+                productParts[newActiveIndex].SetActive(true);
+            }
+
+            currentActivePartIndex = newActiveIndex;
+        }
+        // else: no change needed, same active part keeps active
+    }
+
+    public void CoverPutAndRemove(bool isInHand)
+    {
         productParts[0].SetActive(!isInHand);
-        spoon.SetActive(isInHand); 
+        spoon.SetActive(isInHand);
     }
 }

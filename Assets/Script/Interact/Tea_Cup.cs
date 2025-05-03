@@ -50,7 +50,9 @@ public class Tea_Cup : MonoBehaviour
     }
 
     public void AddOraletOrCoffee(string product){
-
+        Debug.Log(product+" tozu eklendi eklendi");
+        isFillOraletorCoffee=true;
+        
     }
 
     public void FillHotWater(){
