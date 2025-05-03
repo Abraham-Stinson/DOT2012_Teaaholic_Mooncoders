@@ -4,7 +4,7 @@ using UnityEngine;
 public class HighLight : MonoBehaviour
 {
     [SerializeField] private List<Renderer> renderers;
-    private Color color = new Color (124,124,124,0.2f); 
+    [SerializeField] private Color color = new Color (89f,89f,89f,1f); 
     [SerializeField] private List<Material> materials;
 
     void Awake()

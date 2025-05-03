@@ -76,9 +76,11 @@ public class Player : MonoBehaviour
                 hit.collider.GetComponent<IInteractable>().interact();
             }
 
-            else if(inHandItem!=null&&inHandItem.tag=="Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&&isPicked){//ÇAY DÖKME SİSTEMİ
+            else if(inHandItem!=null&&inHandItem.tag=="Kettle"&&isPicked){//ÇAY DÖKME SİSTEMİ
                 if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
-                    if(target.CompareTag("Tea_Cup")&&target.GetComponent<Tea_Cup>().isFullTea==false&&inHandItem.GetComponent<Kettle>().currentKettleMagazine>0){
+                    if(target.CompareTag("Tea_Cup")){
+                        var teaCupScript = target.GetComponent<Tea_Cup>();
+                        if(!teaCupScript.isFullTea&&inHandItem.GetComponent<Kettle>().currentKettleMagazine>0&&!teaCupScript.isFillOraletorCoffee&&!teaCupScript.isFullOraletorCoffee)
                         hit.collider.GetComponent<Tea_Cup>().AddTea();
                         inHandItem.GetComponent<Kettle>().PourTea();
                         Debug.Log("Çay eklendi");
@@ -88,7 +90,7 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-            else if(inHandItem!=null&&inHandItem.tag=="Tea_Cup"){
+            else if(inHandItem!=null&&inHandItem.tag=="Tea_Cup"){//SICAK SU
                 if (Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)){
                     if(target.CompareTag("Hot_Water")){
                         if(inHandItem.GetComponent<Tea_Cup>().isFillTea){
@@ -100,15 +102,32 @@ public class Player : MonoBehaviour
                     }
                 }
             }
+            else if(inHandItem!=null&&inHandItem.tag=="Other_Products"){//ORALET VEYA KAHVE
+                if(Physics.Raycast(playerCam.position,playerCam.forward,out hit,rayCastRange)){
+                    
+                    if(target.CompareTag("Tea_Cup")){
+                        var teaCupScript = target.GetComponent<Tea_Cup>();
+                        if(!teaCupScript.isFillOraletorCoffee&&!teaCupScript.isFillTea&&!teaCupScript.isFullTea){
+                            teaCupScript.AddOraletOrCoffee(inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
+                            inHandItem.GetComponent<OraletAndCoffee>().reduceProduct();
+                        }
+                        else{
+                            Debug.Log("Oralet veya kahve dolduramazsın");
+                        }
+                    }
+                }
+            }
             else if(inHandItem!=null&&inHandItem.GetComponent<DirtyStatus>()!=null/*DİĞER BARDAKLARDA OLABİLİR*/&&isPicked){
                 if(Physics.Raycast(playerCam.position,playerCam.forward,out hit, rayCastRange)){
                     if(target.CompareTag("Water")){
                         Debug.Log("Water'ı gördü");
                         var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
-                        if(isDirtyinHandItem.isDirty){
-                            
-                            isDirtyinHandItem.CleanDirt();
-                        }
+                        /*if(isDirtyinHandItem.isDirty){
+                            //ONLY CLEAN WHEN IT DIRTY
+                        }*/
+
+                        isDirtyinHandItem.CleanDirt();
+                            inHandItem.GetComponent<Tea_Cup>().EmptyCup();
                     }
                 }
             }
@@ -309,9 +328,11 @@ public class Player : MonoBehaviour
 
     private void SetItemPositionOnSurface(GameObject item, Vector3 hitPoint){
         Collider col = item.GetComponent<Collider>();
-        if(col!=null){
-            float heightOffset = col.bounds.extents.y;
-            item.transform.position=hitPoint+Vector3.up* heightOffset;
+        if(col!=null/*&&inHandItem.tag!="Tea_Cup"*/){
+            float bottomY = col.bounds.min.y;
+            float offsetY = item.transform.position.y - bottomY;
+
+            item.transform.position=hitPoint + Vector3.up * offsetY;;
         }
 
         else{

@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public class Tea_Cup : MonoBehaviour
@@ -9,16 +10,21 @@ public class Tea_Cup : MonoBehaviour
     [SerializeField] private float currentTeaCupMagazine;
     [SerializeField] private float currentTeaCupTeaMagazine;
     [SerializeField] public bool isOnTray=false;
-    [SerializeField] public bool isFillOralet=false;
+    [SerializeField] public bool isFillOraletorCoffee=false;
+    [SerializeField] public bool isFullOraletorCoffee=false;
     [SerializeField] public bool isFillTea=false;
     [SerializeField] public bool isFullTea=false;
-    [SerializeField] public bool isFullOralet=false;
+    
 
     [Header ("Meshler")]
-    [SerializeField] Mesh[] teaMeshList;
+
+    [SerializeField] public GameObject cup; 
+    [SerializeField] GameObject[] teaCupsLevels;
+
     
     void Start()
     {
+
         currentTeaCupMagazine=minTeaCupMagazine;
         currentTeaCupTeaMagazine=minTeaCupMagazine;
     }
@@ -30,7 +36,7 @@ public class Tea_Cup : MonoBehaviour
     }
 
     public void AddTea(){
-        if(!isFillOralet&&!isFillTea){
+        if(!isFillOraletorCoffee&&!isFillTea){
             isFillTea=true;
         }
         if(currentTeaCupTeaMagazine<3){
@@ -43,50 +49,85 @@ public class Tea_Cup : MonoBehaviour
         ChangeMeshTea();
     }
 
-    public void FillHotWater(){
-        currentTeaCupMagazine=currentTeaCupMagazine+(maxTeaCupMagazine-currentTeaCupMagazine);
-        ChangeMeshTea();
+    public void AddOraletOrCoffee(string product){
+
     }
 
+    public void FillHotWater(){
+        currentTeaCupMagazine=currentTeaCupMagazine+(maxTeaCupMagazine-currentTeaCupMagazine);
+        isFullTea=true;
+        ChangeMeshTea();
+    }
+#region change mesh of tea
     private void ChangeMeshTea(){
-        /*if(currentTeaCupMagazine==0){
+        if(currentTeaCupMagazine==0){
             //EMPTY MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[0];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            
         }
         else if(currentTeaCupMagazine==1&&currentTeaCupTeaMagazine==1){
             //1 DEM DOLU MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[1];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            teaCupsLevels[0].SetActive(true);
         }
         else if(currentTeaCupMagazine==2&&currentTeaCupTeaMagazine==2){
             //2DEM DOLU MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[2];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            teaCupsLevels[0].SetActive(true);
+            teaCupsLevels[1].SetActive(true);
         }
         else if(currentTeaCupMagazine==3&&currentTeaCupTeaMagazine==3){
             //3DEM DOLU MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[3];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            teaCupsLevels[0].SetActive(true);
+            teaCupsLevels[1].SetActive(true);
+            teaCupsLevels[2].SetActive(true);
         }
         else if(currentTeaCupMagazine==5&&currentTeaCupTeaMagazine==1){
             //AÇIK ÇAY MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[4];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            teaCupsLevels[3].SetActive(true);
         }
         else if(currentTeaCupMagazine==5&&currentTeaCupTeaMagazine==2){
             //TAVŞAN KANI ÇAY MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[5];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            teaCupsLevels[4].SetActive(true);
         }
         else if(currentTeaCupMagazine==5&&currentTeaCupTeaMagazine==3){
             //DEMLİ ÇAY MESH
-            GetComponent<MeshFilter>().mesh=teaMeshList[6];
+            for(int i=0;i<teaCupsLevels.Length;i++){
+                teaCupsLevels[i].SetActive(false);
+            }
+            teaCupsLevels[5].SetActive(true);
         }
         else{
             Debug.Log("HATA");
-        }*/
+        }
     }
+#endregion
+#region change mesh of oralets or coffee
+    void ChangeMeshOraletorCoffee(){
+        
+    }
+#endregion
 
     public void EmptyCup(){
-        isFillOralet=false;
+        isFillOraletorCoffee=false;
         isFillTea=false;
         isFullTea=false;
-        isFullOralet=false;
+        isFullOraletorCoffee=false;
         currentTeaCupMagazine=0;
         currentTeaCupTeaMagazine=0;
         ChangeMeshTea();

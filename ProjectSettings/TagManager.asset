@@ -14,6 +14,7 @@ TagManager:
   - Tap
   - Water
   - Hot_Water
+  - Other_Products
   layers:
   - Default
   - TransparentFX
