@@ -78,12 +78,8 @@ public class OraletAndCoffee : MonoBehaviour
         }
     }
 
-    void Cover(bool isInHand){
-        if(isInHand){
-            productParts[0].SetActive(false);
-        }
-        else{
-            productParts[0].SetActive(true);
-        }
+    public void CoverPutAndRemove(bool isInHand){
+        productParts[0].SetActive(!isInHand);
+        spoon.SetActive(isInHand); 
     }
 }

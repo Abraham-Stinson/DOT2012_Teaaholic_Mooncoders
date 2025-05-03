@@ -170,6 +170,10 @@ public class Player : MonoBehaviour
             if(((1<<target.layer)&placementLayer)!=0){//BIRAKMA SİSTEMİ  
                 isPicked=false;
 
+                if(inHandItem.tag=="Other_Products"){
+                    inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(false);
+                }
+
                 inHandItem.transform.SetParent(null);
                 SetItemPositionOnSurface(inHandItem, hit.point);
                 
@@ -215,13 +219,21 @@ public class Player : MonoBehaviour
                     teaCup.isOnTray=false;
                 }
 
+                
+
                 isPicked = true;
                 inHandItem = target;
                 inHandItem.transform.SetParent(firstPersonHand.transform, false);
                 inHandItem.transform.localPosition = Vector3.zero;
                 inHandItem.transform.localRotation = Quaternion.identity;
 
+                if(inHandItem.tag=="Other_Products"){
+                    inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(true);
+                }
+                
                 EnablePhysics(inHandItem, false);
+
+                
             }
         }
     }
