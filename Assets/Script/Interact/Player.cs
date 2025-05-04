@@ -146,11 +146,28 @@ public class Player : MonoBehaviour
         {
             if (inHandItem.GetComponent<Tea_Cup>().isFillTea)
             {
-                inHandItem.GetComponent<Tea_Cup>().FillHotWater();
+                inHandItem.GetComponent<Tea_Cup>().FillHotWaterToTea();
+            }
+            else if (inHandItem.GetComponent<Tea_Cup>().isFillOraletorCoffee)
+            {
+                inHandItem.GetComponent<Tea_Cup>().FillHotWaterToCoffeeOrOralet();
             }
             else
             {
                 Debug.Log("Sıcak su dolduramazsın");
+            }
+        }
+
+        else if (inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
+        {
+            Debug.Log("Niggas");
+            if (target.CompareTag("Water"))
+            {
+                Debug.Log("Niggasss");
+                Debug.Log("Water'ı gördü");
+                var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
+                isDirtyinHandItem.CleanDirt();
+                inHandItem.GetComponent<Tea_Cup>().EmptyCup();
             }
         }
     }
@@ -170,16 +187,7 @@ public class Player : MonoBehaviour
                 Debug.Log("Oralet veya kahve dolduramazsın");
             }
         }
-        else if (inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
-        {
-            if (target.CompareTag("Water"))
-            {
-                Debug.Log("Water'ı gördü");
-                var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
-                isDirtyinHandItem.CleanDirt();
-                inHandItem.GetComponent<Tea_Cup>().EmptyCup();
-            }
-        }
+        
     }
     #endregion
     #region Pick and put and tray
@@ -358,6 +366,19 @@ public class Player : MonoBehaviour
             }
         }
 
+        if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        {//bardağa Kahve veya oralet koyma
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+            {
+                if (hit.collider.CompareTag("Tea_Cup"))
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Pour " + inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
+                }
+            }
+        }
+
         if (didHit && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
         {//KETTLE DAN ÇAY KOYMA UI
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
@@ -375,7 +396,7 @@ public class Player : MonoBehaviour
         {
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>().isDirty)
+                if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
                 {
                     lastHighlightedObject = hit.collider.gameObject;
                     ShowUIMessage("Press F to Wash");
