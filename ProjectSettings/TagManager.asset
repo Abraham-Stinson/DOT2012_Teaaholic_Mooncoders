@@ -15,6 +15,7 @@ TagManager:
   - Water
   - Hot_Water
   - Other_Products
+  - Kettle_Base
   layers:
   - Default
   - TransparentFX

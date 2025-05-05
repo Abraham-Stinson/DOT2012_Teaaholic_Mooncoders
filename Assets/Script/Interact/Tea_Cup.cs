@@ -54,6 +54,9 @@ public class Tea_Cup : MonoBehaviour
         {
             currentTeaCupMagazine += 1;
             currentTeaCupTeaMagazine += 1;
+            if(currentTeaCupMagazine>=3){
+                isFullTea = true;
+            }
         }
         else
         {
