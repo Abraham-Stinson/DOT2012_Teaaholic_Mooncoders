@@ -371,7 +371,7 @@ public class Player : MonoBehaviour
             if(/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle")){
                     var kettleScript=hit.collider.GetComponent<Kettle>();
                     if(kettleScript.currentKettleMagazine>0){
-                        ShowUIMessage("Press E to Pick Up\n"+ kettleScript.currentKettleMagazine +"tea left");
+                        ShowUIMessage("Press E to Pick Up\n"+ kettleScript.currentKettleMagazine +" tea left");
                     }
                     else{
                         if(kettleScript.isHaveTea&&!kettleScript.isHaveHotWater){
