@@ -9,32 +9,36 @@ public class Valve : MonoBehaviour, IInteractable
     void Start()
     {
         waterEffect.Stop();
-        waterEffectCollider.enabled=false;
+        waterEffectCollider.enabled = false;
 
 
     }
 
-    public void interact(){
-        isOpen=!isOpen;
-        animator.SetBool("isOpen",isOpen);
+    public void interact()
+    {
+        isOpen = !isOpen;
+        animator.SetBool("isOpen", isOpen);
         FlowingWater();
     }
 
     void Update()
     {
-         
+
     }
 
-    void FlowingWater(){
-        if(isOpen){
-            waterEffectCollider.enabled=true;
+    void FlowingWater()
+    {
+        if (isOpen)
+        {
+            waterEffectCollider.enabled = true;
             waterEffect.Play();
 
         }
-        else{
-            waterEffectCollider.enabled=false;
+        else
+        {
+            waterEffectCollider.enabled = false;
             waterEffect.Stop();
         }
-         
+
     }
 }

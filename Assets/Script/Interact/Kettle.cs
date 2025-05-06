@@ -13,7 +13,7 @@ public class Kettle : MonoBehaviour
     [SerializeField] public bool isHaveHotWater;
     [SerializeField] public bool isBrewed;
     private RaycastHit bottomOfKettle;
-    [SerializeField] private float brewTimeOfTea=10f;
+    [SerializeField] private float brewTimeOfTea = 10f;
     [SerializeField] public float currentBrewTimeOfTea;
 
     [Header("CoolDown")]
@@ -46,9 +46,10 @@ public class Kettle : MonoBehaviour
             isPourAnimation = true;
             animator.SetBool("isPour", isPourAnimation);
             currentKettleMagazine -= 1;
-            if(currentKettleMagazine==0){
-                isHaveHotWater=false;
-                isHaveTea=false;
+            if (currentKettleMagazine == 0)
+            {
+                isHaveHotWater = false;
+                isHaveTea = false;
             }
             StartCoroutine(WaitForPourAnimation());
             StartCoroutine(StartCoolDown());
@@ -75,8 +76,9 @@ public class Kettle : MonoBehaviour
         yield return new WaitForSeconds(coolDownTime);
         isOnCoolDown = false;
     }
-    public void ChangeBrewTime(){
-        currentBrewTimeOfTea=brewTimeOfTea;
+    public void ChangeBrewTime()
+    {
+        currentBrewTimeOfTea = brewTimeOfTea;
     }
 
     void CheckBrew()
@@ -84,7 +86,7 @@ public class Kettle : MonoBehaviour
         Debug.DrawRay(transform.position, -transform.up * 1f, Color.red);
         if (CheckIsOnKettleBase())
         {
-            if (isHaveHotWater&&isHaveTea)
+            if (isHaveHotWater && isHaveTea)
             {
                 UpdateBrewTime(true);
             }
@@ -93,36 +95,45 @@ public class Kettle : MonoBehaviour
                 UpdateBrewTime(false);
             }
         }
-        else{
+        else
+        {
             UpdateBrewTime(false);
         }
     }
 
-    void UpdateBrewTime(bool Continue){
-        if(Continue){
-            if(currentBrewTimeOfTea>0){
-                currentBrewTimeOfTea-=Time.deltaTime;
+    void UpdateBrewTime(bool Continue)
+    {
+        if (Continue)
+        {
+            if (currentBrewTimeOfTea > 0)
+            {
+                currentBrewTimeOfTea -= Time.deltaTime;
             }
-            else{
-                isBrewed=true;
+            else
+            {
+                isBrewed = true;
                 Debug.Log("ÇAY DEMLENDİİİ");
-                currentKettleMagazine=maxKettleMagazine;
+                currentKettleMagazine = maxKettleMagazine;
             }
         }
     }
 
-    public bool CheckIsOnKettleBase(){
-        if(Physics.Raycast(transform.position, -transform.up, out bottomOfKettle, 1f) && bottomOfKettle.collider.CompareTag("Kettle_Base")){
+    public bool CheckIsOnKettleBase()
+    {
+        if (Physics.Raycast(transform.position, -transform.up, out bottomOfKettle, 1f) && bottomOfKettle.collider.CompareTag("Kettle_Base"))
+        {
             return true;
         }
-        else{
+        else
+        {
             return false;
         }
     }
 
-    public void EmptyKettle(){
-        currentKettleMagazine=0;
-        isHaveHotWater=false;
-        isHaveTea=false;
+    public void EmptyKettle()
+    {
+        currentKettleMagazine = 0;
+        isHaveHotWater = false;
+        isHaveTea = false;
     }
 }

@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    public GarbageScript garbageScript;
     [Header("Player")]
     [SerializeField] private Transform playerCam;
     [SerializeField][Min(1)] private float rayCastRange = 10f;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask interactionLayer;
     [SerializeField] private LayerMask placementLayer;
     [SerializeField] private LayerMask useableLayer;
+    [SerializeField] private LayerMask groundLayer;
     [Header("First Person Hand")]
     [SerializeField] private Transform firstPersonHand;//when pick up objects it will show on this transform
     [SerializeField] private GameObject inHandItem;//what we picked up
@@ -67,6 +69,7 @@ public class Player : MonoBehaviour
         if (inHandItem != null && inHandItem.CompareTag("Mop") && hit.collider.gameObject.tag == "Trash")
         {
             Destroy(hit.collider.gameObject);
+            garbageScript.AddThrashToGarbage();
         }
     }
     #endregion
@@ -93,6 +96,23 @@ public class Player : MonoBehaviour
                 }
             }
 
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin"))
+            {
+                if (inHandItem != null && (inHandItem.layer == 6) && !(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
+                {
+                    //var garbageBagScript = hit.collider.GetComponent<GarbageScript>();
+                    Destroy(inHandItem);
+                    isPicked = false;
+                    inHandItem = null;
+                    garbageScript.AddThrashToGarbage();
+                    Debug.Log("Eşya çöpe atıldı ve destroy edildi");
+                }
+                else
+                {
+                    Debug.Log("Çöpe atılamaz");
+                }
+            }
+
             // Handle interactions based on the item in hand
             if (inHandItem != null)
             {
@@ -100,6 +120,7 @@ public class Player : MonoBehaviour
             }
         }
     }
+
 
     private void HandleInHandItem(GameObject target)
     {
@@ -144,10 +165,11 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(target.CompareTag("Hot_Water")){
-            if (!inHandItem.GetComponent<Kettle>().isHaveHotWater&&inHandItem.GetComponent<Kettle>().isHaveTea)
+        if (target.CompareTag("Hot_Water"))
+        {
+            if (!inHandItem.GetComponent<Kettle>().isHaveHotWater/*&&inHandItem.GetComponent<Kettle>().isHaveTea*/)
             {
-                inHandItem.GetComponent<Kettle>().isHaveHotWater=true;
+                inHandItem.GetComponent<Kettle>().isHaveHotWater = true;
                 Debug.Log("Kettle Sıcak su eklendi");
                 inHandItem.GetComponent<Kettle>().ChangeBrewTime();
             }
@@ -203,7 +225,7 @@ public class Player : MonoBehaviour
         if (target.CompareTag("Tea_Cup"))
         {
             var teaCupScript = target.GetComponent<Tea_Cup>();
-            if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea && !teaCupScript.isFullTea && inHandItem.GetComponent<OraletAndCoffee>().currentMagazine>0)
+            if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea && !teaCupScript.isFullTea && inHandItem.GetComponent<OraletAndCoffee>().currentMagazine > 0)
             {
                 teaCupScript.AddOraletOrCoffee(inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
                 inHandItem.GetComponent<OraletAndCoffee>().reduceProduct();
@@ -221,11 +243,11 @@ public class Player : MonoBehaviour
         if (target.CompareTag("Kettle"))
         {
             var kettleScript = target.GetComponent<Kettle>();
-            if (!kettleScript.isHaveTea&&inHandItem.GetComponent<TeaCanScript>().currentTeaCanMagazine>0)
+            if (!kettleScript.isHaveTea && inHandItem.GetComponent<TeaCanScript>().currentTeaCanMagazine > 0)
             {
                 inHandItem.GetComponent<TeaCanScript>().ReduceTeaOnCan();
-                kettleScript.isHaveTea=true;
-                Debug.Log("1 çay Dem azaldı oo");
+                kettleScript.isHaveTea = true;
+                Debug.Log("Çaya dem veridli");
             }
         }
     }
@@ -267,16 +289,32 @@ public class Player : MonoBehaviour
 
             if (((1 << target.layer) & placementLayer) != 0)
             {//BIRAKMA SİSTEMİ  
-                isPicked = false;
-
-                if (inHandItem.tag == "Other_Products")
+                if (inHandItem.tag != "Mop" && inHandItem.tag != "Garbage_Bag")
                 {
-                    inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(false);
-                }
+                    isPicked = false;
 
-                if(inHandItem.tag == "Tea_Can"){
-                    inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(false);
+                    if (inHandItem.tag == "Other_Products")
+                    {
+                        inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(false);
+                    }
+
+                    if (inHandItem.tag == "Tea_Can")
+                    {
+                        inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(false);
+                    }
+
+                    inHandItem.transform.SetParent(null);
+                    SetItemPositionOnSurface(inHandItem, hit.point);
+
+                    EnablePhysics(inHandItem, true);
+                    inHandItem = null;
+                    return;
                 }
+            }
+
+            if (((1 << target.layer) & groundLayer) != 0 && (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+            {
+                isPicked = false;
 
                 inHandItem.transform.SetParent(null);
                 SetItemPositionOnSurface(inHandItem, hit.point);
@@ -368,37 +406,56 @@ public class Player : MonoBehaviour
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
             lastHighlightedObject = hit.collider.gameObject;
-            if(/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle")){
-                    var kettleScript=hit.collider.GetComponent<Kettle>();
-                    if(kettleScript.currentKettleMagazine>0){
-                        ShowUIMessage("Press E to Pick Up\n"+ kettleScript.currentKettleMagazine +" tea left");
-                    }
-                    else{
-                        if(kettleScript.isHaveTea&&!kettleScript.isHaveHotWater){
-                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
-                        }
-                        else if(kettleScript.isHaveTea&&kettleScript.isHaveHotWater){
-                            if(kettleScript.CheckIsOnKettleBase()){
-                                ShowUIMessage("It's brewing\n"+ (int)kettleScript.currentBrewTimeOfTea +"second(s) left");
-                            }
-                            else {
-                                ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
-                            }
-                        }
-                        else if(!kettleScript.isHaveTea&&!kettleScript.isHaveHotWater){
-                            ShowUIMessage("Press E to Pick Up\nInside: Empty");
-                        }
-                    }
-                    
-                    
+            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
+            {
+                var kettleScript = hit.collider.GetComponent<Kettle>();
+                if (kettleScript.currentKettleMagazine > 0)
+                {
+                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.currentKettleMagazine + " tea left");
                 }
-            
-            else {
+                else
+                {
+                    if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
+                    }
+                    else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Hot Water");
+                    }
+                    else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                    {
+                        if (kettleScript.CheckIsOnKettleBase())
+                        {
+                            ShowUIMessage("It's brewing\n" + (int)kettleScript.currentBrewTimeOfTea + "second(s) left");
+                        }
+                        else
+                        {
+                            ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
+                        }
+                    }
+                    else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Empty");
+                    }
+                }
+
+
+            }
+
+            else
+            {
                 ShowUIMessage("Press E to Pick Up");
             }
-            
+
         }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked)
+        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+        {
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            lastHighlightedObject = null;
+            ShowUIMessage("Press E to Put Down");
+        }
+        if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
@@ -443,7 +500,7 @@ public class Player : MonoBehaviour
 
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (hit.collider.CompareTag("Hot_Water")&&inHandItem.GetComponent<Kettle>().isHaveTea)
+                if (hit.collider.CompareTag("Hot_Water") /*&& inHandItem.GetComponent<Kettle>().isHaveTea*/)
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
@@ -478,7 +535,8 @@ public class Player : MonoBehaviour
             }
         }
 
-        if(didHit&& inHandItem!=null&&inHandItem.tag=="Tea_Can"&&isPicked){
+        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
+        {
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
                 if (hit.collider.CompareTag("Kettle"))
@@ -502,6 +560,24 @@ public class Player : MonoBehaviour
                 }
             }
         }
+
+        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
+        {
+            if (inHandItem != null && (inHandItem.layer == 6))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
+            {
+                if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
+                {
+                    ShowUIMessage("Press F to Throw the Item in the Garbage");
+                }
+                else
+                {
+                    ShowUIMessage("You can't throw this item to Garbage");
+                }
+
+            }
+
+        }
+
         if (didHit && hit.collider.gameObject.tag == "Trash")
         {//THRASH UI
             if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
@@ -566,5 +642,17 @@ public class Player : MonoBehaviour
         {
             col.enabled = false;
         }*/
+    }
+
+    public void GiveHandGarbageBag(GameObject garbageBagObj)
+    {
+        if (inHandItem == null)
+        {
+            inHandItem = Instantiate(garbageBagObj); ;
+            inHandItem.transform.SetParent(firstPersonHand.transform, false);
+            inHandItem.transform.localPosition = new Vector3(0, -1, 0);
+            inHandItem.transform.localRotation = Quaternion.identity;
+            isPicked = true;
+        }
     }
 }

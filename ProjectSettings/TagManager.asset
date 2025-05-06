@@ -18,6 +18,8 @@ TagManager:
   - Kettle_Base
   - Tea_Can
   - Lamb_Switch
+  - Garbage_Bin
+  - Garbage_Bag
   layers:
   - Default
   - TransparentFX
