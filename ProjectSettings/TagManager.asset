@@ -16,6 +16,7 @@ TagManager:
   - Hot_Water
   - Other_Products
   - Kettle_Base
+  - Tea_Can
   layers:
   - Default
   - TransparentFX

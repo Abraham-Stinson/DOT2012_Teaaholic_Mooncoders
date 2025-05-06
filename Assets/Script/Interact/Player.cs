@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Microsoft.Unity.VisualStudio.Editor;
+using Mono.Cecil;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
@@ -116,6 +117,10 @@ public class Player : MonoBehaviour
                 HandleOtherProductsInteraction(target);
                 break;
 
+            case "Tea_Can":
+                HandleTeaCanInteraction(target);
+                break;
+
             default:
                 Debug.Log("Unhandled item type.");
                 break;
@@ -138,6 +143,25 @@ public class Player : MonoBehaviour
                 Debug.Log("Dolduramazsın");
             }
         }
+
+        if(target.CompareTag("Hot_Water")){
+            if (!inHandItem.GetComponent<Kettle>().isHaveHotWater&&inHandItem.GetComponent<Kettle>().isHaveTea)
+            {
+                inHandItem.GetComponent<Kettle>().isHaveHotWater=true;
+                Debug.Log("Kettle Sıcak su eklendi");
+                inHandItem.GetComponent<Kettle>().ChangeBrewTime();
+            }
+        }
+
+        if (inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
+        {
+            if (target.CompareTag("Water"))
+            {
+                Debug.Log("Water'ı gördü");
+                var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
+                isDirtyinHandItem.CleanDirt();
+            }
+        }
     }
 
     private void HandleTeaCupInteraction(GameObject target)
@@ -152,6 +176,10 @@ public class Player : MonoBehaviour
             {
                 inHandItem.GetComponent<Tea_Cup>().FillHotWaterToCoffeeOrOralet();
             }
+            else if (!inHandItem.GetComponent<Kettle>().isHaveHotWater)
+            {
+                inHandItem.GetComponent<Kettle>().isHaveHotWater = true;
+            }
             else
             {
                 Debug.Log("Sıcak su dolduramazsın");
@@ -160,14 +188,12 @@ public class Player : MonoBehaviour
 
         else if (inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
         {
-            Debug.Log("Niggas");
             if (target.CompareTag("Water"))
             {
-                Debug.Log("Niggasss");
                 Debug.Log("Water'ı gördü");
                 var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
                 isDirtyinHandItem.CleanDirt();
-                inHandItem.GetComponent<Tea_Cup>().EmptyCup();
+                //inHandItem.GetComponent<Tea_Cup>().EmptyCup();
             }
         }
     }
@@ -177,7 +203,7 @@ public class Player : MonoBehaviour
         if (target.CompareTag("Tea_Cup"))
         {
             var teaCupScript = target.GetComponent<Tea_Cup>();
-            if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea && !teaCupScript.isFullTea)
+            if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea && !teaCupScript.isFullTea && inHandItem.GetComponent<OraletAndCoffee>().currentMagazine>0)
             {
                 teaCupScript.AddOraletOrCoffee(inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
                 inHandItem.GetComponent<OraletAndCoffee>().reduceProduct();
@@ -187,7 +213,21 @@ public class Player : MonoBehaviour
                 Debug.Log("Oralet veya kahve dolduramazsın");
             }
         }
-        
+
+    }
+
+    private void HandleTeaCanInteraction(GameObject target)
+    {
+        if (target.CompareTag("Kettle"))
+        {
+            var kettleScript = target.GetComponent<Kettle>();
+            if (!kettleScript.isHaveTea&&inHandItem.GetComponent<TeaCanScript>().currentTeaCanMagazine>0)
+            {
+                inHandItem.GetComponent<TeaCanScript>().ReduceTeaOnCan();
+                kettleScript.isHaveTea=true;
+                Debug.Log("1 çay Dem azaldı oo");
+            }
+        }
     }
     #endregion
     #region Pick and put and tray
@@ -232,6 +272,10 @@ public class Player : MonoBehaviour
                 if (inHandItem.tag == "Other_Products")
                 {
                     inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(false);
+                }
+
+                if(inHandItem.tag == "Tea_Can"){
+                    inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(false);
                 }
 
                 inHandItem.transform.SetParent(null);
@@ -294,6 +338,10 @@ public class Player : MonoBehaviour
                 {
                     inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(true);
                 }
+                if (inHandItem.tag == "Tea_Can")
+                {
+                    inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(true);
+                }
 
                 EnablePhysics(inHandItem, false);
 
@@ -320,7 +368,35 @@ public class Player : MonoBehaviour
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
             lastHighlightedObject = hit.collider.gameObject;
-            ShowUIMessage("Press E to Pick Up");
+            if(/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle")){
+                    var kettleScript=hit.collider.GetComponent<Kettle>();
+                    if(kettleScript.currentKettleMagazine>0){
+                        ShowUIMessage("Press E to Pick Up\n"+ kettleScript.currentKettleMagazine +"tea left");
+                    }
+                    else{
+                        if(kettleScript.isHaveTea&&!kettleScript.isHaveHotWater){
+                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
+                        }
+                        else if(kettleScript.isHaveTea&&kettleScript.isHaveHotWater){
+                            if(kettleScript.CheckIsOnKettleBase()){
+                                ShowUIMessage("It's brewing\n"+ (int)kettleScript.currentBrewTimeOfTea +"second(s) left");
+                            }
+                            else {
+                                ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
+                            }
+                        }
+                        else if(!kettleScript.isHaveTea&&!kettleScript.isHaveHotWater){
+                            ShowUIMessage("Press E to Pick Up\nInside: Empty");
+                        }
+                    }
+                    
+                    
+                }
+            
+            else {
+                ShowUIMessage("Press E to Pick Up");
+            }
+            
         }
         if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked)
         {
@@ -364,6 +440,16 @@ public class Player : MonoBehaviour
                     ShowUIMessage("Press F to Pour Tea");
                 }
             }
+
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+            {
+                if (hit.collider.CompareTag("Hot_Water")&&inHandItem.GetComponent<Kettle>().isHaveTea)
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Fill Hot Water to Kettle");
+                }
+            }
         }
 
         if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
@@ -392,7 +478,20 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
+        if(didHit&& inHandItem!=null&&inHandItem.tag=="Tea_Can"&&isPicked){
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+            {
+                if (hit.collider.CompareTag("Kettle"))
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Put Tea To Kettle");
+                }
+            }
+        }
+
+
+        if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
         {
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
