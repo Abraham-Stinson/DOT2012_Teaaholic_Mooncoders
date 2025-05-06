@@ -17,6 +17,7 @@ TagManager:
   - Other_Products
   - Kettle_Base
   - Tea_Can
+  - Lamb_Switch
   layers:
   - Default
   - TransparentFX
