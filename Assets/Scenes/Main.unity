@@ -23862,8 +23862,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.0504456, y: 0.37022305, z: 2.138092}
-  m_Center: {x: 0.009262085, y: 2.6669822, z: 0.011703491}
+  m_Size: {x: 2.0504456, y: 0.28257728, z: 2.138092}
+  m_Center: {x: 0.009262085, y: 2.710805, z: 0.011703491}
 --- !u!4 &4347330638282712371
 Transform:
   m_ObjectHideFlags: 0
@@ -26119,7 +26119,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.2700202, y: 0.031621695, z: 0.27002016}
+  m_Size: {x: 0.1721159, y: 0.02015625, z: 0.1721159}
   m_Center: {x: -0.40535805, y: 0.82864255, z: 0}
 --- !u!1 &6716896913450731338
 GameObject:
@@ -26760,7 +26760,7 @@ GameObject:
   - component: {fileID: 6285198406245497260}
   - component: {fileID: 6023380506521911912}
   m_Layer: 0
-  m_Name: GarbageBag
+  m_Name: GarbageBagOnBin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27713,7 +27713,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.2700202, y: 0.031621695, z: 0.27002016}
+  m_Size: {x: 0.17211588, y: 0.020156255, z: 0.17211586}
   m_Center: {x: -0.00032776594, y: 0.82864255, z: 0}
 --- !u!33 &7944737632959522242
 MeshFilter:
@@ -28102,7 +28102,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.2700202, y: 0.031621695, z: 0.27002016}
+  m_Size: {x: 0.1721159, y: 0.02015625, z: 0.1721159}
   m_Center: {x: 0.4047025, y: 0.82864255, z: 0}
 --- !u!33 &8231655849202594926
 MeshFilter:

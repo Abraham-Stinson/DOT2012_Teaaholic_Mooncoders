@@ -644,15 +644,14 @@ public class Player : MonoBehaviour
         }*/
     }
 
-    public void GiveHandGarbageBag(GameObject garbageBagObj)
+    public void CreateGarbageBag(GameObject garbageBagObj,Vector3 garbagePosition)
     {
-        if (inHandItem == null)
-        {
-            inHandItem = Instantiate(garbageBagObj); ;
-            inHandItem.transform.SetParent(firstPersonHand.transform, false);
+        Debug.Log("Çöp üretti");
+            Instantiate(garbageBagObj);
+            garbageBagObj.transform.position=new Vector3(garbagePosition.x+3,garbagePosition.y,garbagePosition.z);
+            /*inHandItem.transform.SetParent(firstPersonHand.transform, false);
             inHandItem.transform.localPosition = new Vector3(0, -1, 0);
             inHandItem.transform.localRotation = Quaternion.identity;
-            isPicked = true;
-        }
+            isPicked = true;*/
     }
 }

@@ -1,3 +1,4 @@
+using System.Numerics;
 using UnityEditor;
 using UnityEngine;
 
@@ -31,7 +32,7 @@ public class GarbageScript : MonoBehaviour
         currentGarbage += 1;
         if (currentGarbage == 10)
         {
-            player.GiveHandGarbageBag(garbageBagObj);
+            player.CreateGarbageBag(garbageBagObj,transform.position);
             currentGarbage=0;
         }
         ChangeViewOfGarbage();
