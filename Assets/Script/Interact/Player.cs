@@ -142,6 +142,10 @@ public class Player : MonoBehaviour
                 HandleTeaCanInteraction(target);
                 break;
 
+            case "Garbage_Bag":
+                HandleGarbageBagInteraction(target);
+                break;
+
             default:
                 Debug.Log("Unhandled item type.");
                 break;
@@ -249,6 +253,16 @@ public class Player : MonoBehaviour
                 kettleScript.isHaveTea = true;
                 Debug.Log("Çaya dem veridli");
             }
+        }
+    }
+
+    private void HandleGarbageBagInteraction(GameObject target)
+    {
+        if (target.CompareTag("Garbage_Container"))
+        {
+            Destroy(inHandItem);
+            isPicked = false;
+            inHandItem = null;
         }
     }
     #endregion
@@ -576,6 +590,14 @@ public class Player : MonoBehaviour
 
             }
 
+        }
+
+        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
+        {
+            if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
+            {
+                ShowUIMessage("Press F to Throw the Garbage in the Container");
+            }
         }
 
         if (didHit && hit.collider.gameObject.tag == "Trash")

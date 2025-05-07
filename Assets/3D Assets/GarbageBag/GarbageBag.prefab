@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2521575051540241648}
   - component: {fileID: 1101295148015484782}
   - component: {fileID: 8900276548145634625}
-  - component: {fileID: 1684093456264427784}
+  - component: {fileID: -948928806274462132}
   m_Layer: 6
   m_Name: GarbageBag
   m_TagString: Garbage_Bag
@@ -128,7 +128,7 @@ CapsuleCollider:
   m_Height: 2.6466699
   m_Direction: 1
   m_Center: {x: -0.014847199, y: 1.3171904, z: -0.015874863}
---- !u!54 &1684093456264427784
+--- !u!54 &-948928806274462132
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
