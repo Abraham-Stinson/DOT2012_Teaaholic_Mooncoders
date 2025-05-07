@@ -142,6 +142,10 @@ public class Player : MonoBehaviour
                 HandleTeaCanInteraction(target);
                 break;
 
+            case "Garbage_Bag":
+                HandleGarbageBagInteraction(target);
+                break;
+
             default:
                 Debug.Log("Unhandled item type.");
                 break;
@@ -249,6 +253,16 @@ public class Player : MonoBehaviour
                 kettleScript.isHaveTea = true;
                 Debug.Log("Çaya dem veridli");
             }
+        }
+    }
+
+    private void HandleGarbageBagInteraction(GameObject target)
+    {
+        if (target.CompareTag("Garbage_Container"))
+        {
+            Destroy(inHandItem);
+            isPicked = false;
+            inHandItem = null;
         }
     }
     #endregion
@@ -578,6 +592,14 @@ public class Player : MonoBehaviour
 
         }
 
+        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
+        {
+            if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
+            {
+                ShowUIMessage("Press F to Throw the Garbage in the Container");
+            }
+        }
+
         if (didHit && hit.collider.gameObject.tag == "Trash")
         {//THRASH UI
             if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
@@ -644,15 +666,14 @@ public class Player : MonoBehaviour
         }*/
     }
 
-    public void GiveHandGarbageBag(GameObject garbageBagObj)
+    public void CreateGarbageBag(GameObject garbageBagObj,Vector3 garbagePosition)
     {
-        if (inHandItem == null)
-        {
-            inHandItem = Instantiate(garbageBagObj); ;
-            inHandItem.transform.SetParent(firstPersonHand.transform, false);
+        Debug.Log("Çöp üretti");
+            Instantiate(garbageBagObj);
+            garbageBagObj.transform.position=new Vector3(garbagePosition.x+3,garbagePosition.y,garbagePosition.z);
+            /*inHandItem.transform.SetParent(firstPersonHand.transform, false);
             inHandItem.transform.localPosition = new Vector3(0, -1, 0);
             inHandItem.transform.localRotation = Quaternion.identity;
-            isPicked = true;
-        }
+            isPicked = true;*/
     }
 }

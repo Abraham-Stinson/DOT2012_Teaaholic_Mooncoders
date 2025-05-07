@@ -20,6 +20,7 @@ TagManager:
   - Lamb_Switch
   - Garbage_Bin
   - Garbage_Bag
+  - Garbage_Container
   layers:
   - Default
   - TransparentFX
