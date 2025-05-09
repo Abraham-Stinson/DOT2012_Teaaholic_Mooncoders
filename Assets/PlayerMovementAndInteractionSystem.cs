@@ -117,6 +117,33 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interactions"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ea1d7c0-d174-4ee7-bc40-5edcb8ac0232"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Use"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d81ebd9-5fee-4b79-b723-2fc7d93070a5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Use_Hold"",
+                    ""type"": ""Button"",
+                    ""id"": ""f2b84f99-6af1-4954-bb64-377bd8a40394"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -229,6 +256,72 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""699d1a51-9cb7-4041-8a18-1f70b19bb7df"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interactions"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec737657-5327-4340-b703-b85070e9d331"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interactions"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7ca73ef6-814a-44a5-80dc-0b8f210c446a"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Use"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1323eff7-1a6c-4ef4-ae7e-4485d7d81399"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Use"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e46ceffe-7ad4-424c-a4c8-e684b099d6e1"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": ""Hold(duration=0.4)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Use_Hold"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b8c28bb7-e946-4a41-9894-a4f8071ae8c4"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": ""Hold(duration=0.4)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Use_Hold"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -240,6 +333,9 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
         m_ChrachterController_Move = m_ChrachterController.FindAction("Move", throwIfNotFound: true);
         m_ChrachterController_Run = m_ChrachterController.FindAction("Run", throwIfNotFound: true);
         m_ChrachterController_Look = m_ChrachterController.FindAction("Look", throwIfNotFound: true);
+        m_ChrachterController_Interactions = m_ChrachterController.FindAction("Interactions", throwIfNotFound: true);
+        m_ChrachterController_Use = m_ChrachterController.FindAction("Use", throwIfNotFound: true);
+        m_ChrachterController_Use_Hold = m_ChrachterController.FindAction("Use_Hold", throwIfNotFound: true);
     }
 
     ~@PlayerMovementAndInteractionSystem()
@@ -323,6 +419,9 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
     private readonly InputAction m_ChrachterController_Move;
     private readonly InputAction m_ChrachterController_Run;
     private readonly InputAction m_ChrachterController_Look;
+    private readonly InputAction m_ChrachterController_Interactions;
+    private readonly InputAction m_ChrachterController_Use;
+    private readonly InputAction m_ChrachterController_Use_Hold;
     /// <summary>
     /// Provides access to input actions defined in input action map "ChrachterController".
     /// </summary>
@@ -346,6 +445,18 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
         /// Provides access to the underlying input action "ChrachterController/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_ChrachterController_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "ChrachterController/Interactions".
+        /// </summary>
+        public InputAction @Interactions => m_Wrapper.m_ChrachterController_Interactions;
+        /// <summary>
+        /// Provides access to the underlying input action "ChrachterController/Use".
+        /// </summary>
+        public InputAction @Use => m_Wrapper.m_ChrachterController_Use;
+        /// <summary>
+        /// Provides access to the underlying input action "ChrachterController/Use_Hold".
+        /// </summary>
+        public InputAction @Use_Hold => m_Wrapper.m_ChrachterController_Use_Hold;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -381,6 +492,15 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Interactions.started += instance.OnInteractions;
+            @Interactions.performed += instance.OnInteractions;
+            @Interactions.canceled += instance.OnInteractions;
+            @Use.started += instance.OnUse;
+            @Use.performed += instance.OnUse;
+            @Use.canceled += instance.OnUse;
+            @Use_Hold.started += instance.OnUse_Hold;
+            @Use_Hold.performed += instance.OnUse_Hold;
+            @Use_Hold.canceled += instance.OnUse_Hold;
         }
 
         /// <summary>
@@ -401,6 +521,15 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Interactions.started -= instance.OnInteractions;
+            @Interactions.performed -= instance.OnInteractions;
+            @Interactions.canceled -= instance.OnInteractions;
+            @Use.started -= instance.OnUse;
+            @Use.performed -= instance.OnUse;
+            @Use.canceled -= instance.OnUse;
+            @Use_Hold.started -= instance.OnUse_Hold;
+            @Use_Hold.performed -= instance.OnUse_Hold;
+            @Use_Hold.canceled -= instance.OnUse_Hold;
         }
 
         /// <summary>
@@ -462,5 +591,26 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Interactions" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInteractions(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Use" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUse(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Use_Hold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUse_Hold(InputAction.CallbackContext context);
     }
 }

@@ -49,7 +49,6 @@ public class Player : MonoBehaviour
     void Start()
     {
         pickAndPutInput.action.performed += PickAndPut;
-        //putDownInput.action.performed+=PutDown;
         useInput.action.performed += Use;
         useHoldInput.action.performed += UseHold;
     }
@@ -82,14 +81,13 @@ public class Player : MonoBehaviour
 
         if (hit.collider != null)
         {
-            // Check for interactable objects
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
             {
                 var interactable = hit.collider.GetComponent<IInteractable>();
                 if (interactable != null)
                 {
                     interactable.interact();
-                    return; // Exit after interaction
+                    return;
                 }
             }
 
@@ -97,7 +95,6 @@ public class Player : MonoBehaviour
             {
                 if (inHandItem != null && (inHandItem.layer == 6) && !(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
                 {
-                    //var garbageBagScript = hit.collider.GetComponent<GarbageScript>();
                     Destroy(inHandItem);
                     isPicked = false;
                     inHandItem = null;
@@ -110,7 +107,6 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // Handle interactions based on the item in hand
             if (inHandItem != null)
             {
                 HandleInHandItem(target);
