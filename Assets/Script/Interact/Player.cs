@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using Microsoft.Unity.VisualStudio.Editor;
-using Mono.Cecil;
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -670,7 +667,7 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Çöp üretti");
         Instantiate(garbageBagObj);
-        garbageBagObj.transform.position = new Vector3(garbagePosition.x + 3, garbagePosition.y, garbagePosition.z);
+        garbageBagObj.transform.position = new Vector3(garbagePosition.x, garbagePosition.y, garbagePosition.z-3);
         /*inHandItem.transform.SetParent(firstPersonHand.transform, false);
         inHandItem.transform.localPosition = new Vector3(0, -1, 0);
         inHandItem.transform.localRotation = Quaternion.identity;
