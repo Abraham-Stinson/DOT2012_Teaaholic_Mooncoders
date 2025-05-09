@@ -30,7 +30,6 @@ public class DayNightCycleController : MonoBehaviour
     private const float sunrise = 6f;
     private const float sunPeak = 13f;
     private const float sunset = 18f;
-    private float totalTimer=0;
 
     private void Start()
     {
@@ -46,7 +45,6 @@ public class DayNightCycleController : MonoBehaviour
         if (isPaused) return;
 
         timer += Time.deltaTime;
-        totalTimer += Time.deltaTime;
         
         if (timer >= minuteDurationSeconds)
         {
@@ -57,7 +55,6 @@ public class DayNightCycleController : MonoBehaviour
 
     private void IncrementTimeByOneMinute()
     {
-        Debug.Log(totalTimer);
         minute++;
         if (minute >= 60)
         {
@@ -73,9 +70,8 @@ public class DayNightCycleController : MonoBehaviour
         if (hour == 0 && minute == 0)
         {
             isPaused = true;
-            // İsterseniz burada bir log veya olay tetikleyebilirsiniz
+
             Debug.Log("Gün sonu - Zaman durduruldu");
-            Debug.Log("Toplam zaman: "+totalTimer);
         }
 
         UpdateTimeUI();
