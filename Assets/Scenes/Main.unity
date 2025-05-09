@@ -23733,10 +23733,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e6cd83b49158b4088e0e346325d3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 6
-  runMultiply: 4
+  walkSpeed: 5
+  runMultiply: 2
   cameraTransform: {fileID: 1329170500}
-  mouseSensitivity: 0.25
+  mouseSensitivity: 0.125
   upDownRange: 85
 --- !u!114 &3469287838036912813
 MonoBehaviour:
