@@ -11,6 +11,16 @@ TagManager:
   - Tray
   - Trash
   - Mop
+  - Tap
+  - Water
+  - Hot_Water
+  - Other_Products
+  - Kettle_Base
+  - Tea_Can
+  - Lamb_Switch
+  - Garbage_Bin
+  - Garbage_Bag
+  - Garbage_Container
   layers:
   - Default
   - TransparentFX
