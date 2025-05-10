@@ -21,6 +21,7 @@ TagManager:
   - Garbage_Bin
   - Garbage_Bag
   - Garbage_Container
+  - Main_Door
   layers:
   - Default
   - TransparentFX
