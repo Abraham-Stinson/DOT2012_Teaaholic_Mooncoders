@@ -9,11 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 685804493677127726}
+  - component: {fileID: 982737133126653183}
   - component: {fileID: 6589921476477460040}
   - component: {fileID: 6141263096393963566}
   - component: {fileID: 8006803473368119459}
   - component: {fileID: 6086517374744118149}
   - component: {fileID: 162366795827113371}
+  - component: {fileID: 3621094545456926966}
   m_Layer: 10
   m_Name: NPC_0
   m_TagString: Untagged
@@ -36,6 +38,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &982737133126653183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4982699999919292395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f56f6d9a8f12cd54b8b732959be24d8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 3621094545456926966}
+  waitingPatience: 90
+  possibleDrinks:
+  - Light_Tea
+  - Rabbit_Blood_Tea
+  - Brewed_Tea
 --- !u!33 &6589921476477460040
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -155,3 +175,25 @@ NavMeshAgent:
   m_BaseOffset: 0.73
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &3621094545456926966
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4982699999919292395}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

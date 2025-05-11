@@ -47,22 +47,24 @@ public class Player : MonoBehaviour
     [SerializeField] private float cleaningRadius = 2f;
     private Coroutine cleaningCoroutine;
     private bool isCleaning = false;
-    
-    // Reference to NPC system
-    private NPCCustomerSystem npcSystem;
-    
+
+    // Reference to the currently highlighted NPC for serving drinks
+    private NPC currentNPC = null;
+    // Reference to the currently highlighted table for placing games
+    private Table currentTable = null;
+    // Reference to table game being interacted with
+    private TableGame currentTableGame = null;
+    // Reference to the cashier NPC for payment
+    private NPC cashierNPC = null;
+    [SerializeField] private float paymentAmount = 15.0f; // Default payment amount
+
     void Start()
     {
         pickAndPutInput.action.performed += PickAndPut;
         useInput.action.performed += Use;
         useHoldInput.action.performed += UseHold;
-        
+
         // Find the NPC system in the scene
-        npcSystem = FindObjectOfType<NPCCustomerSystem>();
-        if (npcSystem == null)
-        {
-            Debug.LogWarning("NPC Customer System not found in scene!");
-        }
     }
     void Update()
     {
@@ -93,14 +95,36 @@ public class Player : MonoBehaviour
 
         if (hit.collider != null)
         {
-            // Check for NPC interaction first
-            CustomerNPC customerNPC = hit.collider.GetComponent<CustomerNPC>();
-            if (customerNPC != null)
+            // Check for NPC interaction
+            NPC npc = target.GetComponent<NPC>();
+            if (npc != null && inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
             {
-                HandleNPCInteraction(customerNPC);
+                // Handle serving drinks to NPC
+                HandleDrinkServing(npc);
                 return;
             }
             
+            // Handle cashier payment
+            if (npc != null && npc.IsGroupLeader && !npc.HasPaid && Vector3.Distance(npc.transform.position, GameObject.FindWithTag("CashierSpot").transform.position) < 1.5f)
+            {
+                HandlePayment(npc);
+                return;
+            }
+            
+            // Handle table game placement
+            TableGame tableGame = null;
+            if (inHandItem != null)
+            {
+                tableGame = inHandItem.GetComponent<TableGame>();
+            }
+            
+            Table table = hit.collider.GetComponent<Table>();
+            if (table != null && tableGame != null && isPicked)
+            {
+                PlaceTableGame(tableGame, table);
+                return;
+            }
+
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
             {
                 var interactable = hit.collider.GetComponent<IInteractable>();
@@ -134,105 +158,110 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void HandleNPCInteraction(CustomerNPC customerNPC)
+    private void HandleDrinkServing(NPC npc)
     {
-        if (customerNPC.myGroup == null) return;
-        
-        CustomerGroup.GroupState groupState = customerNPC.myGroup.currentState;
-        
-        // Handle game delivery
-        if (groupState == CustomerGroup.GroupState.WaitingForGame && inHandItem != null)
-        {
-            string gameType = "";
-            if (inHandItem.CompareTag("Backgammon")) gameType = "Backgammon";
-            else if (inHandItem.CompareTag("Cards")) gameType = "Cards";
-            else if (inHandItem.CompareTag("Okey")) gameType = "Okey";
+        if (!isPicked || inHandItem == null || !inHandItem.CompareTag("Tea_Cup"))
+            return;
             
-            if (!string.IsNullOrEmpty(gameType) && gameType == customerNPC.myGroup.requestedGame)
-            {
-                Debug.Log($"Delivering {gameType} game to table");
-                
-                // Destroy the held game item
-                Destroy(inHandItem);
-                inHandItem = null;
-                isPicked = false;
-                
-                // Deliver the game to the table - any group member can receive it
-                customerNPC.ReceiveGame();
-                
-                return;
-            }
-        }
+        Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
+        if (teaCup == null)
+            return;
+            
+        // Get the NPC's group and check if this drink matches their order
+        NPCGroup group = npc.gameObject.GetComponentInParent<NPCGroup>();
+        if (group == null)
+            return;
+            
+        string inCupDrink = teaCup.inCup;
+        string orderedDrink = group.GetDrinkOrderForNPC(npc);
         
-        // Handle drink delivery
-        if (groupState == CustomerGroup.GroupState.WaitingForDrinks && inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
+        // Check if the drink matches the order
+        if (inCupDrink == orderedDrink)
         {
-            Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
-            if (teaCup != null && !string.IsNullOrEmpty(teaCup.inCup))
+            // Find the table this NPC is sitting at
+            Table table = FindTableForNPC(npc);
+            if (table != null)
             {
-                if (customerNPC.myGroup.drinkOrders.TryGetValue(customerNPC, out string orderedDrink))
+                // Find the NPC's index position at the table
+                int npcIndex = FindNPCIndexAtTable(npc, table);
+                if (npcIndex >= 0)
                 {
-                    bool isCorrectDrink = false;
-                    string cupContent = teaCup.inCup;
+                    // Place the cup on the table in front of the NPC
+                    table.PlaceDrink(inHandItem, npcIndex);
                     
-                    switch (orderedDrink) // Removed ToLower() to match user's change
-                    {
-                        case "coffee":
-                            isCorrectDrink = cupContent == "Coffee_Drink";
-                            break;
-                        case "orange oralet":
-                            isCorrectDrink = cupContent == "Orange_Oralet";
-                            break;
-                        case "banana oralet":
-                            isCorrectDrink = cupContent == "Banana_Oralet";
-                            break;
-                        case "kiwi oralet":
-                            isCorrectDrink = cupContent == "Kiwi_Oralet";
-                            break;
-                        case "strawberry oralet":
-                            isCorrectDrink = cupContent == "Strawberry_Oralet";
-                            break;
-                        case "light tea":
-                            isCorrectDrink = cupContent == "Light_Tea";
-                            break;
-                        case "normal tea":
-                            isCorrectDrink = cupContent == "Rabbit_Blood_Tea";
-                            break;
-                        case "strong tea":
-                            isCorrectDrink = cupContent == "Brewed_Tea";
-                            break;
-                    }
+                    // Mark the drink as served
+                    group.ServeDrinkToNPC(npc);
                     
-                    if (isCorrectDrink)
-                    {
-                        Debug.Log($"Serving correct drink to customer: {orderedDrink}, cupContent: {cupContent}");
-                        
-                        // Give the cup to the NPC
-                        customerNPC.ReceiveDrink(orderedDrink);
-                        
-                        // Clear the player's hand
-                        isPicked = false;
-                        inHandItem = null;
-                        
-                        // Mark that the group has received at least one drink
-                        customerNPC.myGroup.hasReceivedAnyDrinks = true;
-                        
-                        return;
-                    }
-                    else
-                    {
-                        Debug.Log($"Wrong drink. Customer ordered: {orderedDrink}, player has: {cupContent}");
-                    }
+                    // Release the cup
+                    isPicked = false;
+                    inHandItem = null;
+                    
+                    Debug.Log($"Successfully served {inCupDrink} to NPC");
                 }
             }
         }
-        
-        // Handle payment
-        if (groupState == CustomerGroup.GroupState.PayingBill && inHandItem == null && customerNPC == customerNPC.myGroup.leader)
+        else
         {
-            customerNPC.ProcessPayment();
-            return;
+            Debug.Log($"Wrong drink! NPC ordered {orderedDrink} but you're serving {inCupDrink}");
         }
+    }
+
+    private void HandlePayment(NPC npc)
+    {
+        // Process payment
+        npc.SetPaid(true);
+        
+        // In a real game, you would add money to the player's account here
+        // Example: playerMoney += paymentAmount;
+        
+        Debug.Log($"Payment of ${paymentAmount} received from customer");
+    }
+
+    private void PlaceTableGame(TableGame tableGame, Table table)
+    {
+        if (table.IsAvailable || table.HasGame(tableGame.GetGameType()))
+            return;
+            
+        tableGame.PlaceOnTable(table);
+        
+        // Release the game from hand
+        isPicked = false;
+        inHandItem = null;
+    }
+
+    private Table FindTableForNPC(NPC npc)
+    {
+        // Find the closest table to this NPC
+        Table[] tables = FindObjectsOfType<Table>();
+        Table closestTable = null;
+        float minDistance = float.MaxValue;
+        
+        foreach (Table table in tables)
+        {
+            float distance = Vector3.Distance(npc.transform.position, table.transform.position);
+            if (distance < minDistance && distance < 3f) // Only consider tables within 3 units
+            {
+                minDistance = distance;
+                closestTable = table;
+            }
+        }
+        
+        return closestTable;
+    }
+
+    private int FindNPCIndexAtTable(NPC npc, Table table)
+    {
+        // Find which chair position the NPC is sitting at
+        for (int i = 0; i < 4; i++) // Assuming max 4 chairs per table
+        {
+            Transform chairTransform = table.GetChairTransform(i);
+            if (chairTransform != null && Vector3.Distance(npc.transform.position, chairTransform.position) < 0.5f)
+            {
+                return i;
+            }
+        }
+        
+        return -1;
     }
 
     private void HandleInHandItem(GameObject target)
@@ -387,6 +416,24 @@ public class Player : MonoBehaviour
             return;
         }
         GameObject target = hit.collider.gameObject;
+        
+        // Check for table game interaction when not holding anything
+        if (!isPicked)
+        {
+            TableGame tableGame = target.GetComponent<TableGame>();
+            if (tableGame != null && !tableGame.IsPlacedOnTable())
+            {
+                // Pick up the game
+                isPicked = true;
+                inHandItem = target;
+                inHandItem.transform.SetParent(firstPersonHand.transform, false);
+                inHandItem.transform.localPosition = Vector3.zero;
+                inHandItem.transform.localRotation = Quaternion.identity;
+                EnablePhysics(inHandItem, false);
+                return;
+            }
+        }
+        
         if (isPicked)
         {
             //TEPSİ SİSTEMİ
@@ -463,96 +510,6 @@ public class Player : MonoBehaviour
                 }
 
                 // Check if this is a game on the table
-                CustomerNPC.GameScaleManager gameManager = target.GetComponent<CustomerNPC.GameScaleManager>();
-                if (gameManager != null && !string.IsNullOrEmpty(gameManager.gameType))
-                {
-                    // Find out if this game is on a table that has customers
-                    TableController table = target.transform.parent?.GetComponent<TableController>();
-                    if (table != null && !table.IsEmpty())
-                    {
-                        // Table is occupied by customers, show message and prevent pickup
-                        ShowUIMessage("Cannot take game while customers are using it");
-                        return;
-                    }
-                    
-                    // This is a game on the table, replace it with the carryable version
-                    isPicked = true;
-                    
-                    // Get the carryable game prefab
-                    NPCCustomerSystem npcSystem = FindObjectOfType<NPCCustomerSystem>();
-                    if (npcSystem != null)
-                    {
-                        GameObject carryablePrefab = null;
-                        
-                        switch (gameManager.gameType)
-                        {
-                            case "Backgammon":
-                                carryablePrefab = npcSystem.backgammonPrefab;
-                                break;
-                            case "Cards":
-                                carryablePrefab = npcSystem.cardGamePrefab;
-                                break;
-                            case "Okey":
-                                carryablePrefab = npcSystem.okeyPrefab;
-                                break;
-                        }
-                        
-                        if (carryablePrefab != null)
-                        {
-                            // Destroy the table version
-                            string gameType = gameManager.gameType;
-                            Destroy(target);
-                            
-                            // Instantiate the carryable version
-                            GameObject newItem = Instantiate(carryablePrefab);
-                            
-                            // Check that the new object was created successfully
-                            if (newItem == null)
-                            {
-                                Debug.LogError("Failed to instantiate carryable game prefab!");
-                                return;
-                            }
-                            
-                            // Get prefab scale before parenting
-                            Vector3 prefabScale = newItem.transform.localScale;
-                            if (prefabScale.x <= 0 || prefabScale.y <= 0 || prefabScale.z <= 0)
-                            {
-                                // Eğer scale değerlerinden biri 0 ise, açıkça ayarlayalım
-                                Debug.LogWarning($"Game prefab has zero scale values: {prefabScale}, fixing it");
-                                prefabScale = new Vector3(
-                                    prefabScale.x <= 0 ? 1f : prefabScale.x,
-                                    prefabScale.y <= 0 ? 1f : prefabScale.y,
-                                    prefabScale.z <= 0 ? 1f : prefabScale.z
-                                );
-                            }
-                            
-                            // Set it as the hand item
-                            inHandItem = newItem;
-                            inHandItem.transform.SetParent(firstPersonHand, false); // worldPositionStays=false
-                            
-                            // Parenting can sometimes reset scale, explicitly set it again
-                            inHandItem.transform.localScale = prefabScale;
-                            
-                            // Set position and rotation for hand holding
-                            inHandItem.transform.localPosition = Vector3.zero;
-                            inHandItem.transform.localRotation = Quaternion.identity;
-                            
-                            Debug.Log($"Created handheld {gameType} game with scale: {inHandItem.transform.localScale}");
-                            
-                            // Check one more time if the scale got reset
-                            if (inHandItem.transform.localScale.x <= 0 || 
-                                inHandItem.transform.localScale.y <= 0 || 
-                                inHandItem.transform.localScale.z <= 0)
-                            {
-                                Debug.LogWarning("Scale got reset to zero after parenting, fixing again");
-                                inHandItem.transform.localScale = prefabScale;
-                            }
-                            
-                            EnablePhysics(inHandItem, false);
-                            return;
-                        }
-                    }
-                }
                 else
                 {
                     // Normal eşya alma mekaniği
@@ -561,9 +518,9 @@ public class Player : MonoBehaviour
                     inHandItem.transform.SetParent(firstPersonHand.transform, false);
                     inHandItem.transform.localPosition = Vector3.zero;
                     inHandItem.transform.localRotation = Quaternion.identity;
-                    
+
                     Debug.Log($"Picked up regular object: {target.name} with scale: {inHandItem.transform.localScale}");
-        
+
                     if (inHandItem.tag == "Other_Products")
                     {
                         inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(true);
@@ -572,7 +529,7 @@ public class Player : MonoBehaviour
                     {
                         inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(true);
                     }
-        
+
                     EnablePhysics(inHandItem, false);
                 }
             }
@@ -588,105 +545,60 @@ public class Player : MonoBehaviour
         {
             lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
+            currentNPC = null;
+            currentTable = null;
         }
 
         mainInfoUI.SetActive(false);
-        
+        currentNPC = null;
+        currentTable = null;
+
         if (didHit)
         {
-            // Try to get CustomerNPC component
-            CustomerNPC customerNPC = hit.collider.gameObject.GetComponent<CustomerNPC>();
-            if (customerNPC != null)
+            // Check for NPC with drink order
+            NPC npc = hit.collider.gameObject.GetComponent<NPC>();
+            if (npc != null && isPicked && inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
             {
-                // Check if we're holding a drink and looking at a customer
-                if (inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
+                currentNPC = npc;
+                NPCGroup group = npc.gameObject.GetComponentInParent<NPCGroup>();
+                
+                if (group != null)
                 {
                     Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
-                    
-                    // If the customer is waiting for drinks and we have a valid tea cup
-                    if (teaCup != null && 
-                        customerNPC.myGroup != null && 
-                        customerNPC.myGroup.currentState == CustomerGroup.GroupState.WaitingForDrinks)
+                    if (teaCup != null)
                     {
-                        // Check if this customer ordered a drink
-                        if (customerNPC.myGroup.drinkOrders.TryGetValue(customerNPC, out string orderedDrink))
+                        string inCupDrink = teaCup.inCup;
+                        string orderedDrink = group.GetDrinkOrderForNPC(npc);
+                        
+                        if (inCupDrink == orderedDrink)
                         {
-                            string cupContent = teaCup.inCup;
-                            bool isCorrectDrink = false;
-                            
-                            // Determine if this is the correct drink - NO ToLower()
-                            switch (orderedDrink)
-                            {
-                                case "coffee":
-                                    isCorrectDrink = cupContent == "Coffee_Drink";
-                                    break;
-                                case "orange oralet":
-                                    isCorrectDrink = cupContent == "Orange_Oralet";
-                                    break;
-                                case "banana oralet":
-                                    isCorrectDrink = cupContent == "Banana_Oralet";
-                                    break;
-                                case "kiwi oralet":
-                                    isCorrectDrink = cupContent == "Kiwi_Oralet";
-                                    break;
-                                case "strawberry oralet":
-                                    isCorrectDrink = cupContent == "Strawberry_Oralet";
-                                    break;
-                                case "light tea":
-                                    isCorrectDrink = cupContent == "Light_Tea";
-                                    break;
-                                case "normal tea":
-                                    isCorrectDrink = cupContent == "Rabbit_Blood_Tea";
-                                    break;
-                                case "strong tea":
-                                    isCorrectDrink = cupContent == "Brewed_Tea";
-                                    break;
-                            }
-                            
-                            // Log drink check info for debugging
-                            Debug.Log($"UI Check - Customer ordered: {orderedDrink}, player has: {cupContent}, isCorrect: {isCorrectDrink}");
-                            
-                            // Show appropriate message based on drink
-                            if (isCorrectDrink)
-                            {
-                                ShowUIMessage($"Press F to Serve {orderedDrink}");
-                                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                                lastHighlightedObject = hit.collider.gameObject;
-                                return;
-                            }
-                            else if (cupContent == "Empty")
-                            {
-                                ShowUIMessage($"Empty Cup\nCustomer ordered: {orderedDrink}");
-                            }
-                            else if (cupContent.Contains("Powder"))
-                            {
-                                ShowUIMessage($"Need Hot Water\nCustomer ordered: {orderedDrink}");
-                            }
-                            else
-                            {
-                                ShowUIMessage($"Wrong Drink!\nCustomer ordered: {orderedDrink}");
-                            }
-                            
-                            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                            lastHighlightedObject = hit.collider.gameObject;
-                            return;
+                            ShowUIMessage($"Press F to serve {inCupDrink}");
+                        }
+                        else
+                        {
+                            ShowUIMessage($"Wrong item! Customer wants {orderedDrink}");
                         }
                     }
                 }
-                
-                // Get order information via the IHighlightable interface (normal case)
-                IHighlightable highlightable = customerNPC as IHighlightable;
-                if (highlightable != null)
+            }
+            
+            // Check for cashier payment
+            if (npc != null && npc.IsGroupLeader && !npc.HasPaid && 
+                Vector3.Distance(npc.transform.position, GameObject.FindWithTag("CashierSpot").transform.position) < 1.5f)
+            {
+                cashierNPC = npc;
+                ShowUIMessage($"Press F to collect payment (${paymentAmount})");
+            }
+            
+            // Check for table game placement
+            Table table = hit.collider.gameObject.GetComponent<Table>();
+            if (table != null && !table.IsAvailable && isPicked && inHandItem != null)
+            {
+                TableGame tableGame = inHandItem.GetComponent<TableGame>();
+                if (tableGame != null)
                 {
-                    string orderInfo = highlightable.GetHighlightText();
-                    ShowUIMessage(orderInfo);
-                    
-                    // Also highlight the customer
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    
-                    // Return early to prioritize customer interaction
-                    return;
+                    currentTable = table;
+                    ShowUIMessage($"Press F to place {tableGame.GetGameType()} on table");
                 }
             }
 
@@ -945,7 +857,7 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Çöp üretti");
         Instantiate(garbageBagObj);
-        garbageBagObj.transform.position = new Vector3(garbagePosition.x, garbagePosition.y, garbagePosition.z-3);
+        garbageBagObj.transform.position = new Vector3(garbagePosition.x, garbagePosition.y, garbagePosition.z - 3);
         /*inHandItem.transform.SetParent(firstPersonHand.transform, false);
         inHandItem.transform.localPosition = new Vector3(0, -1, 0);
         inHandItem.transform.localRotation = Quaternion.identity;

@@ -27,6 +27,7 @@ TagManager:
   - Cards
   - Backgammon
   - Okey
+  - CashierSpot
   layers:
   - Default
   - TransparentFX
