@@ -30,9 +30,10 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask placementLayer;
     [SerializeField] private LayerMask useableLayer;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask npcLayer; // Layer for NPC interaction
     [Header("First Person Hand")]
     [SerializeField] private Transform firstPersonHand;//when pick up objects it will show on this transform
-    [SerializeField] private GameObject inHandItem;//what we picked up
+    [SerializeField] public GameObject inHandItem;//what we picked up
     private RaycastHit hit;
     private GameObject lastHighlightedObject;
 
@@ -46,11 +47,22 @@ public class Player : MonoBehaviour
     [SerializeField] private float cleaningRadius = 2f;
     private Coroutine cleaningCoroutine;
     private bool isCleaning = false;
+    
+    // Reference to NPC system
+    private NPCCustomerSystem npcSystem;
+    
     void Start()
     {
         pickAndPutInput.action.performed += PickAndPut;
         useInput.action.performed += Use;
         useHoldInput.action.performed += UseHold;
+        
+        // Find the NPC system in the scene
+        npcSystem = FindObjectOfType<NPCCustomerSystem>();
+        if (npcSystem == null)
+        {
+            Debug.LogWarning("NPC Customer System not found in scene!");
+        }
     }
     void Update()
     {
@@ -81,6 +93,14 @@ public class Player : MonoBehaviour
 
         if (hit.collider != null)
         {
+            // Check for NPC interaction first
+            CustomerNPC customerNPC = hit.collider.GetComponent<CustomerNPC>();
+            if (customerNPC != null)
+            {
+                HandleNPCInteraction(customerNPC);
+                return;
+            }
+            
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
             {
                 var interactable = hit.collider.GetComponent<IInteractable>();
@@ -114,6 +134,101 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void HandleNPCInteraction(CustomerNPC customerNPC)
+    {
+        if (customerNPC.myGroup == null) return;
+        
+        CustomerGroup.GroupState groupState = customerNPC.myGroup.currentState;
+        
+        // Handle game delivery
+        if (groupState == CustomerGroup.GroupState.WaitingForGame && inHandItem != null)
+        {
+            string gameType = "";
+            if (inHandItem.CompareTag("Backgammon")) gameType = "Backgammon";
+            else if (inHandItem.CompareTag("Cards")) gameType = "Cards";
+            else if (inHandItem.CompareTag("Okey")) gameType = "Okey";
+            
+            if (!string.IsNullOrEmpty(gameType) && gameType == customerNPC.myGroup.requestedGame)
+            {
+                // Destroy the held game item
+                Destroy(inHandItem);
+                inHandItem = null;
+                isPicked = false;
+                
+                // Deliver the game to the table
+                if (npcSystem != null)
+                {
+                    customerNPC.ReceiveGame();
+                }
+                
+                return;
+            }
+        }
+        
+        // Handle drink delivery
+        if (groupState == CustomerGroup.GroupState.WaitingForDrinks && inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
+        {
+            Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
+            if (teaCup != null && !string.IsNullOrEmpty(teaCup.inCup))
+            {
+                if (customerNPC.myGroup.drinkOrders.TryGetValue(customerNPC, out string orderedDrink))
+                {
+                    bool isCorrectDrink = false;
+                    string cupContent = teaCup.inCup;
+                    
+                    switch (orderedDrink.ToLower())
+                    {
+                        case "coffee":
+                            isCorrectDrink = cupContent == "Coffee_Drink";
+                            break;
+                        case "orange oralet":
+                            isCorrectDrink = cupContent == "Orange_Oralet";
+                            break;
+                        case "banana oralet":
+                            isCorrectDrink = cupContent == "Banana_Oralet";
+                            break;
+                        case "kiwi oralet":
+                            isCorrectDrink = cupContent == "Kiwi_Oralet";
+                            break;
+                        case "strawberry oralet":
+                            isCorrectDrink = cupContent == "Strawberry_Oralet";
+                            break;
+                        case "light tea":
+                            isCorrectDrink = cupContent == "Light_Tea";
+                            break;
+                        case "normal tea":
+                            isCorrectDrink = cupContent == "Rabbit_Blood_Tea";
+                            break;
+                        case "strong tea":
+                            isCorrectDrink = cupContent == "Brewed_Tea";
+                            break;
+                    }
+                    
+                    if (isCorrectDrink)
+                    {
+                        // Give the cup to the NPC
+                        customerNPC.ReceiveDrink(orderedDrink);
+                        
+                        // Clear the player's hand
+                        isPicked = false;
+                        inHandItem = null;
+                        
+                        // Mark that the group has received at least one drink
+                        customerNPC.myGroup.hasReceivedAnyDrinks = true;
+                        
+                        return;
+                    }
+                }
+            }
+        }
+        
+        // Handle payment
+        if (groupState == CustomerGroup.GroupState.PayingBill && inHandItem == null && customerNPC == customerNPC.myGroup.leader)
+        {
+            customerNPC.ProcessPayment();
+            return;
+        }
+    }
 
     private void HandleInHandItem(GameObject target)
     {
@@ -371,7 +486,47 @@ public class Player : MonoBehaviour
                     teaCup.isOnTray = false;
                 }
 
-
+                // Check if this is a game on the table
+                CustomerNPC.GameScaleManager gameManager = target.GetComponent<CustomerNPC.GameScaleManager>();
+                if (gameManager != null && !string.IsNullOrEmpty(gameManager.gameType))
+                {
+                    // This is a game on the table, replace it with the carryable version
+                    isPicked = true;
+                    
+                    // Get the carryable game prefab
+                    NPCCustomerSystem npcSystem = FindObjectOfType<NPCCustomerSystem>();
+                    if (npcSystem != null)
+                    {
+                        GameObject carryablePrefab = null;
+                        switch (gameManager.gameType)
+                        {
+                            case "Backgammon":
+                                carryablePrefab = npcSystem.backgammonPrefab;
+                                break;
+                            case "Cards":
+                                carryablePrefab = npcSystem.cardGamePrefab;
+                                break;
+                            case "Okey":
+                                carryablePrefab = npcSystem.okeyPrefab;
+                                break;
+                        }
+                        
+                        if (carryablePrefab != null)
+                        {
+                            // Destroy the table version
+                            Destroy(target);
+                            
+                            // Instantiate the carryable version in hand
+                            inHandItem = Instantiate(carryablePrefab, firstPersonHand.position, Quaternion.identity);
+                            inHandItem.transform.SetParent(firstPersonHand, false);
+                            inHandItem.transform.localPosition = Vector3.zero;
+                            inHandItem.transform.localRotation = Quaternion.identity;
+                            
+                            EnablePhysics(inHandItem, false);
+                            return;
+                        }
+                    }
+                }
 
                 isPicked = true;
                 inHandItem = target;
@@ -389,8 +544,6 @@ public class Player : MonoBehaviour
                 }
 
                 EnablePhysics(inHandItem, false);
-
-
             }
         }
     }
@@ -407,7 +560,29 @@ public class Player : MonoBehaviour
         }
 
         mainInfoUI.SetActive(false);
-
+        
+        if (didHit)
+        {
+            // Try to get CustomerNPC component
+            CustomerNPC customerNPC = hit.collider.gameObject.GetComponent<CustomerNPC>();
+            if (customerNPC != null)
+            {
+                // Get order information via the IHighlightable interface
+                IHighlightable highlightable = customerNPC as IHighlightable;
+                if (highlightable != null)
+                {
+                    string orderInfo = highlightable.GetHighlightText();
+                    ShowUIMessage(orderInfo);
+                    
+                    // Also highlight the customer
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    
+                    // Return early to prioritize customer interaction
+                    return;
+                }
+            }
+        }
 
         if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {

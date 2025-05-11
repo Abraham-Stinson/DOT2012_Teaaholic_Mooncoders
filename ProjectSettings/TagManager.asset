@@ -22,6 +22,11 @@ TagManager:
   - Garbage_Bag
   - Garbage_Container
   - Main_Door
+  - Chair
+  - Table
+  - Cards
+  - Backgammon
+  - Okey
   layers:
   - Default
   - TransparentFX
@@ -33,8 +38,8 @@ TagManager:
   - Placement
   - Ground
   - Usable
-  - 
-  - 
+  - NPC
+  - Road
   - 
   - 
   - 
