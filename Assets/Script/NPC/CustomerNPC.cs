@@ -38,11 +38,24 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
                 return "Looking for a table";
 
             case CustomerGroup.GroupState.Seated:
+                if (myGroup.hasOrderedGame)
+                {
+                    // Already ordered, now waiting for the game
+                    float gamePatience = Mathf.Max(0, myGroup.gameOrderPatience);
+                    return $"Waiting for: {myGroup.requestedGame}\n(Patience: {gamePatience:0} seconds)";
+                }
+                else
+                {
+                    return "Getting seated"; // Still in the process of seating everyone
+                }
+                
             case CustomerGroup.GroupState.OrderingGame:
-                return "Ready to order game";
+                return "Ordering a game...";
                 
             case CustomerGroup.GroupState.WaitingForGame:
-                float gamePatience = Mathf.Max(0, myGroup.gameOrderPatience);
+                float waitingGamePatience = Mathf.Max(0, myGroup.gameOrderPatience);
+                
+                // Check if player is holding the correct game
                 if (playerHeldItem != null)
                 {
                     bool isCorrectGame = false;
@@ -56,13 +69,12 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
                     }
                     
                     if (isCorrectGame)
-                        return $"Press F to Give {myGroup.requestedGame}\n(Patience: {gamePatience:0} seconds)";
+                        return $"Press F to Give {myGroup.requestedGame}\n(Patience: {waitingGamePatience:0} seconds)";
                     else if (playerHeldItem.CompareTag("Backgammon") || playerHeldItem.CompareTag("Cards") || playerHeldItem.CompareTag("Okey"))
-                        return $"Wrong Game! They want {myGroup.requestedGame}\n(Patience: {gamePatience:0} seconds)";
-                    else
-                        return $"Waiting for: {myGroup.requestedGame}\n(Patience: {gamePatience:0} seconds)";
+                        return $"Wrong Game! They want {myGroup.requestedGame}\n(Patience: {waitingGamePatience:0} seconds)";
                 }
-                return $"Waiting for: {myGroup.requestedGame}\n(Patience: {gamePatience:0} seconds)";
+                
+                return $"Waiting for: {myGroup.requestedGame}\n(Patience: {waitingGamePatience:0} seconds)";
                 
             case CustomerGroup.GroupState.PlayingGame:
                 if (!hasOrderedDrink)
@@ -82,7 +94,7 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
                                 bool isCorrectDrink = false;
                                 string cupContent = teaCup.inCup;
 
-                                switch (orderedDrink.ToLower())
+                                switch (orderedDrink)
                                 {
                                     case "coffee":
                                         isCorrectDrink = cupContent == "Coffee_Drink";
@@ -353,30 +365,41 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
                 navAgent.enabled = false;
             }
             
-            // Check if all group members are seated
-            CheckAllSeated();
+            // Notify the group leader to check if everyone is seated
+            if (myGroup.leader != null)
+            {
+                myGroup.leader.CheckAllSeated();
+            }
         }));
     }
     
     void CheckAllSeated()
     {
-        if (myGroup.leader == this)
+        // This method should only be called on the leader
+        if (this != myGroup.leader) return;
+        
+        // Check if all members are seated
+        bool allSeated = true;
+        foreach (CustomerNPC member in myGroup.members)
         {
-            // Check if all members are seated
-            bool allSeated = true;
-            foreach (CustomerNPC member in myGroup.members)
+            if (member.assignedChair == null)
             {
-                if (member.assignedChair == null)
-                {
-                    allSeated = false;
-                    break;
-                }
+                allSeated = false;
+                Debug.Log("Not all members are seated yet");
+                break;
             }
+        }
+        
+        if (allSeated)
+        {
+            Debug.Log("All group members are seated now");
             
-            if (allSeated)
+            // Only proceed if we haven't ordered yet
+            if (!myGroup.hasOrderedGame)
             {
-                // Everyone is seated, time to order game
+                // Everyone is seated and we haven't ordered yet, time to order game
                 myGroup.currentState = CustomerGroup.GroupState.Seated;
+                
                 // Add a small delay before ordering to make it more natural
                 StartCoroutine(WaitForAnimation(2.0f, OrderGame));
             }
@@ -385,79 +408,105 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
     
     void OrderGame()
     {
-        if (myGroup.leader == this && !myGroup.hasOrderedGame)
+        // Double check we're the leader and haven't ordered yet
+        if (this != myGroup.leader || myGroup.hasOrderedGame)
         {
-            myGroup.currentState = CustomerGroup.GroupState.OrderingGame;
-            string gameToOrder = "";
-            
-            // Order appropriate game based on group size
-            if (myGroup.groupSize == 2)
-            {
-                // 2-person group orders either backgammon or cards
-                gameToOrder = Random.value < 0.5f ? "Backgammon" : "Cards";
-            }
-            else
-            {
-                // 4-person group orders Okey
-                gameToOrder = "Okey";
-            }
-            
-            myGroup.requestedGame = gameToOrder;
-            myGroup.hasOrderedGame = true;
-            
-            // Start patience timer for game delivery
-            myGroup.ResetGamePatience();
-            myGroup.currentState = CustomerGroup.GroupState.WaitingForGame;
-            
-            // Trigger UI notification or other game mechanics to notify player
-            Debug.Log($"Group ordered: {gameToOrder} - Waiting for {myGroup.gameOrderPatience} seconds");
+            Debug.LogError("OrderGame called incorrectly");
+            return;
         }
+        
+        Debug.Log("Leader now ordering game for the group");
+        
+        // Set state to ordering
+        myGroup.currentState = CustomerGroup.GroupState.OrderingGame;
+        
+        // Order appropriate game based on group size
+        string gameToOrder = "";
+        
+        if (myGroup.groupSize == 2)
+        {
+            // 2-person group orders either backgammon or cards
+            gameToOrder = Random.value < 0.5f ? "Backgammon" : "Cards";
+        }
+        else
+        {
+            // 4-person group orders Okey
+            gameToOrder = "Okey";
+        }
+        
+        myGroup.requestedGame = gameToOrder;
+        myGroup.hasOrderedGame = true;
+        
+        // Start patience timer for game delivery
+        myGroup.ResetGamePatience();
+        
+        // Set state to waiting for game
+        myGroup.currentState = CustomerGroup.GroupState.WaitingForGame;
+        
+        Debug.Log($"Group has ordered: {gameToOrder} - Waiting for {myGroup.gameOrderPatience} seconds");
     }
     
     // Called when player delivers the game to the table
     public void ReceiveGame()
     {
-        if (myGroup.leader == this && !myGroup.hasReceivedGame)
+        // Any group member can receive the game, but only if the group is waiting for a game
+        if (myGroup.currentState == CustomerGroup.GroupState.WaitingForGame && !myGroup.hasReceivedGame)
         {
+            Debug.Log($"NPC {name} receiving the game for the group");
+        
             // Get the game prefab from the system
             GameObject gamePrefab = systemRef.GetGamePrefab(myGroup.requestedGame);
             
             if (gamePrefab != null && myGroup.assignedTable != null)
             {
-                // Set rotation and scale based on game type
-                Quaternion rotation = Quaternion.identity;
-                Vector3 scale = Vector3.one;
-                float heightOffset = 0;
-                
-                switch (myGroup.requestedGame)
-                {
-                    case "Backgammon":
-                        rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                        scale = new Vector3(1.2f, 0.3f, 1.2f);
-                        heightOffset = 0.02f; // Small additional height offset
-                        break;
-                    case "Cards":
-                        rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                        scale = new Vector3(1.0f, 0.2f, 1.0f);
-                        heightOffset = 0.01f;
-                        break;
-                    case "Okey":
-                        rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                        scale = new Vector3(1.5f, 0.4f, 1.5f);
-                        heightOffset = 0.03f;
-                        break;
-                }
+                // Set rotation based on game type
+                Quaternion rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+                float heightOffset = 0.02f; // Small additional height offset for all games
                 
                 // Get game position directly from the table controller
                 Vector3 placementPosition = myGroup.assignedTable.GetGamePosition();
-                placementPosition += Vector3.up * heightOffset; // Add small extra height based on game type
+                placementPosition += Vector3.up * heightOffset; // Add small extra height
+                
+                Debug.Log($"[{myGroup.requestedGame}] Instantiating game at position: {placementPosition}");
                 
                 // Instantiate the game on the table
                 GameObject gameObj = Instantiate(gamePrefab, placementPosition, rotation);
                 
-                // Parent to table and set local scale
+                // Check that the game object was created successfully
+                if (gameObj == null)
+                {
+                    Debug.LogError($"Failed to instantiate game object for {myGroup.requestedGame}");
+                    return;
+                }
+                
+                // Remember the original scale before parenting
+                Vector3 originalScale = gameObj.transform.localScale;
+                Debug.Log($"[{myGroup.requestedGame}] Original scale before parenting: {originalScale}");
+                
+                // Check if scale is zero and fix it if necessary
+                if (originalScale.x <= 0 || originalScale.y <= 0 || originalScale.z <= 0)
+                {
+                    Debug.LogWarning($"Game prefab has zero scale values, fixing it");
+                    originalScale = new Vector3(
+                        originalScale.x <= 0 ? 1f : originalScale.x,
+                        originalScale.y <= 0 ? 1f : originalScale.y,
+                        originalScale.z <= 0 ? 1f : originalScale.z
+                    );
+                }
+                
+                // Parent to table
                 gameObj.transform.parent = myGroup.assignedTable.transform;
-                gameObj.transform.localScale = scale;
+                
+                // Check if scale got lost during parenting and fix it
+                if (gameObj.transform.localScale.x <= 0 || 
+                    gameObj.transform.localScale.y <= 0 || 
+                    gameObj.transform.localScale.z <= 0)
+                {
+                    Debug.LogWarning($"Scale got reset to zero after parenting, fixing to: {originalScale}");
+                    gameObj.transform.localScale = originalScale;
+                }
+                
+                Debug.Log($"[{myGroup.requestedGame}] Game object scale after parenting: {gameObj.transform.localScale}");
                 
                 // Set to Interactable layer so player can pick it up
                 gameObj.layer = LayerMask.NameToLayer("Interactable");
@@ -470,9 +519,12 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
                 
                 // Store original properties for when it becomes interactable
                 GameScaleManager scaleManager = gameObj.AddComponent<GameScaleManager>();
-                scaleManager.originalScale = scale;
+                scaleManager.originalScale = originalScale;
                 scaleManager.originalRotation = rotation;
                 scaleManager.gameType = myGroup.requestedGame;
+                
+                // Final check of scale after all operations
+                Debug.Log($"[{myGroup.requestedGame}] Final game scale: {gameObj.transform.localScale}");
                 
                 myGroup.gameOnTable = gameObj;
             }
@@ -967,13 +1019,39 @@ public class CustomerNPC : MonoBehaviour, IHighlightable
         // Which original game prefab this corresponds to
         public string gameType; // "Backgammon", "Cards", or "Okey"
         
+        void Start()
+        {
+            // Initial check to make sure scale is set properly
+            EnsureValidScale();
+        }
+        
         void OnEnable()
         {
             // When the object becomes interactable (picked up), restore original properties
             if (gameObject.layer == LayerMask.NameToLayer("Interactable"))
             {
-                transform.localScale = originalScale;
                 transform.rotation = originalRotation;
+                EnsureValidScale();
+            }
+        }
+        
+        private void EnsureValidScale()
+        {
+            // Check if current scale is zero in any dimension
+            if (transform.localScale.x <= 0 || transform.localScale.y <= 0 || transform.localScale.z <= 0)
+            {
+                // Check if original scale is valid
+                if (originalScale.x > 0 && originalScale.y > 0 && originalScale.z > 0)
+                {
+                    Debug.LogWarning($"Game {gameType} has zero scale, restoring to originalScale: {originalScale}");
+                    transform.localScale = originalScale;
+                }
+                else
+                {
+                    // If original scale is also invalid, set a default scale
+                    Debug.LogError($"Both current scale and originalScale are invalid for {gameType}, using default scale");
+                    transform.localScale = new Vector3(1f, 1f, 1f);
+                }
             }
         }
     }

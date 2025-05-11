@@ -167,18 +167,31 @@ public class NPCCustomerSystem : MonoBehaviour
     // Get GameObject for the requested game
     public GameObject GetGamePrefab(string gameName)
     {
+        GameObject prefab = null;
+        
         switch (gameName)
         {
             case "Backgammon":
-                return backgammonPlayingPrefab;
+                prefab = backgammonPlayingPrefab;
+                break;
             case "Cards":
-                return cardGamePlayingPrefab;
+                prefab = cardGamePlayingPrefab;
+                break;
             case "Okey":
-                return okeyPlayingPrefab;
+                prefab = okeyPlayingPrefab;
+                break;
             default:
                 Debug.LogWarning("Unknown game requested: " + gameName);
                 return null;
         }
+        
+        // Log the original scale of the prefab
+        if (prefab != null)
+        {
+            Debug.Log($"Game prefab '{gameName}' original scale: {prefab.transform.localScale}");
+        }
+        
+        return prefab;
     }
     
     // Get all active drink orders for a specific customer group
