@@ -9,6 +9,7 @@ public class Table : MonoBehaviour
     [SerializeField] private Transform gameItemPlacement;
     [SerializeField] private bool isReserved = false;
     [SerializeField] private int maxSeats;
+    [SerializeField] private int tableTypeID; // Masanın tipini tanımlamak için ID
     
     [Header("Game Items")]
     [SerializeField] private GameObject currentGameItem;
@@ -152,11 +153,14 @@ public class Table : MonoBehaviour
         {
             gameItem.transform.position = gameItemPlacement.position;
             gameItem.transform.rotation = gameItemPlacement.rotation;
+            gameItem.transform.SetParent(gameItemPlacement);
             
             // Make the game item not pickable while NPCs are using it
             if (gameItem.TryGetComponent<PickableGameItem>(out var pickableItem))
             {
                 pickableItem.MakeNotPickable();
+                // Farklı masa tipine göre görünümü ayarla
+                pickableItem.UpdateAppearanceForTable(tableTypeID);
             }
         }
     }
@@ -171,5 +175,10 @@ public class Table : MonoBehaviour
             }
         }
         return true;
+    }
+    
+    public int TableTypeID
+    {
+        get { return tableTypeID; }
     }
 } 

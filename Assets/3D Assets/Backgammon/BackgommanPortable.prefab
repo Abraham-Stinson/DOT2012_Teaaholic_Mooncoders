@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3100772580262015228
+--- !u!1 &5050964409325780073
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,49 +8,49 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7993915851283728830}
-  - component: {fileID: 1297651806937834461}
-  - component: {fileID: 2049882665442255653}
-  - component: {fileID: 7714790333396243674}
-  - component: {fileID: 8746846217856203772}
-  - component: {fileID: 1182520671293035635}
+  - component: {fileID: 4934235156321929257}
+  - component: {fileID: 7007961095647923337}
+  - component: {fileID: 1354799799932482573}
+  - component: {fileID: 1958828076349050473}
+  - component: {fileID: 2978990212791597163}
+  - component: {fileID: 5493779514037303092}
   m_Layer: 6
-  m_Name: Backgammon 1
+  m_Name: BackgommanPortable
   m_TagString: Backgammon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7993915851283728830
+--- !u!4 &4934235156321929257
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
+  m_GameObject: {fileID: 5050964409325780073}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 358.6, y: 6.43, z: 411.26}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1297651806937834461
+--- !u!33 &7007961095647923337
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
+  m_GameObject: {fileID: 5050964409325780073}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &2049882665442255653
+--- !u!23 &1354799799932482573
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
+  m_GameObject: {fileID: 5050964409325780073}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -89,13 +89,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7714790333396243674
+--- !u!65 &1958828076349050473
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
+  m_GameObject: {fileID: 5050964409325780073}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -110,29 +110,29 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8746846217856203772
+--- !u!114 &2978990212791597163
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
+  m_GameObject: {fileID: 5050964409325780073}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 469ff1531985b274fbb145aba138b20c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gameType: Backgammon
-  pickableModel: {fileID: 3100772580262015228}
+  pickableModel: {fileID: 5050964409325780073}
   placedModel: {fileID: 3100772580262015228, guid: c72d71c77e18f9c42b1ed1510fc9e95c, type: 3}
   isPickable: 1
---- !u!54 &1182520671293035635
+--- !u!54 &5493779514037303092
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
+  m_GameObject: {fileID: 5050964409325780073}
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0

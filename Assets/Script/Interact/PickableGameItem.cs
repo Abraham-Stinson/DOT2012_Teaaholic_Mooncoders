@@ -8,7 +8,11 @@ public class PickableGameItem : MonoBehaviour
     [SerializeField] private GameObject placedModel;
     [SerializeField] private bool isPickable = true;
     
+    [Header("Table Appearance")]
+    [SerializeField] private GameObject[] tableSpecificModels; // Farklı masa tipleri için farklı modeller
+    
     private HighLight highlight;
+    private int currentTableType = -1;
     
     private void Awake()
     {
@@ -51,6 +55,31 @@ public class PickableGameItem : MonoBehaviour
         if (placedModel != null)
         {
             placedModel.SetActive(!isPickable);
+        }
+        
+        // Masa tipine göre belirli modelleri güncelle
+        UpdateTableSpecificModels();
+    }
+    
+    public void UpdateAppearanceForTable(int tableTypeID)
+    {
+        currentTableType = tableTypeID;
+        UpdateTableSpecificModels();
+    }
+    
+    private void UpdateTableSpecificModels()
+    {
+        // Tüm masa tipi modellerini gizle
+        if (tableSpecificModels != null)
+        {
+            for (int i = 0; i < tableSpecificModels.Length; i++)
+            {
+                if (tableSpecificModels[i] != null)
+                {
+                    bool shouldShow = !isPickable && i == currentTableType;
+                    tableSpecificModels[i].SetActive(shouldShow);
+                }
+            }
         }
     }
     
