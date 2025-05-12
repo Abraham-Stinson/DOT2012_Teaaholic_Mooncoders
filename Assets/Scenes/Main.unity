@@ -600,42 +600,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36f130791f74594e9b86b872702915e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcPrefabs:
-  - {fileID: 4982699999919292395, guid: a93c62729682a5847a71b62ddf15a317, type: 3}
-  spawnPoint: {fileID: 1288587128}
-  exitPoint: {fileID: 442602767}
-  spawnInterval: 10
-  doorPoint: {fileID: 1383898050}
-  cashierPoint: {fileID: 2081793126}
-  tables:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  drinkMenu:
-  - drinkName: Light_Tea
-    price: 10
-    description: Light Tea
-  - drinkName: Rabbit_Blood_Tea
-    price: 10
-    description: Rabbit Blood Tea
-  - drinkName: Brewed_Tea
-    price: 10
-    description: Brewed Tea
-  backgammonPrefab: {fileID: 3100772580262015228, guid: 3ecac290e1ad65c4fbcfb9211c9745e8, type: 3}
-  cardGamePrefab: {fileID: 3100772580262015228, guid: 32bf86a1244a12d45a10e6ec507c7b14, type: 3}
-  okeyPrefab: {fileID: 3100772580262015228, guid: 1b8d5fc626c14fb47964bb15fceb01db, type: 3}
-  backgammonPlayingPrefab: {fileID: 3100772580262015228, guid: 65d1514bc38af1649b9fa707ca3e5430, type: 3}
-  cardGamePlayingPrefab: {fileID: 3100772580262015228, guid: d661659ecdbe12249875e15f7f9bb016, type: 3}
-  okeyPlayingPrefab: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}
-  defaultGamePatience: 30
-  defaultDrinkPatience: 50
-  defaultPaymentPatience: 45
-  reorderChance: 0.3
-  minStayTime: 10
-  maxStayTime: 20
-  gameRunning: 1
 --- !u!4 &231622895
 Transform:
   m_ObjectHideFlags: 0

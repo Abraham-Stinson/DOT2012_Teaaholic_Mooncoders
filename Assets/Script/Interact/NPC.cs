@@ -23,6 +23,7 @@ public class NPC : MonoBehaviour, IInteractable
     private string requestedDrink;
     private bool hasBeenServed = false;
     private Coroutine drinkConsumptionCoroutine;
+    private Coroutine sittingCoroutine;
     
     // Event to notify when NPC is destroyed
     public System.Action<NPC> OnDestroyed;
@@ -231,22 +232,11 @@ public class NPC : MonoBehaviour, IInteractable
             case NPCState.Sitting:
                 if (assignedChair != null)
                 {
-                    // Sandalyeye otur
-                    transform.position = assignedChair.GetSittingPositionVector();
-                    transform.rotation = assignedChair.GetSittingRotation();
-                    assignedChair.SetOccupied(true);
-                    PlaySitAnimation();
-                    
-                    if (isLeader && !group.hasReceivedGame)
+                    if (sittingCoroutine != null)
                     {
-                        // Show game request
-                        DisplayGameRequest();
+                        StopCoroutine(sittingCoroutine);
                     }
-                    else if (group.hasReceivedGame && !hasBeenServed)
-                    {
-                        // Order drink
-                        OrderDrink();
-                    }
+                    sittingCoroutine = StartCoroutine(SitOnChair());
                 }
                 break;
                 
@@ -277,6 +267,52 @@ public class NPC : MonoBehaviour, IInteractable
                 agent.SetDestination(exitPos);
                 PlayWalkAnimation();
                 break;
+        }
+    }
+    
+    IEnumerator SitOnChair()
+    {
+        if (assignedChair == null) yield break;
+        
+        // NavMeshAgent'i devre dışı bırak
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+        }
+        
+        // Sandalyeye doğru dön
+        Vector3 lookDirection = assignedChair.transform.forward;
+        transform.rotation = Quaternion.LookRotation(lookDirection);
+        
+        // Oturma animasyonunu başlat
+        PlaySitAnimation();
+        
+        // Animasyonun tamamlanmasını bekle
+        yield return new WaitForSeconds(1.0f);
+        
+        // Tam oturma pozisyonuna geç
+        transform.position = assignedChair.GetSittingPositionVector();
+        transform.rotation = assignedChair.GetSittingRotation();
+        
+        // Sandalyeyi işgal et
+        assignedChair.SetOccupied(true);
+        
+        // NavMeshAgent'i kalıcı olarak devre dışı bırak
+        if (agent != null)
+        {
+            agent.enabled = false;
+        }
+        
+        // Grup lideri ise ve oyun istenmemişse, oyun iste
+        if (isLeader && !group.hasReceivedGame)
+        {
+            DisplayGameRequest();
+        }
+        else if (group.hasReceivedGame && !hasBeenServed)
+        {
+            OrderDrink();
         }
     }
     
@@ -323,6 +359,15 @@ public class NPC : MonoBehaviour, IInteractable
         if (animator != null)
         {
             animator.SetBool("isSitting", false);
+        }
+        
+        // NavMeshAgent'i tekrar etkinleştir
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.isStopped = false;
+            agent.updatePosition = true;
+            agent.updateRotation = true;
         }
     }
     
@@ -547,6 +592,16 @@ public class NPC : MonoBehaviour, IInteractable
                 return "Press F to collect payment";
         }
         return null;
+    }
+    
+    public Table GetAssignedTable()
+    {
+        return targetTable;
+    }
+    
+    public Chair GetAssignedChair()
+    {
+        return assignedChair;
     }
 }
 

@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameType: Backgammon
   pickableModel: {fileID: 3100772580262015228}
-  placedModel: {fileID: 3100772580262015228, guid: 65d1514bc38af1649b9fa707ca3e5430, type: 3}
+  placedModel: {fileID: 3100772580262015228, guid: c72d71c77e18f9c42b1ed1510fc9e95c, type: 3}
   isPickable: 1
 --- !u!54 &1182520671293035635
 Rigidbody:

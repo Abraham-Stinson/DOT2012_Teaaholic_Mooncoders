@@ -58,7 +58,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameType: Okey
   pickableModel: {fileID: 3100772580262015228}
-  placedModel: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}
+  placedModel: {fileID: 3100772580262015228, guid: 09ddfcb3de8933a49b8379f2e5ded2e6, type: 3}
   isPickable: 1
 --- !u!23 &2049882665442255653
 MeshRenderer:

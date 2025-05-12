@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameType: Cards
   pickableModel: {fileID: 3100772580262015228}
-  placedModel: {fileID: 3100772580262015228, guid: d661659ecdbe12249875e15f7f9bb016, type: 3}
+  placedModel: {fileID: 3100772580262015228, guid: 56cfd22582208ec458f556348c822f19, type: 3}
   isPickable: 1
 --- !u!54 &8518349997735502377
 Rigidbody:

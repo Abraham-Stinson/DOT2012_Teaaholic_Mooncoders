@@ -108,9 +108,10 @@ public class Player : MonoBehaviour
                         if (npc.ReceiveGame(gameItem.GetGameType()))
                         {
                             // Place the game on the table
-                            Table table = npc.GetComponent<NPC>().transform.root.GetComponent<Table>();
+                            Table table = npc.GetAssignedTable();
                             if (table != null)
                             {
+                                // Oyun itemini masaya yerleştir
                                 table.SetGameItem(inHandItem);
                                 inHandItem.transform.SetParent(null);
                                 isPicked = false;
@@ -129,13 +130,25 @@ public class Player : MonoBehaviour
                         {
                             if (npc.ReceiveDrink(teaCup.inCup))
                             {
-                                // Correct drink served
-                                // Put the drink on the table at NPC's position
-                                inHandItem.transform.SetParent(null);
-                                isPicked = false;
-                                inHandItem = null;
-                                Debug.Log("Correct drink served to NPC");
-                                return;
+                                // Çayı NPC'nin önündeki masaya yerleştir
+                                Table table = npc.GetAssignedTable();
+                                if (table != null)
+                                {
+                                    // NPC'nin sandalye indeksini bul
+                                    int chairIndex = table.GetChairIndex(npc.GetAssignedChair());
+                                    Transform drinkPlacement = table.GetDrinkPlacement(chairIndex);
+                                    
+                                    if (drinkPlacement != null)
+                                    {
+                                        inHandItem.transform.SetParent(null);
+                                        inHandItem.transform.position = drinkPlacement.position;
+                                        inHandItem.transform.rotation = drinkPlacement.rotation;
+                                        isPicked = false;
+                                        inHandItem = null;
+                                        Debug.Log("Drink placed on table for NPC");
+                                        return;
+                                    }
+                                }
                             }
                         }
                     }

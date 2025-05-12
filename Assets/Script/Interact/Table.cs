@@ -121,6 +121,29 @@ public class Table : MonoBehaviour
         }
     }
     
+    public int GetChairIndex(Chair chair)
+    {
+        if (chairs == null) return -1;
+        
+        for (int i = 0; i < chairs.Length; i++)
+        {
+            if (chairs[i] == chair)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public Transform GetDrinkPlacement(int chairIndex)
+    {
+        if (drinkPlacements == null || chairIndex < 0 || chairIndex >= drinkPlacements.Length)
+        {
+            return null;
+        }
+        return drinkPlacements[chairIndex];
+    }
+    
     public void SetGameItem(GameObject gameItem)
     {
         currentGameItem = gameItem;
@@ -136,15 +159,6 @@ public class Table : MonoBehaviour
                 pickableItem.MakeNotPickable();
             }
         }
-    }
-    
-    public Transform GetDrinkPlacement(int chairIndex)
-    {
-        if (drinkPlacements != null && chairIndex < drinkPlacements.Length)
-        {
-            return drinkPlacements[chairIndex];
-        }
-        return transform;
     }
     
     public bool IsTableEmpty()
