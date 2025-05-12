@@ -611,20 +611,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 231622893}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d2a4db41d76e344a872ddd2f24dbc65, type: 3}
+  m_Script: {fileID: 11500000, guid: 95f44ddf3b04d864a90088f6b2bd8e67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoint: {fileID: 1288587128}
   npcPrefabs:
   - {fileID: 4982699999919292395, guid: a93c62729682a5847a71b62ddf15a317, type: 3}
+  spawnPoint: {fileID: 1288587128}
   minSpawnTime: 10
   maxSpawnTime: 20
-  entryPosition: {fileID: 1671252118}
+  groupChance2Person: 0.5
+  entrancePosition: {fileID: 1671252118}
+  cashRegisterPosition: {fileID: 2081793126}
   exitPosition: {fileID: 442602767}
-  cashierPosition: {fileID: 2081793126}
-  doorAnimator: {fileID: 8918280151647193478}
-  chanceForFourPersonGroup: 30
-  tableManager: {fileID: 2075787497}
+  entranceDoor: {fileID: 8918280151647193479}
+  allTables:
+  - {fileID: 605397623}
+  - {fileID: 1221676368}
+  - {fileID: 307660725}
+  - {fileID: 890307166}
+  - {fileID: 1408827235}
 --- !u!1 &245889715
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,11 +1798,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.36454126, y: 10.78582, z: 10.958378}
   m_Center: {x: 0, y: 0.03753853, z: 3.1187131}
---- !u!1 &739136182 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3100772580262015228, guid: 32bf86a1244a12d45a10e6ec507c7b14, type: 3}
-  m_PrefabInstance: {fileID: 1298096839}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &816134885
 GameObject:
   m_ObjectHideFlags: 0
@@ -2491,11 +2491,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 387104730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1028335256 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3100772580262015228, guid: 3ecac290e1ad65c4fbcfb9211c9745e8, type: 3}
-  m_PrefabInstance: {fileID: 513140715}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1064622683
 GameObject:
   m_ObjectHideFlags: 0
@@ -5154,65 +5149,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2075638098}
   m_SourcePrefab: {fileID: 100100000, guid: 3ecac290e1ad65c4fbcfb9211c9745e8, type: 3}
---- !u!1 &1761149204
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1761149206}
-  - component: {fileID: 1761149205}
-  m_Layer: 0
-  m_Name: CustomerManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1761149205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1761149204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe298a43d85f7d34ba1d91deb55bb184, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  npcManager: {fileID: 231622896}
-  tableManager: {fileID: 2075787497}
-  gameObjects:
-  - {fileID: 1028335256}
-  - {fileID: 739136182}
-  - {fileID: 2022765985}
-  gameSpawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  totalCustomersServed: 0
-  totalMoneyEarned: 0
-  totalCustomersLost: 0
---- !u!4 &1761149206
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1761149204}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 177.96997, y: -6.8267994, z: 628.8698}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1764672077
 GameObject:
   m_ObjectHideFlags: 0
@@ -6317,11 +6253,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &2022765985 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3100772580262015228, guid: 1b8d5fc626c14fb47964bb15fceb01db, type: 3}
-  m_PrefabInstance: {fileID: 849483096}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2028203096
 GameObject:
   m_ObjectHideFlags: 0
@@ -6688,8 +6619,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2075787499}
-  - component: {fileID: 2075787498}
-  - component: {fileID: 2075787497}
   m_Layer: 0
   m_Name: TableManager
   m_TagString: Untagged
@@ -6697,36 +6626,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2075787497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2075787496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56d1ee6a207434f43bc6e7f7c0142b83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tables:
-  - {fileID: 605397623}
-  - {fileID: 1221676368}
-  - {fileID: 307660725}
-  - {fileID: 890307166}
-  - {fileID: 1408827235}
---- !u!114 &2075787498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2075787496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c36f130791f74594e9b86b872702915e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2075787499
 Transform:
   m_ObjectHideFlags: 0
@@ -8788,6 +8687,7 @@ GameObject:
   - component: {fileID: 8918280151647193477}
   - component: {fileID: 1483627407}
   - component: {fileID: 8918280151647193478}
+  - component: {fileID: 8918280151647193479}
   m_Layer: 9
   m_Name: Door
   m_TagString: Main_Door
@@ -10400,18 +10300,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3040009057712450901, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: requestGameUI
-      value: 
-      objectReference: {fileID: 1764672077}
-    - target: {fileID: 3040009057712450901, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: requestGameText
-      value: 
-      objectReference: {fileID: 1764672079}
-    - target: {fileID: 3040009057712450901, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'drinkOrderTexts.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1764672079}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair
@@ -11761,7 +11649,6 @@ MonoBehaviour:
   useHoldInput: {fileID: 1883127306925870050, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   cleaningTime: 3
   cleaningRadius: 2
-  paymentAmount: 15
 --- !u!114 &3469287838036912812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24529,6 +24416,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8918280151647193479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155298510326356404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c8a3a7a8de3c164d8d7735e738dd4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doorAnimator: {fileID: 8918280151647193478}
+  openAnimationTrigger: Open
+  closeAnimationTrigger: Close
+  autoCloseDelay: 3
 --- !u!33 &8931907563268878057
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -24870,7 +24773,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 190237884}
   - {fileID: 231622895}
-  - {fileID: 1761149206}
   - {fileID: 2075787499}
   - {fileID: 410087041}
   - {fileID: 832575519}

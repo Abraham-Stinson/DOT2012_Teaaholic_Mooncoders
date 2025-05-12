@@ -48,15 +48,6 @@ public class Player : MonoBehaviour
     private Coroutine cleaningCoroutine;
     private bool isCleaning = false;
 
-    // Reference to the currently highlighted NPC for serving drinks
-    private NPC currentNPC = null;
-    // Reference to the currently highlighted table for placing games
-    private Table currentTable = null;
-    // Reference to table game being interacted with
-    private TableGame currentTableGame = null;
-    // Reference to the cashier NPC for payment
-    private NPC cashierNPC = null;
-    [SerializeField] private float paymentAmount = 15.0f; // Default payment amount
 
     void Start()
     {
@@ -95,35 +86,6 @@ public class Player : MonoBehaviour
 
         if (hit.collider != null)
         {
-            // Check for NPC interaction
-            NPC npc = target.GetComponent<NPC>();
-            if (npc != null && inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
-            {
-                // Handle serving drinks to NPC
-                HandleDrinkServing(npc);
-                return;
-            }
-            
-            // Handle cashier payment
-            if (npc != null && npc.IsGroupLeader && !npc.HasPaid && Vector3.Distance(npc.transform.position, GameObject.FindWithTag("CashierSpot").transform.position) < 1.5f)
-            {
-                HandlePayment(npc);
-                return;
-            }
-            
-            // Handle table game placement
-            TableGame tableGame = null;
-            if (inHandItem != null)
-            {
-                tableGame = inHandItem.GetComponent<TableGame>();
-            }
-            
-            Table table = hit.collider.GetComponent<Table>();
-            if (table != null && tableGame != null && isPicked)
-            {
-                PlaceTableGame(tableGame, table);
-                return;
-            }
 
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
             {
@@ -156,112 +118,6 @@ public class Player : MonoBehaviour
                 HandleInHandItem(target);
             }
         }
-    }
-
-    private void HandleDrinkServing(NPC npc)
-    {
-        if (!isPicked || inHandItem == null || !inHandItem.CompareTag("Tea_Cup"))
-            return;
-            
-        Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
-        if (teaCup == null)
-            return;
-            
-        // Get the NPC's group and check if this drink matches their order
-        NPCGroup group = npc.gameObject.GetComponentInParent<NPCGroup>();
-        if (group == null)
-            return;
-            
-        string inCupDrink = teaCup.inCup;
-        string orderedDrink = group.GetDrinkOrderForNPC(npc);
-        
-        // Check if the drink matches the order
-        if (inCupDrink == orderedDrink)
-        {
-            // Find the table this NPC is sitting at
-            Table table = FindTableForNPC(npc);
-            if (table != null)
-            {
-                // Find the NPC's index position at the table
-                int npcIndex = FindNPCIndexAtTable(npc, table);
-                if (npcIndex >= 0)
-                {
-                    // Place the cup on the table in front of the NPC
-                    table.PlaceDrink(inHandItem, npcIndex);
-                    
-                    // Mark the drink as served
-                    group.ServeDrinkToNPC(npc);
-                    
-                    // Release the cup
-                    isPicked = false;
-                    inHandItem = null;
-                    
-                    Debug.Log($"Successfully served {inCupDrink} to NPC");
-                }
-            }
-        }
-        else
-        {
-            Debug.Log($"Wrong drink! NPC ordered {orderedDrink} but you're serving {inCupDrink}");
-        }
-    }
-
-    private void HandlePayment(NPC npc)
-    {
-        // Process payment
-        npc.SetPaid(true);
-        
-        // In a real game, you would add money to the player's account here
-        // Example: playerMoney += paymentAmount;
-        
-        Debug.Log($"Payment of ${paymentAmount} received from customer");
-    }
-
-    private void PlaceTableGame(TableGame tableGame, Table table)
-    {
-        if (table.IsAvailable || table.HasGame(tableGame.GetGameType()))
-            return;
-            
-        tableGame.PlaceOnTable(table);
-        
-        // Release the game from hand
-        isPicked = false;
-        inHandItem = null;
-    }
-
-    private Table FindTableForNPC(NPC npc)
-    {
-        // Find the closest table to this NPC
-        Table[] tables = FindObjectsOfType<Table>();
-        Table closestTable = null;
-        float minDistance = float.MaxValue;
-        
-        foreach (Table table in tables)
-        {
-            float distance = Vector3.Distance(npc.transform.position, table.transform.position);
-            if (distance < minDistance && distance < 3f) // Only consider tables within 3 units
-            {
-                minDistance = distance;
-                closestTable = table;
-            }
-        }
-        
-        return closestTable;
-    }
-
-    private int FindNPCIndexAtTable(NPC npc, Table table)
-    {
-        // Find which chair position the NPC is sitting at
-        for (int i = 0; i < 4; i++) // Assuming max 4 chairs per table
-        {
-            Transform chairTransform = table.GetChairTransform(i);
-            if (chairTransform != null && Vector3.Distance(npc.transform.position, chairTransform.position) < 0.5f)
-            {
-                return i;
-            }
-        }
-        
-        return -1;
     }
 
     private void HandleInHandItem(GameObject target)
@@ -416,24 +272,9 @@ public class Player : MonoBehaviour
             return;
         }
         GameObject target = hit.collider.gameObject;
-        
-        // Check for table game interaction when not holding anything
-        if (!isPicked)
-        {
-            TableGame tableGame = target.GetComponent<TableGame>();
-            if (tableGame != null && !tableGame.IsPlacedOnTable())
-            {
-                // Pick up the game
-                isPicked = true;
-                inHandItem = target;
-                inHandItem.transform.SetParent(firstPersonHand.transform, false);
-                inHandItem.transform.localPosition = Vector3.zero;
-                inHandItem.transform.localRotation = Quaternion.identity;
-                EnablePhysics(inHandItem, false);
-                return;
-            }
-        }
-        
+
+
+
         if (isPicked)
         {
             //TEPSİ SİSTEMİ
@@ -545,196 +386,141 @@ public class Player : MonoBehaviour
         {
             lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            currentNPC = null;
-            currentTable = null;
+
         }
 
         mainInfoUI.SetActive(false);
-        currentNPC = null;
-        currentTable = null;
 
-        if (didHit)
+
+        // Original UI logic continues from here
+        if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {
-            // Check for NPC with drink order
-            NPC npc = hit.collider.gameObject.GetComponent<NPC>();
-            if (npc != null && isPicked && inHandItem != null && inHandItem.CompareTag("Tea_Cup"))
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+            lastHighlightedObject = hit.collider.gameObject;
+            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
             {
-                currentNPC = npc;
-                NPCGroup group = npc.gameObject.GetComponentInParent<NPCGroup>();
-                
-                if (group != null)
+                var kettleScript = hit.collider.GetComponent<Kettle>();
+                if (kettleScript.currentKettleMagazine > 0)
                 {
-                    Tea_Cup teaCup = inHandItem.GetComponent<Tea_Cup>();
-                    if (teaCup != null)
+                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.currentKettleMagazine + " tea left");
+                }
+                else
+                {
+                    if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        string inCupDrink = teaCup.inCup;
-                        string orderedDrink = group.GetDrinkOrderForNPC(npc);
-                        
-                        if (inCupDrink == orderedDrink)
+                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
+                    }
+                    else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Hot Water");
+                    }
+                    else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                    {
+                        if (kettleScript.CheckIsOnKettleBase())
                         {
-                            ShowUIMessage($"Press F to serve {inCupDrink}");
+                            ShowUIMessage("It's brewing\n" + (int)kettleScript.currentBrewTimeOfTea + "second(s) left");
                         }
                         else
                         {
-                            ShowUIMessage($"Wrong item! Customer wants {orderedDrink}");
+                            ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
                         }
                     }
-                }
-            }
-            
-            // Check for cashier payment
-            if (npc != null && npc.IsGroupLeader && !npc.HasPaid && 
-                Vector3.Distance(npc.transform.position, GameObject.FindWithTag("CashierSpot").transform.position) < 1.5f)
-            {
-                cashierNPC = npc;
-                ShowUIMessage($"Press F to collect payment (${paymentAmount})");
-            }
-            
-            // Check for table game placement
-            Table table = hit.collider.gameObject.GetComponent<Table>();
-            if (table != null && !table.IsAvailable && isPicked && inHandItem != null)
-            {
-                TableGame tableGame = inHandItem.GetComponent<TableGame>();
-                if (tableGame != null)
-                {
-                    currentTable = table;
-                    ShowUIMessage($"Press F to place {tableGame.GetGameType()} on table");
-                }
-            }
-
-            if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
-            {
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                lastHighlightedObject = hit.collider.gameObject;
-                if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
-                {
-                    var kettleScript = hit.collider.GetComponent<Kettle>();
-                    if (kettleScript.currentKettleMagazine > 0)
+                    else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Press E to Pick Up\n" + kettleScript.currentKettleMagazine + " tea left");
+                        ShowUIMessage("Press E to Pick Up\nInside: Empty");
                     }
-                    else
-                    {
-                        if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
-                        {
-                            ShowUIMessage("Press E to Pick Up\nInside: Tea");
-                        }
-                        else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
-                        {
-                            ShowUIMessage("Press E to Pick Up\nInside: Hot Water");
-                        }
-                        else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
-                        {
-                            if (kettleScript.CheckIsOnKettleBase())
-                            {
-                                ShowUIMessage("It's brewing\n" + (int)kettleScript.currentBrewTimeOfTea + "second(s) left");
-                            }
-                            else
-                            {
-                                ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
-                            }
-                        }
-                        else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
-                        {
-                            ShowUIMessage("Press E to Pick Up\nInside: Empty");
-                        }
-                    }
-
-
                 }
+            }
+            else
+            {
+                ShowUIMessage("Press E to Pick Up");
+            }
+        }
 
+        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+        {
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            lastHighlightedObject = null;
+            ShowUIMessage("Press E to Put Down");
+        }
+        if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+        {
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            lastHighlightedObject = null;
+            ShowUIMessage("Press E to Put Down");
+        }
+        if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
+        {
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            lastHighlightedObject = hit.collider.gameObject;
+            ShowUIMessage("Press F to Use");
+        }
+
+        if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
+        {
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+            {
+                if (inHandItem.gameObject.tag == "Tea_Cup" && !inHandItem.GetComponent<Tea_Cup>().isOnTray && hit.collider.gameObject.tag == "Tray")
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press E to Put on Tray");
+                }
                 else
                 {
-                    ShowUIMessage("Press E to Pick Up");
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                    lastHighlightedObject = null;
                 }
-
             }
-            if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+        }
+
+        if (didHit && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        {//KETTLE DAN ÇAY KOYMA UI
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-                lastHighlightedObject = null;
-                ShowUIMessage("Press E to Put Down");
+                if (hit.collider.CompareTag("Tea_Cup"))
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Pour Tea");
+                }
             }
-            if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-                lastHighlightedObject = null;
-                ShowUIMessage("Press E to Put Down");
+                if (hit.collider.CompareTag("Hot_Water") /*&& inHandItem.GetComponent<Kettle>().isHaveTea*/)
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Fill Hot Water to Kettle");
+                }
             }
-            if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
+        }
+
+        if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        {//bardağa Kahve veya oralet koyma
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-                lastHighlightedObject = hit.collider.gameObject;
-                ShowUIMessage("Press F to Use");
+                if (hit.collider.CompareTag("Tea_Cup"))
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Pour " + inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
+                }
             }
+        }
 
-            if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
+        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        {//KETTLE DAN ÇAY KOYMA UI
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                if (hit.collider.CompareTag("Hot_Water"))
                 {
-                    if (inHandItem.gameObject.tag == "Tea_Cup" && !inHandItem.GetComponent<Tea_Cup>().isOnTray && hit.collider.gameObject.tag == "Tray")
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press E to Put on Tray");
-                    }
-                    else
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-                        lastHighlightedObject = null;
-                    }
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Fill the Hot Water");
                 }
             }
-
-            if (didHit && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-            {//KETTLE DAN ÇAY KOYMA UI
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-                {
-                    if (hit.collider.CompareTag("Tea_Cup"))
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press F to Pour Tea");
-                    }
-                }
-
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-                {
-                    if (hit.collider.CompareTag("Hot_Water") /*&& inHandItem.GetComponent<Kettle>().isHaveTea*/)
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press F to Fill Hot Water to Kettle");
-                    }
-                }
-            }
-
-            if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-            {//bardağa Kahve veya oralet koyma
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-                {
-                    if (hit.collider.CompareTag("Tea_Cup"))
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press F to Pour " + inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
-                    }
-                }
-            }
-
-            if (didHit && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-            {//KETTLE DAN ÇAY KOYMA UI
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-                {
-                    if (hit.collider.CompareTag("Hot_Water"))
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press F to Fill the Hot Water");
-                    }
-                }
-            }
-
             if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
             {
                 if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
@@ -747,8 +533,6 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-
-
             if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
             {
                 if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
@@ -802,9 +586,11 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+
     #endregion
 
-    void ShowUIMessage(string message)
+    public void ShowUIMessage(string message)
     {
         mainInfoUI.SetActive(true);
         mainInfoUIText.text = message;

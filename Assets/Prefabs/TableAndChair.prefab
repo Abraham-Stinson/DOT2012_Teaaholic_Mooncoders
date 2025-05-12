@@ -709,21 +709,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41952b1f4c187e84297d49d18ed72359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  capacity: 4
+  tableCapacity: 4
   chairPositions:
   - {fileID: 575321703424625017}
   - {fileID: 2058368310154501766}
   - {fileID: 6835112472168037013}
   - {fileID: 3219732005852127568}
-  gamePlacementPosition: {fileID: 7970079955019184541}
-  backgammonGameObject: {fileID: 3100772580262015228, guid: 65d1514bc38af1649b9fa707ca3e5430, type: 3}
-  cardsGameObject: {fileID: 3100772580262015228, guid: d661659ecdbe12249875e15f7f9bb016, type: 3}
-  okeyGameObject: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}
-  backgammonPickupObject: {fileID: 3100772580262015228, guid: 3ecac290e1ad65c4fbcfb9211c9745e8, type: 3}
-  cardsPickupObject: {fileID: 3100772580262015228, guid: 32bf86a1244a12d45a10e6ec507c7b14, type: 3}
-  okeyPickupObject: {fileID: 3100772580262015228, guid: 1b8d5fc626c14fb47964bb15fceb01db, type: 3}
-  drinkOrderBubbles: []
-  drinkOrderTexts:
-  - {fileID: 0}
-  requestGameUI: {fileID: 0}
-  requestGameText: {fileID: 0}
+  tableEntrancePoint: {fileID: 8265991815663040439}
+  tableGamePosition: {fileID: 7970079955019184541}
+  tavlaGamePrefab: {fileID: 3100772580262015228, guid: 65d1514bc38af1649b9fa707ca3e5430, type: 3}
+  cardsGamePrefab: {fileID: 3100772580262015228, guid: d661659ecdbe12249875e15f7f9bb016, type: 3}
+  okeyGamePrefab: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}
