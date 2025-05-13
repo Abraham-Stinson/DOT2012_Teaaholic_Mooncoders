@@ -153,6 +153,37 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: -0.76}
   m_TimeToStationary: 0
+--- !u!1 &1271761869471242661
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 245931858025977185}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &245931858025977185
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271761869471242661}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8265991815663040439}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1332083929012185200
 GameObject:
   m_ObjectHideFlags: 0
@@ -870,6 +901,7 @@ Transform:
   - {fileID: 8595774342290866149}
   - {fileID: 1489586330350374614}
   - {fileID: 7970079955019184541}
+  - {fileID: 245931858025977185}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1720564201175092108
@@ -893,9 +925,9 @@ MonoBehaviour:
   tavlaGamePrefab: {fileID: 3100772580262015228, guid: 3ecac290e1ad65c4fbcfb9211c9745e8, type: 3}
   iskambilGamePrefab: {fileID: 3100772580262015228, guid: 32bf86a1244a12d45a10e6ec507c7b14, type: 3}
   okeyGamePrefab: {fileID: 3100772580262015228, guid: 1b8d5fc626c14fb47964bb15fceb01db, type: 3}
-  tavlaGamePlaced: {fileID: 3100772580262015228, guid: 65d1514bc38af1649b9fa707ca3e5430, type: 3}
-  iskambilGamePlaced: {fileID: 3100772580262015228, guid: d661659ecdbe12249875e15f7f9bb016, type: 3}
-  okeyGamePlaced: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}
+  tavlaGamePlaced: {fileID: 919132149155446097, guid: bf3e47697b28e26418919b9a869b2331, type: 3}
+  iskambilGamePlaced: {fileID: 919132149155446097, guid: cd74e7ea917dc984f9335e49e5ae2d0e, type: 3}
+  okeyGamePlaced: {fileID: 919132149155446097, guid: 4f91e264aa954c54383ab6a033bc60a7, type: 3}
 --- !u!65 &3952484098767515073
 BoxCollider:
   m_ObjectHideFlags: 0
