@@ -50,9 +50,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56f6d9a8f12cd54b8b732959be24d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  walkSpeed: 10
+  sitOffset: 0.5
   animator: {fileID: 3621094545456926966}
-  waitingPatience: 90
-  possibleDrinks:
+  minDrinkDuration: 10
+  maxDrinkDuration: 15
+  drinkOptions:
   - Light_Tea
   - Rabbit_Blood_Tea
   - Brewed_Tea

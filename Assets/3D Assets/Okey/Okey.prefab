@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7993915851283728830}
+  - component: {fileID: 5332239089116741307}
   - component: {fileID: 1297651806937834461}
   - component: {fileID: 2049882665442255653}
   - component: {fileID: 7714790333396243674}
   - component: {fileID: 2350138796191534739}
-  - component: {fileID: 4605304012373231794}
   m_Layer: 6
   m_Name: Okey
   m_TagString: Okey
@@ -36,6 +36,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5332239089116741307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100772580262015228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5700cee52cc0c64084c29327822178d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameType: Okey
+  placedVisualPrefab: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}
 --- !u!33 &1297651806937834461
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -137,18 +151,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &4605304012373231794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdaf86d2b5bb4934fa1ad653c693b2b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameType: Okey
-  pickupObject: {fileID: 3100772580262015228}
-  tableObject: {fileID: 3100772580262015228, guid: 2beba61d102eaab4dbea32b8ea1209ea, type: 3}

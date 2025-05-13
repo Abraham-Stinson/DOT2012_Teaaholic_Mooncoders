@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System.Collections;
 
 public class Tea_Cup : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class Tea_Cup : MonoBehaviour
     [SerializeField] public bool isFillTea = false;
     [SerializeField] public bool isFullTea = false;
     [SerializeField] public string productType = "";
+    [SerializeField] private GameObject dirtyOverlay; // Visual overlay for dirty cup
 
     [Header ("What is in cup")]
     [SerializeField] public string inCup="";
@@ -36,6 +38,36 @@ public class Tea_Cup : MonoBehaviour
         inCup="Empty";
         currentTeaCupMagazine = minTeaCupMagazine;
         currentTeaCupTeaMagazine = minTeaCupMagazine;
+        
+        // Disable dirty overlay at start
+        if (dirtyOverlay != null)
+        {
+            dirtyOverlay.SetActive(false);
+        }
+        
+        // Subscribe to dirty status change
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null)
+        {
+            // Check every frame
+            StartCoroutine(CheckDirtyStatus());
+        }
+    }
+
+    // Check if cup is dirty and update visuals
+    private IEnumerator CheckDirtyStatus()
+    {
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus == null) yield break;
+        
+        while (true)
+        {
+            if (dirtyOverlay != null)
+            {
+                dirtyOverlay.SetActive(dirtyStatus.isDirty);
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     // Update is called once per frame

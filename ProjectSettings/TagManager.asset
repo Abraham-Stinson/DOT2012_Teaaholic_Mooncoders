@@ -24,10 +24,10 @@ TagManager:
   - Main_Door
   - Chair
   - Table
-  - Cards
-  - Backgammon
   - Okey
   - CashierSpot
+  - Iskambil
+  - Tavla
   layers:
   - Default
   - TransparentFX

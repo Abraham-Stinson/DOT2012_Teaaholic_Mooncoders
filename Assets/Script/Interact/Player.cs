@@ -28,9 +28,9 @@ public class Player : MonoBehaviour
     [Header("Layers")]
     [SerializeField] private LayerMask interactionLayer;
     [SerializeField] private LayerMask placementLayer;
-    [SerializeField] private LayerMask useableLayer;
+    [SerializeField] public LayerMask useableLayer;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private LayerMask npcLayer; // Layer for NPC interaction
+    [SerializeField] public LayerMask npcLayer; // Layer for NPC interaction
     [Header("First Person Hand")]
     [SerializeField] private Transform firstPersonHand;//when pick up objects it will show on this transform
     [SerializeField] public GameObject inHandItem;//what we picked up
@@ -67,7 +67,10 @@ public class Player : MonoBehaviour
     #region USE HOLD (THRASH)
     private void UseHold(InputAction.CallbackContext context)
     {
-        if (inHandItem != null && inHandItem.CompareTag("Mop") && hit.collider.gameObject.tag == "Trash")
+        if (inHandItem == null)
+            return;
+            
+        if (inHandItem.CompareTag("Mop") && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.gameObject.tag == "Trash")
         {
             Destroy(hit.collider.gameObject);
             garbageScript.AddThrashToGarbage();
@@ -79,21 +82,61 @@ public class Player : MonoBehaviour
     {
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
+            Debug.Log("F key pressed but no object hit by raycast");
             return;
         }
 
         GameObject target = hit.collider.gameObject;
+        Debug.Log($"F key pressed, hit object: {target.name}, layer: {LayerMask.LayerToName(target.layer)}");
 
         if (hit.collider != null)
         {
-
+            // NPC kontrolü - öncelikli olarak kontrol edelim
+            NPC npc = hit.collider.GetComponent<NPC>();
+            if (npc == null && hit.collider.transform.parent != null)
+            {
+                npc = hit.collider.transform.parent.GetComponent<NPC>();
+            }
+            
+            if (npc != null)
+            {
+                Debug.Log($"NPC bulundu: {npc.name}, interact() çağrılıyor...");
+                npc.interact();
+                return;
+            }
+            
+            // Masa kontrolü
+            TableController table = hit.collider.GetComponent<TableController>();
+            
+            // Eğer doğrudan objede TableController yoksa, parent'ını kontrol et
+            if (table == null && hit.collider.transform.parent != null)
+            {
+                table = hit.collider.transform.parent.GetComponent<TableController>();
+                Debug.Log($"Parent'tan TableController kontrol edildi: {(table != null ? "Bulundu" : "Bulunamadı")}");
+            }
+            
+            // Eğer masa bulundu ve elinde bir şey varsa
+            if (table != null && inHandItem != null)
+            {
+                Debug.Log($"Masa bulundu '{table.name}', elinde '{inHandItem.name}' var. Table.interact() çağrılıyor...");
+                table.interact();
+                return;
+            }
+            
+            // Normal useable layer kontrolü
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
             {
+                Debug.Log($"Hit object in useable layer: {hit.collider.gameObject.name}");
                 var interactable = hit.collider.GetComponent<IInteractable>();
                 if (interactable != null)
                 {
+                    Debug.Log($"Object has IInteractable, calling interact()");
                     interactable.interact();
                     return;
+                }
+                else
+                {
+                    Debug.LogWarning($"Object {hit.collider.gameObject.name} is in useable layer but doesn't implement IInteractable!");
                 }
             }
 
@@ -122,6 +165,9 @@ public class Player : MonoBehaviour
 
     private void HandleInHandItem(GameObject target)
     {
+        if (inHandItem == null)
+            return;
+            
         switch (inHandItem.tag)
         {
             case "Kettle":
@@ -152,71 +198,101 @@ public class Player : MonoBehaviour
 
     private void HandleKettleInteraction(GameObject target)
     {
+        if (inHandItem == null || !inHandItem.CompareTag("Kettle"))
+            return;
+            
+        Kettle kettleScript = inHandItem.GetComponent<Kettle>();
+        if (kettleScript == null)
+            return;
+            
         if (target.CompareTag("Tea_Cup"))
         {
             var teaCupScript = target.GetComponent<Tea_Cup>();
-            if (!teaCupScript.isFullTea && inHandItem.GetComponent<Kettle>().currentKettleMagazine > 0 && !teaCupScript.isFillOraletorCoffee)
+            if (teaCupScript == null)
+                return;
+                
+            if (!teaCupScript.isFullTea && kettleScript.currentKettleMagazine > 0 && !teaCupScript.isFillOraletorCoffee && kettleScript.isBrewed)
             {
                 teaCupScript.AddTea();
-                inHandItem.GetComponent<Kettle>().PourTea();
+                kettleScript.PourTea();
                 Debug.Log("Çay eklendi");
+            }
+            else if (!kettleScript.isBrewed)
+            {
+                ShowUIMessage("Çay henüz demlenmemiş");
+                Debug.Log("Çay henüz demlenmemiş");
             }
             else
             {
+                ShowUIMessage("Bardak doldurulamıyor");
                 Debug.Log("Dolduramazsın");
             }
         }
 
         if (target.CompareTag("Hot_Water"))
         {
-            if (!inHandItem.GetComponent<Kettle>().isHaveHotWater/*&&inHandItem.GetComponent<Kettle>().isHaveTea*/)
+            if (!kettleScript.isHaveHotWater)
             {
-                inHandItem.GetComponent<Kettle>().isHaveHotWater = true;
-                Debug.Log("Kettle Sıcak su eklendi");
-                inHandItem.GetComponent<Kettle>().ChangeBrewTime();
+                kettleScript.AddHotWater();
+                ShowUIMessage("Kettle'a sıcak su eklendi");
+            }
+            else
+            {
+                ShowUIMessage("Kettle zaten sıcak su içeriyor");
             }
         }
 
-        if (inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
+        DirtyStatus dirtyStatus = inHandItem.GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && isPicked)
         {
             if (target.CompareTag("Water"))
             {
                 Debug.Log("Water'ı gördü");
-                var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
-                isDirtyinHandItem.CleanDirt();
+                dirtyStatus.CleanDirt();
             }
         }
     }
 
     private void HandleTeaCupInteraction(GameObject target)
     {
+        if (inHandItem == null || !inHandItem.CompareTag("Tea_Cup"))
+            return;
+            
+        Tea_Cup teaCupScript = inHandItem.GetComponent<Tea_Cup>();
+        if (teaCupScript == null)
+            return;
+            
         if (target.CompareTag("Hot_Water"))
         {
-            if (inHandItem.GetComponent<Tea_Cup>().isFillTea)
+            if (teaCupScript.isFillTea)
             {
-                inHandItem.GetComponent<Tea_Cup>().FillHotWaterToTea();
+                teaCupScript.FillHotWaterToTea();
             }
-            else if (inHandItem.GetComponent<Tea_Cup>().isFillOraletorCoffee)
+            else if (teaCupScript.isFillOraletorCoffee)
             {
-                inHandItem.GetComponent<Tea_Cup>().FillHotWaterToCoffeeOrOralet();
-            }
-            else if (!inHandItem.GetComponent<Kettle>().isHaveHotWater)
-            {
-                inHandItem.GetComponent<Kettle>().isHaveHotWater = true;
+                teaCupScript.FillHotWaterToCoffeeOrOralet();
             }
             else
             {
-                Debug.Log("Sıcak su dolduramazsın");
+                Kettle kettleScript = inHandItem.GetComponent<Kettle>();
+                if (kettleScript != null && !kettleScript.isHaveHotWater)
+                {
+                    kettleScript.isHaveHotWater = true;
+                }
+                else
+                {
+                    Debug.Log("Sıcak su dolduramazsın");
+                }
             }
         }
 
-        else if (inHandItem.GetComponent<DirtyStatus>() != null && isPicked)
+        DirtyStatus dirtyStatus = inHandItem.GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && isPicked)
         {
             if (target.CompareTag("Water"))
             {
                 Debug.Log("Water'ı gördü");
-                var isDirtyinHandItem = inHandItem.GetComponent<DirtyStatus>();
-                isDirtyinHandItem.CleanDirt();
+                dirtyStatus.CleanDirt();
                 //inHandItem.GetComponent<Tea_Cup>().EmptyCup();
             }
         }
@@ -224,38 +300,69 @@ public class Player : MonoBehaviour
 
     private void HandleOtherProductsInteraction(GameObject target)
     {
+        if (inHandItem == null || !inHandItem.CompareTag("Other_Products"))
+            return;
+            
+        OraletAndCoffee productScript = inHandItem.GetComponent<OraletAndCoffee>();
+        if (productScript == null)
+            return;
+            
         if (target.CompareTag("Tea_Cup"))
         {
-            var teaCupScript = target.GetComponent<Tea_Cup>();
-            if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea && !teaCupScript.isFullTea && inHandItem.GetComponent<OraletAndCoffee>().currentMagazine > 0)
+            Tea_Cup teaCupScript = target.GetComponent<Tea_Cup>();
+            if (teaCupScript == null)
+                return;
+                
+            if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea && 
+                !teaCupScript.isFullTea && productScript.currentMagazine > 0)
             {
-                teaCupScript.AddOraletOrCoffee(inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
-                inHandItem.GetComponent<OraletAndCoffee>().reduceProduct();
+                teaCupScript.AddOraletOrCoffee(productScript.typeOfProduct);
+                productScript.reduceProduct();
             }
             else
             {
                 Debug.Log("Oralet veya kahve dolduramazsın");
             }
         }
-
     }
 
     private void HandleTeaCanInteraction(GameObject target)
     {
+        if (inHandItem == null || !inHandItem.CompareTag("Tea_Can"))
+            return;
+            
+        TeaCanScript teaCanScript = inHandItem.GetComponent<TeaCanScript>();
+        if (teaCanScript == null)
+            return;
+            
         if (target.CompareTag("Kettle"))
         {
-            var kettleScript = target.GetComponent<Kettle>();
-            if (!kettleScript.isHaveTea && inHandItem.GetComponent<TeaCanScript>().currentTeaCanMagazine > 0)
+            Kettle kettleScript = target.GetComponent<Kettle>();
+            if (kettleScript == null)
+                return;
+                
+            if (!kettleScript.isHaveTea && teaCanScript.currentTeaCanMagazine > 0)
             {
-                inHandItem.GetComponent<TeaCanScript>().ReduceTeaOnCan();
-                kettleScript.isHaveTea = true;
-                Debug.Log("Çaya dem veridli");
+                teaCanScript.ReduceTeaOnCan();
+                kettleScript.AddTea();
+                ShowUIMessage("Çaya dem eklendi");
+            }
+            else if (kettleScript.isHaveTea)
+            {
+                ShowUIMessage("Kettle zaten çay içeriyor");
+            }
+            else if (teaCanScript.currentTeaCanMagazine <= 0)
+            {
+                ShowUIMessage("Çay kutusunda çay kalmamış");
             }
         }
     }
 
     private void HandleGarbageBagInteraction(GameObject target)
     {
+        if (inHandItem == null || !inHandItem.CompareTag("Garbage_Bag"))
+            return;
+            
         if (target.CompareTag("Garbage_Container"))
         {
             Destroy(inHandItem);
@@ -273,10 +380,16 @@ public class Player : MonoBehaviour
         }
         GameObject target = hit.collider.gameObject;
 
-
-
         if (isPicked)
         {
+            // Eğer inHandItem null ise işleme devam etmemeliyiz
+            if (inHandItem == null)
+            {
+                Debug.LogWarning("isPicked true ama inHandItem null!");
+                isPicked = false;
+                return;
+            }
+            
             //TEPSİ SİSTEMİ
             if (inHandItem.gameObject.tag == "Tea_Cup" && target.tag == "Tray")
             {
@@ -350,29 +463,41 @@ public class Player : MonoBehaviour
                     teaCup.isOnTray = false;
                 }
 
-                // Check if this is a game on the table
-                else
+                // Masa kontrolü
+                TableController table = hit.collider.GetComponent<TableController>();
+                if (table != null)
                 {
-                    // Normal eşya alma mekaniği
-                    isPicked = true;
-                    inHandItem = target;
-                    inHandItem.transform.SetParent(firstPersonHand.transform, false);
-                    inHandItem.transform.localPosition = Vector3.zero;
-                    inHandItem.transform.localRotation = Quaternion.identity;
-
-                    Debug.Log($"Picked up regular object: {target.name} with scale: {inHandItem.transform.localScale}");
-
-                    if (inHandItem.tag == "Other_Products")
-                    {
-                        inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(true);
-                    }
-                    if (inHandItem.tag == "Tea_Can")
-                    {
-                        inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(true);
-                    }
-
-                    EnablePhysics(inHandItem, false);
+                    // Masa kontrolü ekledik ama burada işlem yapmıyoruz
+                    // Masa etkileşimi Use metodu ile (F tuşu) gerçekleştirilecek
+                    return;
                 }
+
+                // Check if this is a tea cup with dirty status
+                DirtyStatus dirtyStatus = target.GetComponent<DirtyStatus>();
+                if (teaCup != null && dirtyStatus != null && dirtyStatus.isDirty)
+                {
+                    ShowUIMessage("This cup is dirty! Take it to the sink to clean");
+                }
+
+                // Normal eşya alma mekaniği
+                isPicked = true;
+                inHandItem = target;
+                inHandItem.transform.SetParent(firstPersonHand.transform, false);
+                inHandItem.transform.localPosition = Vector3.zero;
+                inHandItem.transform.localRotation = Quaternion.identity;
+
+                Debug.Log($"Picked up regular object: {target.name} with scale: {inHandItem.transform.localScale}");
+
+                if (inHandItem.tag == "Other_Products")
+                {
+                    inHandItem.GetComponent<OraletAndCoffee>().CoverPutAndRemove(true);
+                }
+                if (inHandItem.tag == "Tea_Can")
+                {
+                    inHandItem.GetComponent<TeaCanScript>().CoverPutAndRemove(true);
+                }
+
+                EnablePhysics(inHandItem, false);
             }
         }
     }
@@ -386,49 +511,109 @@ public class Player : MonoBehaviour
         {
             lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-
         }
 
         mainInfoUI.SetActive(false);
 
+        // Check for NPC first
+        if (didHit)
+        {
+            // Check for NPC
+            NPC npc = hit.collider.GetComponent<NPC>();
+            if (npc != null)
+            {
+                string npcType = npc.IsGroupLeader() ? "Grup Lideri" : "Müşteri";
+                string status = npc.HasDrink() ? "İçiyor" : "Bekliyor";
+                string request = string.IsNullOrEmpty(npc.GetRequestedDrink()) ? "Yok" : npc.GetRequestedDrink();
+                string patience = "Sabır: " + npc.GetPatienceLevel();
+                
+                Debug.Log($"[UI] NPC bilgisi: Tip={npcType}, Durum={status}, İstek={request}, Sabır={patience}");
+                
+                if (npc.isPaying)
+                {
+                    ShowUIMessage($"{npcType}\nÖdeme için F tuşuna basın");
+                }
+                else
+                {
+                    ShowUIMessage($"{npcType}\nDurum: {status}\nİstek: {request}\n{patience}");
+                }
+                
+                return;
+            }
+            
+            // Check for Table - DÜZELTME: TableController bulamazsak, transform.parent'tan kontrol edeceğiz
+            TableController table = hit.collider.GetComponent<TableController>();
+            
+            // Eğer doğrudan objede TableController yoksa, parent'ını kontrol et
+            if (table == null)
+            {
+                if (hit.collider.transform.parent != null)
+                {
+                    table = hit.collider.transform.parent.GetComponent<TableController>();
+                    //Debug.Log($"[UI] Table için parent objesine bakıldı: {(table != null ? "Bulundu" : "Bulunamadı")}");
+                }
+            }
+            
+            if (table != null)
+            {
+                // Eğer masada grup var ve grup oturmuşsa
+                if (table.HasGroup() && table.IsGroupSeated())
+                {
+                    Debug.Log($"[UI] Masa bulundu ve grubu oturmuş durumda: {table.name}");
+                    string gameRequest = table.GetRequestedGameType();
+                    
+                    // Eğer oyun isteği yoksa, tekrar deneyeceğiz
+                    if (string.IsNullOrEmpty(gameRequest) && table.HasGroup())
+                    {
+                        Debug.LogWarning($"[UI] Masa {table.name} için oyun isteği bulunamadı ama grubu var!");
+                        NPCGroup group = FindObjectOfType<NPCGroup>();
+                        if (group != null)
+                        {
+                            gameRequest = group.GetRequestedGame();
+                            Debug.Log($"[UI] NPCGroup'tan doğrudan alınan oyun isteği: {gameRequest}");
+                        }
+                    }
+                    
+                    if (string.IsNullOrEmpty(gameRequest))
+                    {
+                        gameRequest = "Yok";
+                        Debug.LogWarning("[UI] Table has group but no game request!");
+                    }
+                    
+                    Debug.Log($"[UI] Masa bilgileri: Oyun İsteği={gameRequest}");
+                    ShowUIMessage($"Masa\nDurum: Dolu\nOyun İsteği: {gameRequest}");
+                }
+                else if (table.HasGroup() && !table.IsGroupSeated())
+                {
+                    // Masa dolu ama henüz tüm grup oturmamış
+                    //Debug.Log($"[UI] Masa dolu ama grup henüz tam oturmamış: {table.name}");
+                    ShowUIMessage($"Masa\nDurum: Dolu\nMüşteriler oturuyor...");
+                }
+                else
+                {
+                    // Masa boş
+                    //Debug.Log($"[UI] Masa boş: {table.name}");
+                    ShowUIMessage($"Masa\nDurum: Boş");
+                }
+                return;
+            }
+        }
 
         // Original UI logic continues from here
         if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
             lastHighlightedObject = hit.collider.gameObject;
-            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
+            if (hit.collider.CompareTag("Kettle"))
             {
                 var kettleScript = hit.collider.GetComponent<Kettle>();
-                if (kettleScript.currentKettleMagazine > 0)
+                if (kettleScript != null)
                 {
-                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.currentKettleMagazine + " tea left");
+                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.GetKettleState());
                 }
                 else
                 {
-                    if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
-                    {
-                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
-                    }
-                    else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
-                    {
-                        ShowUIMessage("Press E to Pick Up\nInside: Hot Water");
-                    }
-                    else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
-                    {
-                        if (kettleScript.CheckIsOnKettleBase())
-                        {
-                            ShowUIMessage("It's brewing\n" + (int)kettleScript.currentBrewTimeOfTea + "second(s) left");
-                        }
-                        else
-                        {
-                            ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
-                        }
-                    }
-                    else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
-                    {
-                        ShowUIMessage("Press E to Pick Up\nInside: Empty");
-                    }
+                    ShowUIMessage("Press E to Pick Up");
                 }
             }
             else
@@ -437,13 +622,15 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && inHandItem != null && 
+            !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
             ShowUIMessage("Press E to Put Down");
         }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+        if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null && 
+            (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
@@ -458,18 +645,22 @@ public class Player : MonoBehaviour
 
         if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
         {
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+            if (inHandItem != null)
             {
-                if (inHandItem.gameObject.tag == "Tea_Cup" && !inHandItem.GetComponent<Tea_Cup>().isOnTray && hit.collider.gameObject.tag == "Tray")
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
                 {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press E to Put on Tray");
-                }
-                else
-                {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-                    lastHighlightedObject = null;
+                    if (inHandItem.gameObject.tag == "Tea_Cup" && inHandItem.GetComponent<Tea_Cup>() != null && 
+                        !inHandItem.GetComponent<Tea_Cup>().isOnTray && hit.collider.gameObject.tag == "Tray")
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("Press E to Put on Tray");
+                    }
+                    else
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                        lastHighlightedObject = null;
+                    }
                 }
             }
         }
@@ -521,69 +712,76 @@ public class Player : MonoBehaviour
                     ShowUIMessage("Press F to Fill the Hot Water");
                 }
             }
-            if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
+            
+            // Bu kısım aslında Tea_Cup kontrolü içinde olmamalı, dışarı alalım
+        }
+        
+        // Tea Can kontrolünü ayrı bir blok olarak yazalım
+        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
+        {
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                if (hit.collider.CompareTag("Kettle"))
                 {
-                    if (hit.collider.CompareTag("Kettle"))
-                    {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press F to Put Tea To Kettle");
-                    }
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Put Tea To Kettle");
                 }
             }
-            if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
+        }
+        
+        // DirtyStatus kontrolünü ayrı bir blok olarak yazalım
+        if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
+        {
+            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
                 {
-                    if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
-                    {
-                        lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press F to Wash");
-                    }
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("Press F to Wash");
                 }
             }
+        }
 
-            if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
+        // Garbage Bin kontrolünü ayrı bir blok olarak yazalım
+        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
+        {
+            if (inHandItem != null && (inHandItem.layer == 6))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
             {
-                if (inHandItem != null && (inHandItem.layer == 6))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
+                if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
                 {
-                    if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
-                    {
-                        ShowUIMessage("Press F to Throw the Item in the Garbage");
-                    }
-                    else
-                    {
-                        ShowUIMessage("You can't throw this item to Garbage");
-                    }
-
-                }
-
-            }
-
-            if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
-            {
-                if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
-                {
-                    ShowUIMessage("Press F to Throw the Garbage in the Container");
-                }
-            }
-
-            if (didHit && hit.collider.gameObject.tag == "Trash")
-            {//THRASH UI
-                if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
-                {
-                    ShowUIMessage("Hold the F to Clean Trash");
+                    ShowUIMessage("Press F to Throw the Item in the Garbage");
                 }
                 else
                 {
-                    ShowUIMessage("You need mop to clean thrash");
+                    ShowUIMessage("You can't throw this item to Garbage");
                 }
-
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                lastHighlightedObject = hit.collider.gameObject;
             }
+        }
+
+        // Garbage Container kontrolünü ayrı bir blok olarak yazalım
+        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
+        {
+            if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
+            {
+                ShowUIMessage("Press F to Throw the Garbage in the Container");
+            }
+        }
+
+        // Trash kontrolünü ayrı bir blok olarak yazalım
+        if (didHit && hit.collider.gameObject.tag == "Trash")
+        {//THRASH UI
+            if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
+            {
+                ShowUIMessage("Hold the F to Clean Trash");
+            }
+            else
+            {
+                ShowUIMessage("You need mop to clean thrash");
+            }
+
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+            lastHighlightedObject = hit.collider.gameObject;
         }
     }
 
@@ -625,6 +823,10 @@ public class Player : MonoBehaviour
     }
     private void DisablePhysics()
     {
+        // İlk olarak inHandItem'in null olup olmadığını kontrol et
+        if (inHandItem == null)
+            return;
+            
         Rigidbody rb = inHandItem.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -648,5 +850,13 @@ public class Player : MonoBehaviour
         inHandItem.transform.localPosition = new Vector3(0, -1, 0);
         inHandItem.transform.localRotation = Quaternion.identity;
         isPicked = true;*/
+    }
+
+    /// <summary>
+    /// Sets the picked status of the player
+    /// </summary>
+    public void SetPickedStatus(bool status)
+    {
+        isPicked = status;
     }
 }
