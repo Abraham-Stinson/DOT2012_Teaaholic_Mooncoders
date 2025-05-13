@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+    
     public GarbageScript garbageScript;
     [Header("Player")]
     [SerializeField] private Transform playerCam;
@@ -46,16 +48,28 @@ public class Player : MonoBehaviour
     [SerializeField] private float cleaningRadius = 2f;
     private Coroutine cleaningCoroutine;
     private bool isCleaning = false;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
         pickAndPutInput.action.performed += PickAndPut;
-        //putDownInput.action.performed+=PutDown;
         useInput.action.performed += Use;
         useHoldInput.action.performed += UseHold;
     }
+
     void Update()
     {
-
         UpdateUIAndHighlight();
         Debug.DrawRay(playerCam.position, playerCam.forward * rayCastRange, Color.red);
     }
@@ -82,14 +96,76 @@ public class Player : MonoBehaviour
 
         if (hit.collider != null)
         {
-            // Check for interactable objects
+            // NPC Interaction
+            if (hit.collider.TryGetComponent<NPC>(out NPC npc))
+            {
+                if (inHandItem != null)
+                {
+                    // Check if we're giving a game item to the NPC
+                    PickableGameItem gameItem = inHandItem.GetComponent<PickableGameItem>();
+                    if (gameItem != null && npc.IsLeader() && npc.GetState() == NPCState.Sitting)
+                    {
+                        if (npc.ReceiveGame(gameItem.GetGameType()))
+                        {
+                            // Place the game on the table
+                            Table table = npc.GetAssignedTable();
+                            if (table != null)
+                            {
+                                // Oyun itemini masaya yerleştir
+                                table.SetGameItem(inHandItem);
+                                inHandItem.transform.SetParent(null);
+                                isPicked = false;
+                                inHandItem = null;
+                                Debug.Log("Game placed on table for NPCs");
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // Check if we're serving a drink to the NPC
+                    if (inHandItem.TryGetComponent<Tea_Cup>(out Tea_Cup teaCup) && npc.GetState() == NPCState.Sitting)
+                    {
+                        string requestedDrink = npc.GetRequestedDrink();
+                        if (requestedDrink != null && teaCup.inCup == requestedDrink)
+                        {
+                            if (npc.ReceiveDrink(teaCup.inCup))
+                            {
+                                // Çayı NPC'nin önündeki masaya yerleştir
+                                Table table = npc.GetAssignedTable();
+                                if (table != null)
+                                {
+                                    // NPC'nin sandalye indeksini bul
+                                    int chairIndex = table.GetChairIndex(npc.GetAssignedChair());
+                                    Transform drinkPlacement = table.GetDrinkPlacement(chairIndex);
+                                    
+                                    if (drinkPlacement != null)
+                                    {
+                                        inHandItem.transform.SetParent(null);
+                                        inHandItem.transform.position = drinkPlacement.position;
+                                        inHandItem.transform.rotation = drinkPlacement.rotation;
+                                        isPicked = false;
+                                        inHandItem = null;
+                                        Debug.Log("Drink placed on table for NPC");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Interact with NPC (e.g., for cashier payment)
+                npc.interact();
+                return;
+            }
+
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
             {
                 var interactable = hit.collider.GetComponent<IInteractable>();
                 if (interactable != null)
                 {
                     interactable.interact();
-                    return; // Exit after interaction
+                    return;
                 }
             }
 
@@ -97,7 +173,6 @@ public class Player : MonoBehaviour
             {
                 if (inHandItem != null && (inHandItem.layer == 6) && !(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
                 {
-                    //var garbageBagScript = hit.collider.GetComponent<GarbageScript>();
                     Destroy(inHandItem);
                     isPicked = false;
                     inHandItem = null;
@@ -110,7 +185,6 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // Handle interactions based on the item in hand
             if (inHandItem != null)
             {
                 HandleInHandItem(target);
@@ -374,8 +448,14 @@ public class Player : MonoBehaviour
                 {
                     teaCup.isOnTray = false;
                 }
-
-
+                
+                // Check if trying to pick up a game from a table with NPCs
+                PickableGameItem gameItem = target.GetComponent<PickableGameItem>();
+                if (gameItem != null && !gameItem.IsPickable())
+                {
+                    // Can't pick up game items being used by NPCs
+                    return;
+                }
 
                 isPicked = true;
                 inHandItem = target;
@@ -393,8 +473,6 @@ public class Player : MonoBehaviour
                 }
 
                 EnablePhysics(inHandItem, false);
-
-
             }
         }
     }
@@ -412,6 +490,49 @@ public class Player : MonoBehaviour
 
         mainInfoUI.SetActive(false);
 
+        // NPC interaction UI
+        if (didHit && hit.collider.TryGetComponent<NPC>(out NPC npc))
+        {
+            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+            lastHighlightedObject = hit.collider.gameObject;
+            
+            // Get NPC info
+            string npcInfo = npc.GetNPCInfo();
+            if (!string.IsNullOrEmpty(npcInfo))
+            {
+                ShowUIMessage(npcInfo);
+                
+                // Eğer elinde doğru item varsa ekstra bilgi göster
+                if (isPicked && inHandItem != null)
+                {
+                    if (inHandItem.TryGetComponent<PickableGameItem>(out var gameItem))
+                    {
+                        string gameRequest = npc.GetRequestedGame();
+                        if (gameRequest != null && gameItem.GetGameType() == gameRequest)
+                        {
+                            ShowUIMessage($"Press F to give {gameRequest}");
+                        }
+                    }
+                    else if (inHandItem.TryGetComponent<Tea_Cup>(out var teaCup))
+                    {
+                        string drinkRequest = npc.GetRequestedDrink();
+                        if (drinkRequest != null)
+                        {
+                            if (teaCup.inCup == drinkRequest)
+                            {
+                                ShowUIMessage($"Press F to serve {drinkRequest}");
+                            }
+                            else
+                            {
+                                ShowUIMessage($"Wrong item. Customer wants {drinkRequest}");
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return;
+        }
 
         if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {
@@ -616,8 +737,11 @@ public class Player : MonoBehaviour
 
     void ShowUIMessage(string message)
     {
-        mainInfoUI.SetActive(true);
-        mainInfoUIText.text = message;
+        if (mainInfoUI != null && mainInfoUIText != null)
+        {
+            mainInfoUI.SetActive(true);
+            mainInfoUIText.text = message;
+        }
     }
 
     private void SetItemPositionOnSurface(GameObject item, Vector3 hitPoint)
@@ -672,5 +796,14 @@ public class Player : MonoBehaviour
         inHandItem.transform.localPosition = new Vector3(0, -1, 0);
         inHandItem.transform.localRotation = Quaternion.identity;
         isPicked = true;*/
+    }
+
+    public void ShowNPCInfo(string message)
+    {
+        if (mainInfoUI != null && mainInfoUIText != null)
+        {
+            mainInfoUI.SetActive(true);
+            mainInfoUIText.text = message;
+        }
     }
 }
