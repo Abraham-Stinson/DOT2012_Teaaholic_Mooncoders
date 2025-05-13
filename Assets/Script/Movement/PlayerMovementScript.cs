@@ -23,6 +23,12 @@ public class PlayerMovementScript : MonoBehaviour
     private float cameraPitch = 0f;
     private Vector2 mouseDelta;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    // Animation parameters
+    private static readonly int IsWalking = Animator.StringToHash("IsWalking");
+    private static readonly int IsRunning = Animator.StringToHash("IsRunning");
+
     void Awake()
     {
         playerInput = new PlayerMovementAndInteractionSystem();
@@ -34,6 +40,12 @@ public class PlayerMovementScript : MonoBehaviour
             Camera mainCamera = GetComponentInChildren<Camera>();
             if (mainCamera != null)
                 cameraTransform = mainCamera.transform;
+        }
+
+        // If no animator assigned, try to find animator component
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
         }
 
         // Lock and hide cursor
@@ -62,11 +74,17 @@ public class PlayerMovementScript : MonoBehaviour
         currentRunMovement.z = currentMovement.z * runMultiply;
 
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
+        
+        // Update animation parameters based on movement
+        UpdateAnimationState();
     }
 
     void OnRun(InputAction.CallbackContext context)
     {
         isRunPressed = context.ReadValueAsButton();
+        
+        // Update animation parameters when run state changes
+        UpdateAnimationState();
     }
 
     void OnLookInput(InputAction.CallbackContext context)
@@ -109,6 +127,33 @@ public class PlayerMovementScript : MonoBehaviour
         mouseDelta = Vector2.zero;
     }
 
+    void UpdateAnimationState()
+    {
+        if (animator == null) return;
+        
+        if (isMovementPressed)
+        {
+            if (isRunPressed)
+            {
+                // Running state
+                animator.SetBool(IsWalking, false);
+                animator.SetBool(IsRunning, true);
+            }
+            else
+            {
+                // Walking state
+                animator.SetBool(IsWalking, true);
+                animator.SetBool(IsRunning, false);
+            }
+        }
+        else
+        {
+            // Idle state
+            animator.SetBool(IsWalking, false);
+            animator.SetBool(IsRunning, false);
+        }
+    }
+
     void Update()
     {
         HandleGravity();
@@ -120,6 +165,9 @@ public class PlayerMovementScript : MonoBehaviour
 
         float speed = isRunPressed ? walkSpeed * runMultiply : walkSpeed;
         characterController.Move(moveDirection * speed * Time.deltaTime);
+        
+        // Ensure animation state is updated each frame
+        UpdateAnimationState();
     }
 
     void OnEnable()

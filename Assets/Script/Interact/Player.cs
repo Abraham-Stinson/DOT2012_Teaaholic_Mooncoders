@@ -344,16 +344,8 @@ public class Player : MonoBehaviour
             if (!kettleScript.isHaveTea && teaCanScript.currentTeaCanMagazine > 0)
             {
                 teaCanScript.ReduceTeaOnCan();
-                kettleScript.AddTea();
-                ShowUIMessage("Çaya dem eklendi");
-            }
-            else if (kettleScript.isHaveTea)
-            {
-                ShowUIMessage("Kettle zaten çay içeriyor");
-            }
-            else if (teaCanScript.currentTeaCanMagazine <= 0)
-            {
-                ShowUIMessage("Çay kutusunda çay kalmamış");
+                kettleScript.isHaveTea = true;
+                Debug.Log("Çaya dem verildi");
             }
         }
     }
@@ -604,16 +596,38 @@ public class Player : MonoBehaviour
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
             lastHighlightedObject = hit.collider.gameObject;
-            if (hit.collider.CompareTag("Kettle"))
+            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
             {
                 var kettleScript = hit.collider.GetComponent<Kettle>();
-                if (kettleScript != null)
+                if (kettleScript.currentKettleMagazine > 0)
                 {
-                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.GetKettleState());
+                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.currentKettleMagazine + " tea left");
                 }
                 else
                 {
-                    ShowUIMessage("Press E to Pick Up");
+                    if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
+                    }
+                    else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Hot Water");
+                    }
+                    else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                    {
+                        if (kettleScript.CheckIsOnKettleBase())
+                        {
+                            ShowUIMessage("It's brewing\n" + (int)kettleScript.currentBrewTimeOfTea + "second(s) left");
+                        }
+                        else
+                        {
+                            ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
+                        }
+                    }
+                    else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
+                    {
+                        ShowUIMessage("Press E to Pick Up\nInside: Empty");
+                    }
                 }
             }
             else

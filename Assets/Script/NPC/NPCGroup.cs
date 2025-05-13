@@ -8,12 +8,18 @@ using UnityEngine;
 public class NPCGroup : MonoBehaviour
 {
     [Header("Group Settings")]
-    [SerializeField] private float secondDrinkChance = 1.0f; // 30% chance for second round
+    [SerializeField] private float secondDrinkChance = 0.3f; // 30% chance for second round
     
     [Header("Patience Settings")]
     [SerializeField] private float groupPatienceTime = 60f; // Base patience time for the group
     [SerializeField] private float patienceBonusPerDrink = 10f; // Patience bonus when a drink is served
     [SerializeField] private float patienceBonusPerGame = 20f; // Patience bonus when a game is served
+    
+    // State tracking for deciding exit behavior
+    private bool receivedRequestedGame = false;
+    private bool receivedAtLeastOneDrink = false;
+    private bool receivedAllDrinks = false;
+    private bool patienceExpired = false;
     
     // Table games
     private const string TAVLA_GAME = "Tavla";
@@ -241,6 +247,7 @@ public class NPCGroup : MonoBehaviour
             // Correct game provided
             Debug.Log($"Correct game provided: {gameType}");
             hasGameBox = true;
+            receivedRequestedGame = true;
             
             // Add patience bonus for receiving the game
             AddGroupPatience(patienceBonusPerGame);
@@ -283,6 +290,9 @@ public class NPCGroup : MonoBehaviour
     {
         servedCount++;
         
+        // Track that at least one drink was served
+        receivedAtLeastOneDrink = true;
+        
         // Add patience bonus for receiving a drink
         AddGroupPatience(patienceBonusPerDrink);
         
@@ -292,6 +302,7 @@ public class NPCGroup : MonoBehaviour
         if (servedCount == npcs.Count)
         {
             allDrinksServed = true;
+            receivedAllDrinks = true;
         }
     }
     
@@ -367,50 +378,25 @@ public class NPCGroup : MonoBehaviour
         
         isLeaving = true;
         
-        // Make sure any cups left on the table are interactable
-        if (assignedTable != null)
-        {
-            // Find all cups that might be children of the table
-            foreach (Transform child in assignedTable.transform)
-            {
-                Tea_Cup teaCup = child.GetComponent<Tea_Cup>();
-                if (teaCup != null)
-                {
-                    // Make sure it's on the interactable layer
-                    child.gameObject.layer = LayerMask.NameToLayer("Interactable");
-                    
-                    // Make sure it has a proper collider
-                    Collider collider = child.GetComponent<Collider>();
-                    if (collider != null)
-                    {
-                        collider.enabled = true;
-                    }
-                    
-                    // Make sure it has proper physics
-                    Rigidbody rb = child.GetComponent<Rigidbody>();
-                    if (rb != null)
-                    {
-                        rb.isKinematic = true; // Keep it from falling
-                        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-                    }
-                    
-                    // Ensure it's marked as dirty
-                    DirtyStatus dirtyStatus = child.GetComponent<DirtyStatus>();
-                    if (dirtyStatus != null && !dirtyStatus.isDirty)
-                    {
-                        dirtyStatus.isDirty = true;
-                    }
-                }
-            }
-        }
+        // Handle cups on the table
+        MakeCupsInteractable();
         
-        // Set cashier and exit positions for all NPCs
-        // (assuming these are set in the NPCManager)
+        // Determine exit behavior based on scenarios
+        bool shouldPayAtCashier = ShouldPayAtCashier();
         
-        // Tell all NPCs to exit
+        // Tell NPCs to exit based on determined behavior
         foreach (NPC npc in npcs)
         {
-            npc.ExitShop();
+            if (npc.IsGroupLeader() && shouldPayAtCashier)
+            {
+                // Leader goes to cashier to pay
+                npc.ExitShopThroughCashier();
+            }
+            else
+            {
+                // Others go directly to exit
+                npc.ExitShopDirectly();
+            }
         }
         
         // Make the table available again
@@ -502,10 +488,13 @@ public class NPCGroup : MonoBehaviour
     }
     
     /// <summary>
-    /// Called when patience timer expires for the group
+    /// Called when group patience timer expires
     /// </summary>
     public void OnGroupPatienceExpired()
     {
+        // Set flag that patience expired
+        patienceExpired = true;
+        
         // Make the whole group leave
         if (!isLeaving)
         {
@@ -565,5 +554,76 @@ public class NPCGroup : MonoBehaviour
         }
         
         return shuffledList;
+    }
+    
+    /// <summary>
+    /// Determines if the group leader should pay at the cashier based on scenario
+    /// </summary>
+    private bool ShouldPayAtCashier()
+    {
+        // SENARYO 1 & 2: Oyun alınmadı veya hiç içecek gelmedi ve sabrı tükendiyse
+        if (patienceExpired && (!receivedRequestedGame || !receivedAtLeastOneDrink))
+        {
+            // Grup lideri dahil herkes doğrudan çıkışa gider
+            Debug.Log("Scenario: Patience expired without game or drinks - entire group leaves directly");
+            return false;
+        }
+        
+        // SENARYO 3, 4, 5: Oyun alındı ve en az bir içecek geldi
+        // - Sabrı tükendi ama oyun ve en az bir içecek geldi
+        // - Oyun ve tüm içecekler geldi ama tazelemede sabır tükendi
+        // - Tüm istekler karşılandı
+        if (receivedRequestedGame && receivedAtLeastOneDrink)
+        {
+            // Bu senaryolarda grup lideri kasaya gider, diğerleri çıkışa gider
+            Debug.Log("Scenario: Received game and at least one drink - leader pays at cashier");
+            return true;
+        }
+        
+        // Varsayılan durum - hiçbir koşul karşılanmadıysa (bu duruma düşmemeli)
+        Debug.LogWarning("No specific exit scenario matched - defaulting to direct exit");
+        return false;
+    }
+    
+    /// <summary>
+    /// Makes cups on the table interactable when the group leaves
+    /// </summary>
+    private void MakeCupsInteractable()
+    {
+        if (assignedTable != null)
+        {
+            // Find all cups that might be children of the table
+            foreach (Transform child in assignedTable.transform)
+            {
+                Tea_Cup teaCup = child.GetComponent<Tea_Cup>();
+                if (teaCup != null)
+                {
+                    // Make sure it's on the interactable layer
+                    child.gameObject.layer = LayerMask.NameToLayer("Interactable");
+                    
+                    // Make sure it has a proper collider
+                    Collider collider = child.GetComponent<Collider>();
+                    if (collider != null)
+                    {
+                        collider.enabled = true;
+                    }
+                    
+                    // Make sure it has proper physics
+                    Rigidbody rb = child.GetComponent<Rigidbody>();
+                    if (rb != null)
+                    {
+                        rb.isKinematic = true; // Keep it from falling
+                        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                    }
+                    
+                    // Ensure it's marked as dirty
+                    DirtyStatus dirtyStatus = child.GetComponent<DirtyStatus>();
+                    if (dirtyStatus != null && !dirtyStatus.isDirty)
+                    {
+                        dirtyStatus.isDirty = true;
+                    }
+                }
+            }
+        }
     }
 } 

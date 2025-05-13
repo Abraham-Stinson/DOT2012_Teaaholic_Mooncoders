@@ -50,7 +50,8 @@ public class NPC : MonoBehaviour, IInteractable
         get { return _isPaying; }
     }
     
-    // Animation parameters
+    // Animation parameters 
+    private static readonly int IsIdle = Animator.StringToHash("IsIdle");
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsSitting = Animator.StringToHash("IsSitting");
     private static readonly int IsDrinking = Animator.StringToHash("IsDrinking");
@@ -357,6 +358,79 @@ public class NPC : MonoBehaviour, IInteractable
     }
     
     /// <summary>
+    /// Exit through cashier (for group leaders who need to pay)
+    /// </summary>
+    public void ExitShopThroughCashier()
+    {
+        if (isExiting) return;
+        
+        isExiting = true;
+        
+        if (!isGroupLeader)
+        {
+            Debug.LogWarning("ExitShopThroughCashier called on non-leader NPC");
+            ExitShopDirectly(); // Fallback to direct exit
+            return;
+        }
+        
+        if (cashierPosition == null)
+        {
+            Debug.LogError("Cashier position not set for NPC " + gameObject.name);
+            ExitShopDirectly(); // Fallback to direct exit
+            return;
+        }
+        
+        if (isSeated)
+        {
+            // First, stand up from the chair
+            StartCoroutine(GetUpProcess(() => {
+                ShowMessageAboveNPC("Kasaya gidiyor");
+                MoveTo(cashierPosition, OnArrivedAtCashier);
+            }));
+        }
+        else
+        {
+            // Already standing
+            ShowMessageAboveNPC("Kasaya gidiyor");
+            MoveTo(cashierPosition, OnArrivedAtCashier);
+        }
+    }
+    
+    /// <summary>
+    /// Exit directly to exit point (skip cashier)
+    /// </summary>
+    public void ExitShopDirectly()
+    {
+        if (isExiting) return;
+        
+        isExiting = true;
+        
+        if (exitPosition == null)
+        {
+            Debug.LogError("Exit position not set for NPC " + gameObject.name);
+            // No good fallback here, just destroy the NPC
+            group.OnNPCLeft(this);
+            Destroy(gameObject, 0.5f);
+            return;
+        }
+        
+        if (isSeated)
+        {
+            // First, stand up from the chair
+            StartCoroutine(GetUpProcess(() => {
+                ShowMessageAboveNPC("Dükkandan çıkıyor");
+                MoveTo(exitPosition, OnArrivedAtExit);
+            }));
+        }
+        else
+        {
+            // Already standing
+            ShowMessageAboveNPC("Dükkandan çıkıyor");
+            MoveTo(exitPosition, OnArrivedAtExit);
+        }
+    }
+    
+    /// <summary>
     /// Display a message above the NPC
     /// </summary>
     private void ShowMessageAboveNPC(string message)
@@ -379,16 +453,21 @@ public class NPC : MonoBehaviour, IInteractable
     {
         _isPaying = true;
         
+        // Play idle animation when at cashier
+        animator?.SetBool(IsWalking, false);
+        animator?.SetBool(IsIdle, true);
+        
         // Show message that NPC is paying
         ShowMessageAboveNPC("Ödeme yapıyor");
         
-        // Start patience timer for payment
+        // Start patience timer for payment - give a longer timeout for payment
         StartCoroutine(PatienceCountdown(() => {
             // Patience expired during payment, just leave
             _isPaying = false;
+            animator?.SetBool(IsIdle, false);
             ShowMessageAboveNPC("Ödemeden vazgeçti");
             MoveTo(exitPosition, OnArrivedAtExit);
-        }));
+        }, 40f)); // 40 saniye - ödemede daha uzun sabır süresi
     }
     
     /// <summary>
@@ -398,9 +477,73 @@ public class NPC : MonoBehaviour, IInteractable
     {
         ShowMessageAboveNPC("Dükkandan çıktı");
         
-        // Destroy this NPC
+        // Çıkış noktasında görsel bir efekt (fade-out) uygula
+        StartCoroutine(FadeOutAndDestroy());
+    }
+    
+    /// <summary>
+    /// Fade out the NPC and destroy it
+    /// </summary>
+    private IEnumerator FadeOutAndDestroy()
+    {
+        // Eğer animator varsa, bir fade-out animasyonu tetiklenebilir
+        if (animator != null)
+        {
+            animator.SetTrigger("FadeOut");
+            yield return new WaitForSeconds(1f); // Animasyon süresi
+        }
+        else
+        {
+            // Animator yoksa, basit bir shader efekti veya scale azaltma
+            float duration = 1.0f;
+            float elapsed = 0;
+            
+            // Tüm renderer'ları bul
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            List<Material> materials = new List<Material>();
+            List<Color> originalColors = new List<Color>();
+            
+            // Tüm materyallerin orijinal rengini kaydet
+            foreach (Renderer renderer in renderers)
+            {
+                foreach (Material mat in renderer.materials)
+                {
+                    materials.Add(mat);
+                    originalColors.Add(mat.color);
+                }
+            }
+            
+            // Zamanla renklerinin alpha değerini azalt
+            while (elapsed < duration)
+            {
+                float t = elapsed / duration;
+                
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    Color color = originalColors[i];
+                    color.a = 1f - t;
+                    materials[i].color = color;
+                }
+                
+                // Boyutu da azalt
+                transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, t * 0.5f);
+                
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
+        
+        // Eğer geçici bir çıkış noktası kullanıyorsak, onu temizle
+        if (exitPosition != null && exitPosition.name.StartsWith("ExitPoint_"))
+        {
+            Destroy(exitPosition.gameObject);
+        }
+        
+        // Notify the group
         group.OnNPCLeft(this);
-        Destroy(gameObject, 0.5f);
+        
+        // Destroy NPC
+        Destroy(gameObject);
     }
     
     /// <summary>
@@ -429,6 +572,9 @@ public class NPC : MonoBehaviour, IInteractable
         Debug.Log("Payment processed!");
         ShowMessageAboveNPC("Ödeme tamamlandı");
         _isPaying = false;
+        
+        // Reset idle animation
+        animator?.SetBool(IsIdle, false);
         
         // Go to exit
         if (exitPosition != null)
@@ -674,12 +820,12 @@ public class NPC : MonoBehaviour, IInteractable
     /// <summary>
     /// Coroutine to handle patience countdown
     /// </summary>
-    private IEnumerator PatienceCountdown(Action onExpired)
+    private IEnumerator PatienceCountdown(Action onExpired, float waitTime = 20f)
     {
         isWaiting = true;
         
-        // Kasiyere ödeme yaparken sabit 20 saniye beklesin
-        yield return new WaitForSeconds(20f);
+        // Belirtilen süre kadar bekle - varsayılan 20 saniye, ama ödemede daha uzun
+        yield return new WaitForSeconds(waitTime);
         
         isWaiting = false;
         onExpired?.Invoke();
