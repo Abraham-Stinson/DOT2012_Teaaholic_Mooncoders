@@ -135,7 +135,7 @@ public class NPCGroup : MonoBehaviour
             if (doorAnimator != null)
             {
                 doorAnimator.SetTrigger("Open");
-                yield return new WaitForSeconds(1f); // Wait for door animation
+                //yield return new WaitForSeconds(1f); // Wait for door animation
             }
             
             // Find a table

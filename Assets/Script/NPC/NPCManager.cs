@@ -24,11 +24,6 @@ public class NPCManager : MonoBehaviour
     [SerializeField] private GameObject doorObject;
     [SerializeField] private string doorAnimationName = "DoorOpen";
     
-    [Header("Exit Settings")]
-    [SerializeField] private Transform cashierPosition;
-    [SerializeField] private Transform exitArea;
-    [SerializeField] private float exitAreaRadius = 3f;
-    
     [Header("Tables")]
     [SerializeField] private List<TableController> availableTables = new List<TableController>();
     
@@ -36,25 +31,11 @@ public class NPCManager : MonoBehaviour
     private List<NPCGroup> activeGroups = new List<NPCGroup>();
     private Coroutine spawnRoutine;
     private bool isShopOpen = true;
-    private List<NPCGroup> waitingGroups = new List<NPCGroup>();
     
     private void Start()
     {
-        if (exitArea != null)
-        {
-            // Gizmo sphere eklenebilir veya visual bir gösterge
-        }
-        
+        // Start spawning NPCs
         spawnRoutine = StartCoroutine(SpawnGroupsRoutine());
-    }
-    
-    private void OnDrawGizmos()
-    {
-        if (exitArea != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(exitArea.position, exitAreaRadius);
-        }
     }
     
     /// <summary>
@@ -64,25 +45,14 @@ public class NPCManager : MonoBehaviour
     {
         while (isShopOpen)
         {
+            // Wait for the next spawn time
             float spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
             yield return new WaitForSeconds(spawnDelay);
             
-            bool canSpawn = activeGroups.Count < maxGroupsInShop;
-            
-            CheckWaitingGroups();
-            
-            if (canSpawn)
+            // Check if we can spawn more groups
+            if (activeGroups.Count < maxGroupsInShop)
             {
                 SpawnNPCGroup();
-            }
-            else
-            {
-                Debug.Log("Cannot spawn new groups: Shop is at capacity");
-                
-                if (waitingGroups.Count > 0)
-                {
-                    CleanupStaleWaitingGroups();
-                }
             }
         }
     }
@@ -92,23 +62,30 @@ public class NPCManager : MonoBehaviour
     /// </summary>
     private void SpawnNPCGroup()
     {
-        int groupSize = (Random.value < 0.5f) ? 2 : 4;
+        // Determine group size
+        int groupSize = (Random.value < 0.5f) ? 2 : 4; // 50% chance for either 2 or 4 NPCs
         
+        // Create a new group
         NPCGroup newGroup = new GameObject("NPCGroup_" + activeGroups.Count).AddComponent<NPCGroup>();
         newGroup.transform.SetParent(transform);
         
+        // Set up the group
         newGroup.Initialize(this, groupSize == 4);
         
+        // Spawn NPCs for the group
         List<NPC> npcsInGroup = new List<NPC>();
         
         for (int i = 0; i < groupSize; i++)
         {
+            // Randomly select an NPC prefab
             GameObject selectedPrefab = npcPrefabs[Random.Range(0, npcPrefabs.Count)];
             
+            // Randomize position around spawn point
             Vector3 randomOffset = Random.insideUnitSphere * spawnAreaRadius;
-            randomOffset.y = 0;
+            randomOffset.y = 0; // Keep NPCs on the ground
             Vector3 spawnPosition = spawnPoint.position + randomOffset;
             
+            // Instantiate the NPC
             GameObject npcObject = Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
             NPC npcComponent = npcObject.GetComponent<NPC>();
             
@@ -117,96 +94,24 @@ public class NPCManager : MonoBehaviour
                 npcComponent = npcObject.AddComponent<NPC>();
             }
             
-            npcComponent.Initialize(newGroup, i == 0);
-            
-            if (cashierPosition != null) {
-                npcComponent.SetCashierPosition(cashierPosition);
-            } else {
-                Debug.LogError("Cashier position not set in NPCManager!");
-            }
-            
-            if (exitArea != null) {
-                Vector3 randomExitOffset = Random.insideUnitSphere * exitAreaRadius;
-                randomExitOffset.y = 0;
-                
-                GameObject tempExitPoint = new GameObject("ExitPoint_" + npcComponent.name);
-                tempExitPoint.transform.position = exitArea.position + randomExitOffset;
-                tempExitPoint.transform.SetParent(exitArea);
-                
-                npcComponent.SetExitPosition(tempExitPoint.transform);
-            } else {
-                Debug.LogError("Exit area not set in NPCManager!");
-            }
-            
+            // Initialize the NPC
+            npcComponent.Initialize(newGroup, i == 0); // First NPC is group leader
             npcComponent.name = "NPC_" + i;
             npcComponent.transform.SetParent(newGroup.transform);
             
             npcsInGroup.Add(npcComponent);
         }
         
+        // Set NPCs in the group
         newGroup.SetNPCs(npcsInGroup);
         
-        TableController table = FindAvailableTable(newGroup);
+        // Add to active groups
+        activeGroups.Add(newGroup);
         
-        if (table != null)
-        {
-            activeGroups.Add(newGroup);
-            
-            newGroup.EnterShop(entryArea, doorObject);
-            
-            Debug.Log($"Spawned new NPC group with {groupSize} NPCs - Table available");
-        }
-        else
-        {
-            waitingGroups.Add(newGroup);
-            
-            newGroup.gameObject.SetActive(false);
-            
-            Debug.Log($"New NPC group with {groupSize} NPCs waiting for a table");
-        }
-    }
-    
-    /// <summary>
-    /// Check if waiting groups can now enter the shop
-    /// </summary>
-    private void CheckWaitingGroups()
-    {
-        if (waitingGroups.Count == 0) return;
+        // Have the group enter the shop
+        newGroup.EnterShop(entryArea, doorObject);
         
-        for (int i = waitingGroups.Count - 1; i >= 0; i--)
-        {
-            NPCGroup waitingGroup = waitingGroups[i];
-            TableController table = FindAvailableTable(waitingGroup);
-            
-            if (table != null)
-            {
-                waitingGroup.gameObject.SetActive(true);
-                
-                activeGroups.Add(waitingGroup);
-                
-                waitingGroups.RemoveAt(i);
-                
-                waitingGroup.EnterShop(entryArea, doorObject);
-                
-                Debug.Log("Waiting group now entering the shop");
-                
-                break;
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Clean up any stale waiting groups that have been waiting too long
-    /// </summary>
-    private void CleanupStaleWaitingGroups()
-    {
-        if (waitingGroups.Count > 0)
-        {
-            NPCGroup oldestGroup = waitingGroups[0];
-            Destroy(oldestGroup.gameObject);
-            waitingGroups.RemoveAt(0);
-            Debug.Log("Removed stale waiting group");
-        }
+        Debug.Log($"Spawned new NPC group with {groupSize} NPCs");
     }
     
     /// <summary>
@@ -222,7 +127,7 @@ public class NPCManager : MonoBehaviour
             }
         }
         
-        return null;
+        return null; // No available tables
     }
     
     /// <summary>
@@ -233,11 +138,7 @@ public class NPCManager : MonoBehaviour
         if (activeGroups.Contains(group))
         {
             activeGroups.Remove(group);
-            Destroy(group.gameObject, 2f);
-            
-            CheckWaitingGroups();
-            
-            Debug.Log("Group has left the shop, checking waiting groups");
+            Destroy(group.gameObject, 2f); // Destroy the group after a delay
         }
     }
     
@@ -252,11 +153,5 @@ public class NPCManager : MonoBehaviour
         {
             StopCoroutine(spawnRoutine);
         }
-        
-        foreach (NPCGroup group in waitingGroups)
-        {
-            Destroy(group.gameObject);
-        }
-        waitingGroups.Clear();
     }
 } 
