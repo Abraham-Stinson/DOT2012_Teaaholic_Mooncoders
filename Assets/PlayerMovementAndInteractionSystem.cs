@@ -144,6 +144,15 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ESC"",
+                    ""type"": ""Button"",
+                    ""id"": ""184d1014-b38d-408a-a4ae-d0db2dc724dd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -322,6 +331,17 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
                     ""action"": ""Use_Hold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6fcdbbab-3e82-4a0e-8452-af0534192cc3"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ESC"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -336,6 +356,7 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
         m_ChrachterController_Interactions = m_ChrachterController.FindAction("Interactions", throwIfNotFound: true);
         m_ChrachterController_Use = m_ChrachterController.FindAction("Use", throwIfNotFound: true);
         m_ChrachterController_Use_Hold = m_ChrachterController.FindAction("Use_Hold", throwIfNotFound: true);
+        m_ChrachterController_ESC = m_ChrachterController.FindAction("ESC", throwIfNotFound: true);
     }
 
     ~@PlayerMovementAndInteractionSystem()
@@ -422,6 +443,7 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
     private readonly InputAction m_ChrachterController_Interactions;
     private readonly InputAction m_ChrachterController_Use;
     private readonly InputAction m_ChrachterController_Use_Hold;
+    private readonly InputAction m_ChrachterController_ESC;
     /// <summary>
     /// Provides access to input actions defined in input action map "ChrachterController".
     /// </summary>
@@ -457,6 +479,10 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
         /// Provides access to the underlying input action "ChrachterController/Use_Hold".
         /// </summary>
         public InputAction @Use_Hold => m_Wrapper.m_ChrachterController_Use_Hold;
+        /// <summary>
+        /// Provides access to the underlying input action "ChrachterController/ESC".
+        /// </summary>
+        public InputAction @ESC => m_Wrapper.m_ChrachterController_ESC;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -501,6 +527,9 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
             @Use_Hold.started += instance.OnUse_Hold;
             @Use_Hold.performed += instance.OnUse_Hold;
             @Use_Hold.canceled += instance.OnUse_Hold;
+            @ESC.started += instance.OnESC;
+            @ESC.performed += instance.OnESC;
+            @ESC.canceled += instance.OnESC;
         }
 
         /// <summary>
@@ -530,6 +559,9 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
             @Use_Hold.started -= instance.OnUse_Hold;
             @Use_Hold.performed -= instance.OnUse_Hold;
             @Use_Hold.canceled -= instance.OnUse_Hold;
+            @ESC.started -= instance.OnESC;
+            @ESC.performed -= instance.OnESC;
+            @ESC.canceled -= instance.OnESC;
         }
 
         /// <summary>
@@ -612,5 +644,12 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnUse_Hold(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ESC" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnESC(InputAction.CallbackContext context);
     }
 }

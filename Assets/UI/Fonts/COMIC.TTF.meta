@@ -10,7 +10,10 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - Comic Sans MS
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: c6ac98b334d746b45aa53906a6a4d298, type: 3}
+  - {fileID: 12800000, guid: 65d05974153daed4081ce55d4c0f55aa, type: 3}
+  - {fileID: 12800000, guid: 502f2571b26aa1140bf7376ea7b4aab5, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
