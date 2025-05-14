@@ -1257,8 +1257,8 @@ MonoBehaviour:
   npcPrefabs:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
-  minSpawnDelay: 5
-  maxSpawnDelay: 10
+  minSpawnDelay: 30
+  maxSpawnDelay: 60
   minGroupSize: 2
   maxGroupSize: 4
   spawnAreaRadius: 3
