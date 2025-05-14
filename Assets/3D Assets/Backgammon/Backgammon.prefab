@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 322593986684305927}
   - component: {fileID: 1297651806937834461}
   - component: {fileID: 2049882665442255653}
-  - component: {fileID: 7714790333396243674}
   - component: {fileID: 1666967071621467308}
+  - component: {fileID: 2432433641398566928}
   m_Layer: 6
   m_Name: Backgammon
   m_TagString: Tavla
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameType: Tavla
-  placedVisualPrefab: {fileID: 3100772580262015228, guid: 65d1514bc38af1649b9fa707ca3e5430, type: 3}
+  placedVisualPrefab: {fileID: 919132149155446097, guid: bf3e47697b28e26418919b9a869b2331, type: 3}
 --- !u!33 &1297651806937834461
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -57,7 +57,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3100772580262015228}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 5949312832123354441, guid: d1bc31bfa88576e46b92289e9bc092e3, type: 3}
 --- !u!23 &2049882665442255653
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -81,7 +81,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1940fcce67424b84cb72b4d32ca57530, type: 2}
+  - {fileID: 2100000, guid: 60cf1bf98f4e45e4992cf41375aa208d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,27 +103,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7714790333396243674
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3100772580262015228}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1666967071621467308
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -151,3 +130,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &2432433641398566928
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100772580262015228}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.226294, y: 0.2667215, z: 1.9081515}
+  m_Center: {x: -0.0019462407, y: 0.13336074, z: 0}

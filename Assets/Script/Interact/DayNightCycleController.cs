@@ -18,14 +18,17 @@ public class DayNightCycleController : MonoBehaviour
     public int endHour = 24;
 
     [Header("References")]
-    public TextMeshProUGUI timeUIText;
+    public TextMeshProUGUI dayUIText;    // Separate UI element for day
+    public TextMeshProUGUI timeUIText;   // Separate UI element for time
     public Light sunLight;
+    public NPCManager npcManager; // Reference to NPC Manager
 
     private int day = 1;
     private int hour;
     private int minute;
     private float timer = 0f;
     private bool isPaused = false;
+    private bool npcSpawningDisabled = false; // Track if NPC spawning is disabled
 
     private const float sunrise = 6f;
     private const float sunPeak = 13f;
@@ -36,8 +39,19 @@ public class DayNightCycleController : MonoBehaviour
         day = 1;
         hour = startHour;
         minute = 0;
+        npcSpawningDisabled = false;
         UpdateTimeUI();
         UpdateSunLight();
+        
+        // Find NPCManager if not assigned
+        if (npcManager == null)
+        {
+            npcManager = FindObjectOfType<NPCManager>();
+            if (npcManager == null)
+            {
+                Debug.LogWarning("NPCManager bulunamadı!");
+            }
+        }
     }
 
     private void Update()
@@ -66,11 +80,18 @@ public class DayNightCycleController : MonoBehaviour
             }
         }
 
+        // Saat 12'den sonra müşteri spawning'i durdur
+        if (hour >= 12 && !npcSpawningDisabled && npcManager != null)
+        {
+            npcSpawningDisabled = true;
+            npcManager.enabled = false; // NPCManager'ı devre dışı bırak
+            Debug.Log("Saat 12:00 oldu - Müşteri spawning durduruldu");
+        }
+
         // Gece yarısında (00:00) zamanı durdur
         if (hour == 0 && minute == 0)
         {
             isPaused = true;
-
             Debug.Log("Gün sonu - Zaman durduruldu");
         }
 
@@ -80,14 +101,22 @@ public class DayNightCycleController : MonoBehaviour
 
     private void UpdateTimeUI()
     {
-        if (timeUIText == null) return;
+        // Day UI güncelleme
+        if (dayUIText != null)
+        {
+            dayUIText.text = $"Gün: {day}";
+        }
 
-        int displayHour = hour % 12;
-        displayHour = (displayHour == 0) ? 12 : displayHour;
-        string ampm = (hour < 12) ? "AM" : "PM";
-        string minuteStr = minute.ToString("00");
+        // Time UI güncelleme
+        if (timeUIText != null)
+        {
+            int displayHour = hour % 12;
+            displayHour = (displayHour == 0) ? 12 : displayHour;
+            string ampm = (hour < 12) ? "ÖÖ" : "ÖS";
+            string minuteStr = minute.ToString("00");
 
-        timeUIText.text = $"Day: {day} | {displayHour}:{minuteStr} {ampm}";
+            timeUIText.text = $"{displayHour}:{minuteStr} {ampm}";
+        }
     }
 
     private void UpdateSunLight()
@@ -137,6 +166,14 @@ public class DayNightCycleController : MonoBehaviour
         minute = 0;
         isPaused = false;
         timer = 0f;
+        
+        // Yeni gün başladığında müşteri spawning'i tekrar aktif et
+        if (npcSpawningDisabled && npcManager != null)
+        {
+            npcSpawningDisabled = false;
+            npcManager.enabled = true; // NPCManager'ı tekrar etkinleştir
+            Debug.Log("Yeni gün başladı - Müşteri spawning tekrar aktif");
+        }
 
         UpdateTimeUI();
         UpdateSunLight();

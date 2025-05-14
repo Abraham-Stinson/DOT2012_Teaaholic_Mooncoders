@@ -601,38 +601,38 @@ public class Player : MonoBehaviour
                 var kettleScript = hit.collider.GetComponent<Kettle>();
                 if (kettleScript.currentKettleMagazine > 0)
                 {
-                    ShowUIMessage("Press E to Pick Up\n" + kettleScript.currentKettleMagazine + " tea left");
+                    ShowUIMessage("Almak için E tuşuna basın\n" + kettleScript.currentKettleMagazine + " çay kaldı");
                 }
                 else
                 {
                     if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Press E to Pick Up\nInside: Tea");
+                        ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Çay");
                     }
                     else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Press E to Pick Up\nInside: Hot Water");
+                        ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Sıcak Su");
                     }
                     else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
                     {
                         if (kettleScript.CheckIsOnKettleBase())
                         {
-                            ShowUIMessage("It's brewing\n" + (int)kettleScript.currentBrewTimeOfTea + "second(s) left");
+                            ShowUIMessage("Demleniyoor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı");
                         }
                         else
                         {
-                            ShowUIMessage("Press E to Pick Up\nInside: Tea and Hot Water Put On Kettle Base to Brew");
+                            ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Çay ve Sıcak Su. Demlemek için Kettle Altlığına Koy");
                         }
                     }
                     else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Press E to Pick Up\nInside: Empty");
+                        ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Boş");
                     }
                 }
             }
             else
             {
-                ShowUIMessage("Press E to Pick Up");
+                ShowUIMessage("Almak için E tuşuna basın");
             }
         }
 
@@ -641,20 +641,20 @@ public class Player : MonoBehaviour
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            ShowUIMessage("Press E to Put Down");
+            ShowUIMessage("Bırakmak için E tuşuna basın");
         }
         if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null && 
             (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            ShowUIMessage("Press E to Put Down");
+            ShowUIMessage("Bırakmak için E tuşuna basın");
         }
         if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = hit.collider.gameObject;
-            ShowUIMessage("Press F to Use");
+            ShowUIMessage("Kullanmak için F tuşuna basın");
         }
 
         if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
@@ -668,7 +668,7 @@ public class Player : MonoBehaviour
                     {
                         hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                         lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Press E to Put on Tray");
+                        ShowUIMessage("Tepsiye koymak için E tuşuna basın");
                     }
                     else
                     {
@@ -687,7 +687,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press F to Pour Tea");
+                    ShowUIMessage("Çay koymak için F tuşuna basın");
                 }
             }
 
@@ -697,7 +697,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press F to Fill Hot Water to Kettle");
+                    ShowUIMessage("Kettle'a sıcak su doldurmak için F tuşuna basın");
                 }
             }
         }
@@ -710,7 +710,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press F to Pour " + inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct);
+                    ShowUIMessage(inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct + " koymak için F tuşuna basın");
                 }
             }
         }
@@ -723,7 +723,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press F to Fill the Hot Water");
+                    ShowUIMessage("Sıcak su doldurmak için F tuşuna basın");
                 }
             }
             
@@ -739,7 +739,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press F to Put Tea To Kettle");
+                    ShowUIMessage("Kettle'a çay koymak için F tuşuna basın");
                 }
             }
         }
@@ -752,7 +752,7 @@ public class Player : MonoBehaviour
                 if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
                 {
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Press F to Wash");
+                    ShowUIMessage("Yıkamak için F tuşuna basın");
                 }
             }
         }
@@ -764,11 +764,11 @@ public class Player : MonoBehaviour
             {
                 if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
                 {
-                    ShowUIMessage("Press F to Throw the Item in the Garbage");
+                    ShowUIMessage("Eşyayı çöpe atmak için F tuşuna basın");
                 }
                 else
                 {
-                    ShowUIMessage("You can't throw this item to Garbage");
+                    ShowUIMessage("Bu eşya çöpe atılamaz");
                 }
             }
         }
@@ -778,7 +778,7 @@ public class Player : MonoBehaviour
         {
             if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
             {
-                ShowUIMessage("Press F to Throw the Garbage in the Container");
+                ShowUIMessage("Çöp poşetini konteynere atmak için F tuşuna basın");
             }
         }
 
@@ -787,11 +787,11 @@ public class Player : MonoBehaviour
         {//THRASH UI
             if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
             {
-                ShowUIMessage("Hold the F to Clean Trash");
+                ShowUIMessage("Çöpü temizlemek için F tuşunu basılı tutun");
             }
             else
             {
-                ShowUIMessage("You need mop to clean thrash");
+                ShowUIMessage("Çöpü temizlemek için paspasa ihtiyacınız var");
             }
 
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
