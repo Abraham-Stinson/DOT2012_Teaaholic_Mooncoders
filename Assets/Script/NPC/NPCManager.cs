@@ -24,6 +24,10 @@ public class NPCManager : MonoBehaviour
     [SerializeField] private GameObject doorObject;
     [SerializeField] private string doorAnimationName = "DoorOpen";
     
+    [Header("Exit Settings")]
+    [SerializeField] private Transform exitPoint; // Exit point for NPCs
+    [SerializeField] private Transform cashierPoint; // Cashier position for payment
+    
     [Header("Tables")]
     [SerializeField] private List<TableController> availableTables = new List<TableController>();
     
@@ -98,6 +102,25 @@ public class NPCManager : MonoBehaviour
             npcComponent.Initialize(newGroup, i == 0); // First NPC is group leader
             npcComponent.name = "NPC_" + i;
             npcComponent.transform.SetParent(newGroup.transform);
+            
+            // Set exit and cashier positions for this NPC
+            if (exitPoint != null)
+            {
+                npcComponent.SetExitPosition(exitPoint);
+            }
+            else
+            {
+                Debug.LogError("Exit point is not set in NPCManager!");
+            }
+            
+            if (cashierPoint != null)
+            {
+                npcComponent.SetCashierPosition(cashierPoint);
+            }
+            else
+            {
+                Debug.LogError("Cashier point is not set in NPCManager!");
+            }
             
             npcsInGroup.Add(npcComponent);
         }

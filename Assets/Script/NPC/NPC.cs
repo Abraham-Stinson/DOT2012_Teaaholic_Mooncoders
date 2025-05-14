@@ -226,26 +226,29 @@ public class NPC : MonoBehaviour, IInteractable
     }
     
     /// <summary>
-    /// Makes the NPC drink their beverage
+    /// Drink the beverage served to this NPC
     /// </summary>
     public IEnumerator DrinkBeverage()
     {
         if (!hasDrink) yield break;
         
+        Debug.Log($"[NPC] {gameObject.name} içecek içmeye başladı");
         animator?.SetBool(IsDrinking, true);
         
         // Generate a random drinking duration between minDrinkDuration and maxDrinkDuration
         float drinkingTime = UnityEngine.Random.Range(minDrinkDuration, maxDrinkDuration);
         
-        Debug.Log($"NPC is drinking for {drinkingTime:F1} seconds");
+        Debug.Log($"[NPC] {gameObject.name} {drinkingTime:F1} saniye içecek içecek");
         yield return new WaitForSeconds(drinkingTime); // Random drinking animation time
         
+        Debug.Log($"[NPC] {gameObject.name} içecek içmeyi bitirdi");
         animator?.SetBool(IsDrinking, false);
         hasDrink = false; // Cup is now empty
         
         // Make the cup dirty
         if (currentCup != null)
         {
+            Debug.Log($"[NPC] {gameObject.name} bardağı kirli olarak işaretliyor");
             // First mark the cup as dirty
             DirtyStatus dirtyStatus = currentCup.GetComponent<DirtyStatus>();
             bool wasDirty = false;
@@ -294,7 +297,15 @@ public class NPC : MonoBehaviour, IInteractable
         }
         
         // Notify group that drinking is complete
-        group.OnNPCFinishedDrinking(this);
+        Debug.Log($"[NPC] {gameObject.name} içmeyi bitirdi, gruba bildirim yapılıyor");
+        if (group != null)
+        {
+            group.OnNPCFinishedDrinking(this);
+        }
+        else
+        {
+            Debug.LogError($"[NPC] {gameObject.name}: NPC'nin grup referansı yok! İçme bildirimi yapılamıyor.");
+        }
     }
     
     /// <summary>
@@ -322,37 +333,58 @@ public class NPC : MonoBehaviour, IInteractable
     {
         if (isExiting) return;
         
+        Debug.Log($"[NPC] {gameObject.name} için ExitShop çağrıldı");
         isExiting = true;
         
         if (isSeated)
         {
+            Debug.Log($"[NPC] {gameObject.name} oturuyordu, önce kalkacak");
             // First, stand up from the chair
             StartCoroutine(GetUpProcess(() => {
                 // After getting up, decide where to go
                 if (isGroupLeader && cashierPosition != null && !_isPaying)
                 {
+                    Debug.Log($"[NPC] {gameObject.name} (lider) kasaya gidiyor");
                     ShowMessageAboveNPC("Kasaya gidiyor");
                     MoveTo(cashierPosition, OnArrivedAtCashier);
                 }
                 else if (exitPosition != null)
                 {
+                    Debug.Log($"[NPC] {gameObject.name} çıkışa gidiyor");
                     ShowMessageAboveNPC("Dükkandan çıkıyor");
                     MoveTo(exitPosition, OnArrivedAtExit);
+                }
+                else
+                {
+                    Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu bulunamadı!");
+                    // Doğrudan grubu bilgilendir
+                    group.OnNPCLeft(this);
+                    Destroy(gameObject, 0.5f);
                 }
             }));
         }
         else
         {
+            Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan gidebilir");
             // Already standing, decide where to go
             if (isGroupLeader && cashierPosition != null && !_isPaying)
             {
+                Debug.Log($"[NPC] {gameObject.name} (lider) kasaya gidiyor");
                 ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
             }
             else if (exitPosition != null)
             {
+                Debug.Log($"[NPC] {gameObject.name} çıkışa gidiyor");
                 ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
+            }
+            else
+            {
+                Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu bulunamadı!");
+                // Doğrudan grubu bilgilendir
+                group.OnNPCLeft(this);
+                Destroy(gameObject, 0.5f);
             }
         }
     }
@@ -364,26 +396,29 @@ public class NPC : MonoBehaviour, IInteractable
     {
         if (isExiting) return;
         
+        Debug.Log($"[NPC] {gameObject.name} için ExitShopThroughCashier çağrıldı");
         isExiting = true;
         
         if (!isGroupLeader)
         {
-            Debug.LogWarning("ExitShopThroughCashier called on non-leader NPC");
+            Debug.LogWarning($"[NPC] {gameObject.name}: ExitShopThroughCashier grup lideri olmayan NPC için çağrıldı");
             ExitShopDirectly(); // Fallback to direct exit
             return;
         }
         
         if (cashierPosition == null)
         {
-            Debug.LogError("Cashier position not set for NPC " + gameObject.name);
+            Debug.LogError($"[NPC] {gameObject.name}: Kasiyer pozisyonu tanımlanmamış!");
             ExitShopDirectly(); // Fallback to direct exit
             return;
         }
         
         if (isSeated)
         {
+            Debug.Log($"[NPC] {gameObject.name} oturuyordu, önce kalkacak sonra kasaya gidecek");
             // First, stand up from the chair
             StartCoroutine(GetUpProcess(() => {
+                Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi kasaya gidiyor");
                 ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
             }));
@@ -391,6 +426,7 @@ public class NPC : MonoBehaviour, IInteractable
         else
         {
             // Already standing
+            Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan kasaya gidebilir");
             ShowMessageAboveNPC("Kasaya gidiyor");
             MoveTo(cashierPosition, OnArrivedAtCashier);
         }
@@ -403,11 +439,12 @@ public class NPC : MonoBehaviour, IInteractable
     {
         if (isExiting) return;
         
+        Debug.Log($"[NPC] {gameObject.name} için ExitShopDirectly çağrıldı");
         isExiting = true;
         
         if (exitPosition == null)
         {
-            Debug.LogError("Exit position not set for NPC " + gameObject.name);
+            Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu tanımlanmamış!");
             // No good fallback here, just destroy the NPC
             group.OnNPCLeft(this);
             Destroy(gameObject, 0.5f);
@@ -416,8 +453,10 @@ public class NPC : MonoBehaviour, IInteractable
         
         if (isSeated)
         {
+            Debug.Log($"[NPC] {gameObject.name} oturuyordu, önce kalkacak sonra çıkışa gidecek");
             // First, stand up from the chair
             StartCoroutine(GetUpProcess(() => {
+                Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi çıkışa gidiyor");
                 ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
             }));
@@ -425,6 +464,7 @@ public class NPC : MonoBehaviour, IInteractable
         else
         {
             // Already standing
+            Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan çıkışa gidebilir");
             ShowMessageAboveNPC("Dükkandan çıkıyor");
             MoveTo(exitPosition, OnArrivedAtExit);
         }
@@ -451,7 +491,21 @@ public class NPC : MonoBehaviour, IInteractable
     /// </summary>
     private void OnArrivedAtCashier()
     {
+        Debug.Log($"[NPC] {gameObject.name} kasiyere vardı");
         _isPaying = true;
+        
+        // Make NPC face the cashier (assuming cashier is facing -Z direction)
+        // Look at the cashier (get position but ignore Y to keep NPC upright)
+        if (cashierPosition != null)
+        {
+            Vector3 directionToCashier = cashierPosition.position - transform.position;
+            directionToCashier.y = 0; // Keep NPC upright by ignoring Y component
+            if (directionToCashier != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(directionToCashier);
+            }
+            Debug.Log($"[NPC] {gameObject.name} kasiyere döndü");
+        }
         
         // Play idle animation when at cashier
         animator?.SetBool(IsWalking, false);
@@ -463,6 +517,7 @@ public class NPC : MonoBehaviour, IInteractable
         // Start patience timer for payment - give a longer timeout for payment
         StartCoroutine(PatienceCountdown(() => {
             // Patience expired during payment, just leave
+            Debug.Log($"[NPC] {gameObject.name} için ödeme süresi doldu, ödemeden çıkıyor");
             _isPaying = false;
             animator?.SetBool(IsIdle, false);
             ShowMessageAboveNPC("Ödemeden vazgeçti");
@@ -475,6 +530,7 @@ public class NPC : MonoBehaviour, IInteractable
     /// </summary>
     private void OnArrivedAtExit()
     {
+        Debug.Log($"[NPC] {gameObject.name} çıkış noktasına vardı");
         ShowMessageAboveNPC("Dükkandan çıktı");
         
         // Çıkış noktasında görsel bir efekt (fade-out) uygula
@@ -569,7 +625,7 @@ public class NPC : MonoBehaviour, IInteractable
     /// </summary>
     private void ProcessPayment()
     {
-        Debug.Log("Payment processed!");
+        Debug.Log($"[NPC] {gameObject.name}: Ödeme işlemi tamamlandı!");
         ShowMessageAboveNPC("Ödeme tamamlandı");
         _isPaying = false;
         
@@ -584,7 +640,8 @@ public class NPC : MonoBehaviour, IInteractable
         }
         else
         {
-            // No exit position defined, just destroy
+            Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu tanımlanmamış! NPC çıkamıyor.");
+            // Fallback - doğrudan grup bilgilendirme
             group.OnNPCLeft(this);
             Destroy(gameObject, 0.5f);
         }
