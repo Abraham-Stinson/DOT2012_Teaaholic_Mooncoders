@@ -104,7 +104,7 @@ public class DayNightCycleController : MonoBehaviour
         // Day UI güncelleme
         if (dayUIText != null)
         {
-            dayUIText.text = $"Gün {day}";
+            dayUIText.text = $"Gün: {day}";
         }
 
         // Time UI güncelleme

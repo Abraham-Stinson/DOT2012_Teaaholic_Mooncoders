@@ -1107,7 +1107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56f6d9a8f12cd54b8b732959be24d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 10
+  walkSpeed: 5
   sitOffset: -0.4
   animator: {fileID: 6994841605647538328}
   minDrinkDuration: 20
