@@ -311,21 +311,27 @@ public class NPCGroup : MonoBehaviour
     /// </summary>
     public void OnNPCFinishedDrinking(NPC npc)
     {
+        Debug.Log($"[NPCGroup] {npc.name} içecek içmeyi bitirdi, sayaçlar güncelleniyor");
         finishedDrinkingCount++;
         
+        Debug.Log($"[NPCGroup] Grup içmeyi bitirenler: {finishedDrinkingCount}/{npcs.Count}");
+        
         // Check if all NPCs have finished drinking
-        if (finishedDrinkingCount == npcs.Count)
+        if (finishedDrinkingCount >= npcs.Count)
         {
+            Debug.Log("[NPCGroup] Tüm NPCler içmeyi bitirdi");
             allDrinksFinished = true;
             
             // Decide whether to order a second round
             if (!isSecondOrder && Random.value < secondDrinkChance)
             {
+                Debug.Log("[NPCGroup] Grup ikinci tur içecek isteyecek");
                 isSecondOrder = true;
                 StartCoroutine(OrderSecondRound());
             }
             else
             {
+                Debug.Log("[NPCGroup] Grup içmeyi bitirdi ve çıkışa hazırlanıyor");
                 // Prepare to leave
                 StartCoroutine(PrepareToLeave());
             }
@@ -337,6 +343,7 @@ public class NPCGroup : MonoBehaviour
     /// </summary>
     private IEnumerator OrderSecondRound()
     {
+        Debug.Log("[NPCGroup] İkinci tur içecek siparişi için bekleniyor...");
         yield return new WaitForSeconds(5f); // Wait a bit before ordering again
         
         // Reset drink counters
@@ -345,10 +352,14 @@ public class NPCGroup : MonoBehaviour
         allDrinksServed = false;
         allDrinksFinished = false;
         
+        Debug.Log("[NPCGroup] İkinci tur içecek siparişi veriliyor");
         // Each NPC orders a new drink with "Tazele:" prefix
         foreach (NPC npc in npcs)
         {
-            npc.OrderDrinkRefresh();
+            if (npc != null)
+            {
+                npc.OrderDrinkRefresh();
+            }
         }
     }
     
@@ -357,14 +368,20 @@ public class NPCGroup : MonoBehaviour
     /// </summary>
     private IEnumerator PrepareToLeave()
     {
+        Debug.Log("[NPCGroup] Grup çıkış için hazırlanıyor - 5 saniye bekleniyor");
         yield return new WaitForSeconds(5f); // Finish playing
         
+        Debug.Log("[NPCGroup] Grup oyun oynamayı bırakıyor");
         // Stop playing animations
         foreach (NPC npc in npcs)
         {
-            npc.StopPlaying();
+            if (npc != null)
+            {
+                npc.StopPlaying();
+            }
         }
         
+        Debug.Log("[NPCGroup] Grup çıkışa yönlendiriliyor");
         // Make all NPCs get up and exit
         ExitShop();
     }
@@ -376,6 +393,7 @@ public class NPCGroup : MonoBehaviour
     {
         if (isLeaving) return;
         
+        Debug.Log("[NPCGroup] ExitShop çağrıldı - grup çıkış sürecine başlıyor");
         isLeaving = true;
         
         // Handle cups on the table
@@ -383,18 +401,35 @@ public class NPCGroup : MonoBehaviour
         
         // Determine exit behavior based on scenarios
         bool shouldPayAtCashier = ShouldPayAtCashier();
+        Debug.Log($"[NPCGroup] Kasada ödeme yapılacak mı: {shouldPayAtCashier}");
+        
+        // Grup lideri ve diğer üye sayısını kontrol et
+        NPC groupLeader = GetGroupLeader();
+        if (groupLeader == null)
+        {
+            Debug.LogError("[NPCGroup] Grup lideri bulunamadı! Çıkış süreci başarısız olabilir.");
+            return;
+        }
         
         // Tell NPCs to exit based on determined behavior
         foreach (NPC npc in npcs)
         {
+            if (npc == null)
+            {
+                Debug.LogWarning("[NPCGroup] NPC null referansı, atlanıyor.");
+                continue;
+            }
+            
             if (npc.IsGroupLeader() && shouldPayAtCashier)
             {
-                // Leader goes to cashier to pay
+                // Lider kasaya gider
+                Debug.Log($"[NPCGroup] {npc.name} kasaya gidiyor");
                 npc.ExitShopThroughCashier();
             }
             else
             {
-                // Others go directly to exit
+                // Diğerleri direkt çıkışa gider
+                Debug.Log($"[NPCGroup] {npc.name} çıkışa gidiyor");
                 npc.ExitShopDirectly();
             }
         }
@@ -417,11 +452,19 @@ public class NPCGroup : MonoBehaviour
     /// </summary>
     public void OnNPCLeft(NPC npc)
     {
+        if (npc == null)
+        {
+            Debug.LogWarning("[NPCGroup] OnNPCLeft çağrıldı ama NPC null!");
+            return;
+        }
+        
+        Debug.Log($"[NPCGroup] {npc.name} gruptan ayrıldı");
         npcLeftCount++;
         
         // If all NPCs have left, notify the manager
-        if (npcLeftCount == npcs.Count)
+        if (npcLeftCount >= npcs.Count)
         {
+            Debug.Log("[NPCGroup] Tüm NPCler gruptan ayrıldı, NPCManager'a bildirim yapılıyor");
             npcManager.OnGroupExit(this);
         }
     }
@@ -565,7 +608,7 @@ public class NPCGroup : MonoBehaviour
         if (patienceExpired && (!receivedRequestedGame || !receivedAtLeastOneDrink))
         {
             // Grup lideri dahil herkes doğrudan çıkışa gider
-            Debug.Log("Scenario: Patience expired without game or drinks - entire group leaves directly");
+            Debug.Log("Senaryo: Sabır tükendi (oyun veya içecek gelmedi) - tüm grup doğrudan çıkar");
             return false;
         }
         
@@ -576,12 +619,12 @@ public class NPCGroup : MonoBehaviour
         if (receivedRequestedGame && receivedAtLeastOneDrink)
         {
             // Bu senaryolarda grup lideri kasaya gider, diğerleri çıkışa gider
-            Debug.Log("Scenario: Received game and at least one drink - leader pays at cashier");
+            Debug.Log("Senaryo: Oyun ve en az bir içecek geldi - lider kasada ödeme yapar");
             return true;
         }
         
         // Varsayılan durum - hiçbir koşul karşılanmadıysa (bu duruma düşmemeli)
-        Debug.LogWarning("No specific exit scenario matched - defaulting to direct exit");
+        Debug.LogWarning("Hiçbir çıkış senaryosu eşleşmedi - varsayılan olarak doğrudan çıkış");
         return false;
     }
     
