@@ -3,32 +3,7 @@ guid: bf3e47697b28e26418919b9a869b2331
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Grey
-    second: {fileID: 2100000, guid: 04233f6c2e9ae3c4ca7f1f89c48019ed, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Tavla
-    second: {fileID: 2100000, guid: 8d87e346c0ef31a4ab45a4f2be13ee3d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Texture
-    second: {fileID: 2100000, guid: 79b705f8797981d44a6b808c6b5971d9, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: White
-    second: {fileID: 2100000, guid: 1016c6ae5443d1548a14ecc97743d80e, type: 2}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Tavla
-    second: {fileID: 2800000, guid: dd33cf94322839f41b022d9ba17b268f, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
