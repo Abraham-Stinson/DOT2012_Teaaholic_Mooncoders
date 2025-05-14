@@ -41,7 +41,7 @@ public class Kettle : MonoBehaviour
     {
         if (isOnCoolDown)
         {
-            Debug.Log("Kettle is on cooldown. Please wait.");
+            Debug.Log("Kettle bekleme süresinde. Lütfen bekleyin.");
             return;
         }
         
@@ -59,7 +59,7 @@ public class Kettle : MonoBehaviour
                 isHaveHotWater = false;
                 isHaveTea = false;
                 isBrewed = false;
-                Debug.Log("Kettle is now empty");
+                Debug.Log("Kettle artık boş");
             }
             
             StartCoroutine(WaitForPourAnimation());
@@ -67,11 +67,11 @@ public class Kettle : MonoBehaviour
         }
         else if (currentKettleMagazine <= 0)
         {
-            Debug.Log("Kettle is empty");
+            Debug.Log("Kettle boş");
         }
         else if (!isBrewed)
         {
-            Debug.Log("Tea is not brewed yet");
+            Debug.Log("Çay henüz demlenmemiş");
         }
     }
     
@@ -91,12 +91,12 @@ public class Kettle : MonoBehaviour
             // Reset brew time when new ingredients are added
             ResetBrewTime();
             
-            Debug.Log("Tea added to kettle");
+            Debug.Log("Kettle'a çay eklendi");
             return true;
         }
         else
         {
-            Debug.Log("Kettle already has tea");
+            Debug.Log("Kettle'da zaten çay var");
             return false;
         }
     }
@@ -111,18 +111,18 @@ public class Kettle : MonoBehaviour
         {
             isHaveHotWater = true;
             
-            // Reset brew status when new hot water is added
+            // Reset brew status when new water is added
             isBrewed = false;
             
             // Reset brew time when new ingredients are added
             ResetBrewTime();
             
-            Debug.Log("Hot water added to kettle");
+            Debug.Log("Kettle'a sıcak su eklendi");
             return true;
         }
         else
         {
-            Debug.Log("Kettle already has hot water");
+            Debug.Log("Kettle'da zaten sıcak su var");
             return false;
         }
     }
@@ -182,7 +182,7 @@ public class Kettle : MonoBehaviour
                 // Only log the message when the tea first becomes brewed
                 if (!isBrewed)
                 {
-                    Debug.Log("TEA IS BREWED!");
+                    Debug.Log("ÇAY DEMLENDİ!");
                     isBrewed = true;
                     currentKettleMagazine = maxKettleMagazine;
                 }
@@ -214,7 +214,7 @@ public class Kettle : MonoBehaviour
         isHaveHotWater = false;
         isHaveTea = false;
         isBrewed = false;
-        Debug.Log("Kettle emptied");
+        Debug.Log("Kettle boşaltıldı");
     }
     
     /// <summary>
@@ -224,30 +224,30 @@ public class Kettle : MonoBehaviour
     {
         if (currentKettleMagazine > 0 && isBrewed)
         {
-            return $"Brewed Tea: {currentKettleMagazine}/{maxKettleMagazine}";
+            return $"Demlenmiş Çay: {currentKettleMagazine}/{maxKettleMagazine}";
         }
         else if (isHaveTea && isHaveHotWater && !isBrewed)
         {
             if (CheckIsOnKettleBase())
             {
-                return $"Brewing: {Mathf.CeilToInt(currentBrewTimeOfTea)}s left";
+                return $"Demleniyor: {Mathf.CeilToInt(currentBrewTimeOfTea)} saniye kaldı";
             }
             else
             {
-                return "Tea & Hot Water (Put on base to brew)";
+                return "Çay ve Sıcak Su (Demlemek için altlığa koy)";
             }
         }
         else if (isHaveTea && !isHaveHotWater)
         {
-            return "Tea (Needs hot water)";
+            return "Çay (Sıcak su gerekiyor)";
         }
         else if (!isHaveTea && isHaveHotWater)
         {
-            return "Hot Water (Needs tea)";
+            return "Sıcak Su (Çay gerekiyor)";
         }
         else
         {
-            return "Empty";
+            return "Boş";
         }
     }
 }

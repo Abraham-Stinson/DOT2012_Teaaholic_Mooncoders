@@ -639,11 +639,11 @@ MonoBehaviour:
   npcPrefabs:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
-  minSpawnDelay: 5
-  maxSpawnDelay: 5
+  minSpawnDelay: 30
+  maxSpawnDelay: 60
   minGroupSize: 2
   maxGroupSize: 4
-  spawnAreaRadius: 2
+  spawnAreaRadius: 3
   maxGroupsInShop: 5
   entryArea: {fileID: 1671252118}
   doorObject: {fileID: 1155298510326356404}
@@ -2185,6 +2185,79 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b8d5fc626c14fb47964bb15fceb01db, type: 3}
+--- !u!1001 &855008726
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 377.04907
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 9.25
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 400.49
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 270
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
+      propertyPath: m_Name
+      value: "Atat\xFCrkPortrait"
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
 --- !u!1001 &937279663
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25417,3 +25490,4 @@ SceneRoots:
   - {fileID: 4318442643026180313}
   - {fileID: 2132600322}
   - {fileID: 1294239016}
+  - {fileID: 855008726}

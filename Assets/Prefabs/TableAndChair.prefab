@@ -808,6 +808,7 @@ GameObject:
   - component: {fileID: 6324517207376706830}
   - component: {fileID: 6947622048718369451}
   - component: {fileID: 5156091851896735329}
+  - component: {fileID: 3766899636123696288}
   m_Layer: 0
   m_Name: SmallTable
   m_TagString: Untagged
@@ -885,6 +886,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3766899636123696288
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6669516899920439220}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 3.178463, z: 2}
+  m_Center: {x: 0, y: 1.5892315, z: 0}
 --- !u!1 &6832842843537092769
 GameObject:
   m_ObjectHideFlags: 0
@@ -1046,6 +1068,7 @@ GameObject:
   - component: {fileID: 8912905418987411701}
   - component: {fileID: 5485063103008282448}
   - component: {fileID: 7780580359786849178}
+  - component: {fileID: 5006431166868027903}
   m_Layer: 0
   m_Name: SmallTable (1)
   m_TagString: Untagged
@@ -1123,3 +1146,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5006431166868027903
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8141048993252000335}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 3.178463, z: 2}
+  m_Center: {x: 0, y: 1.5892315, z: 0}

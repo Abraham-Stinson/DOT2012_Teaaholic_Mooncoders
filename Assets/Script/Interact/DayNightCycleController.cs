@@ -104,7 +104,7 @@ public class DayNightCycleController : MonoBehaviour
         // Day UI güncelleme
         if (dayUIText != null)
         {
-            dayUIText.text = $"Day {day}";
+            dayUIText.text = $"Gün {day}";
         }
 
         // Time UI güncelleme
@@ -112,7 +112,7 @@ public class DayNightCycleController : MonoBehaviour
         {
             int displayHour = hour % 12;
             displayHour = (displayHour == 0) ? 12 : displayHour;
-            string ampm = (hour < 12) ? "AM" : "PM";
+            string ampm = (hour < 12) ? "ÖÖ" : "ÖS";
             string minuteStr = minute.ToString("00");
 
             timeUIText.text = $"{displayHour}:{minuteStr} {ampm}";

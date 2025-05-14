@@ -111,7 +111,7 @@ public class NPCManager : MonoBehaviour
         // Have the group enter the shop
         newGroup.EnterShop(entryArea, doorObject);
         
-        Debug.Log($"Spawned new NPC group with {groupSize} NPCs");
+        Debug.Log($"Yeni NPC grubu oluşturuldu: {groupSize} müşteri");
     }
     
     /// <summary>
