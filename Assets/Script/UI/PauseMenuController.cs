@@ -13,6 +13,10 @@ public class PauseMenuController : MonoBehaviour
     
     [Header("Input Ayarları")]
     [SerializeField] private InputActionReference pauseAction;
+    [SerializeField] private PlayerInput playerInput; // Oyuncunun input sistemi
+    
+    // Kamera kontrolü için referans
+    private Player playerController;
     
     private bool isPaused = false;
     
@@ -22,6 +26,15 @@ public class PauseMenuController : MonoBehaviour
         if (pauseMenuCanvas != null)
         {
             pauseMenuCanvas.SetActive(false);
+        }
+        
+        // Player referansını bul
+        playerController = FindObjectOfType<Player>();
+        
+        // PlayerInput referansı yoksa bul
+        if (playerInput == null)
+        {
+            playerInput = FindObjectOfType<PlayerInput>();
         }
     }
     
@@ -39,7 +52,7 @@ public class PauseMenuController : MonoBehaviour
             restartButton.onClick.AddListener(RestartGame);
             
         if (exitButton != null)
-            exitButton.onClick.AddListener(ExitGame);
+            exitButton.onClick.AddListener(ToMainMenu);
     }
     
     private void OnDisable()
@@ -56,10 +69,10 @@ public class PauseMenuController : MonoBehaviour
             restartButton.onClick.RemoveListener(RestartGame);
             
         if (exitButton != null)
-            exitButton.onClick.RemoveListener(ExitGame);
+            exitButton.onClick.RemoveListener(ToMainMenu);
     }
     
-    private void TogglePauseMenu(InputAction.CallbackContext context)
+    public void TogglePauseMenu(InputAction.CallbackContext context)
     {
         if (isPaused)
         {
@@ -71,11 +84,24 @@ public class PauseMenuController : MonoBehaviour
         }
     }
     
-    private void PauseGame()
+    public void PauseGame()
     {
         // Oyunu duraklat
         Time.timeScale = 0f;
         isPaused = true;
+        
+        // Mouse imlecini görünür yap ve kilidi kaldır
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        
+        // Oyuncu kontrollerini devre dışı bırak
+        if (playerInput != null)
+        {
+            // UI action map'i dışındaki tüm action map'leri devre dışı bırak
+            playerInput.DeactivateInput();
+            // Sadece UI action map'ini etkinleştir (menü için)
+            playerInput.actions.FindActionMap("UI").Enable();
+        }
         
         // Menüyü göster
         if (pauseMenuCanvas != null)
@@ -87,11 +113,21 @@ public class PauseMenuController : MonoBehaviour
         Debug.Log("Oyun duraklatıldı");
     }
     
-    private void ContinueGame()
+    public void ContinueGame()
     {
         // Oyunu devam ettir
         Time.timeScale = 1f;
         isPaused = false;
+        
+        // Mouse imlecini gizle ve kilitle
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        
+        // Oyuncu kontrollerini tekrar etkinleştir
+        if (playerInput != null)
+        {
+            playerInput.ActivateInput();
+        }
         
         // Menüyü gizle
         if (pauseMenuCanvas != null)
@@ -103,11 +139,15 @@ public class PauseMenuController : MonoBehaviour
         Debug.Log("Oyun devam ediyor");
     }
     
-    private void RestartGame()
+    public void RestartGame()
     {
         // Zaman ölçeğini normale döndür
         Time.timeScale = 1f;
         isPaused = false;
+        
+        // Mouse ayarlarını sıfırla
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         
         // Aktif sahneyi yeniden yükle
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -116,17 +156,15 @@ public class PauseMenuController : MonoBehaviour
         Debug.Log("Oyun yeniden başlatılıyor");
     }
     
-    private void ExitGame()
+    public void ToMainMenu()
     {
-        // Debug log
-        Debug.Log("Oyundan çıkılıyor");
+        // Zaman ölçeğini normale döndür
+        Time.timeScale = 1f;
         
-#if UNITY_EDITOR
-        // Unity Editor'da çalışırken oyunu durdur
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        // Build'de oyundan çık
-        Application.Quit();
-#endif
+        // Mouse ayarlarını sıfırla
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        
+        SceneManager.LoadScene("MainMenu");
     }
 } 
