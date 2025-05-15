@@ -6,7 +6,28 @@ TagManager:
   tags:
   - Interactable
   - Kettle
+  - Tea_Cup
+  - CinemachineTarget
+  - Tray
   - Trash
+  - Mop
+  - Tap
+  - Water
+  - Hot_Water
+  - Other_Products
+  - Kettle_Base
+  - Tea_Can
+  - Lamb_Switch
+  - Garbage_Bin
+  - Garbage_Bag
+  - Garbage_Container
+  - Main_Door
+  - Chair
+  - Table
+  - Okey
+  - CashierSpot
+  - Iskambil
+  - Tavla
   layers:
   - Default
   - TransparentFX
@@ -17,9 +38,9 @@ TagManager:
   - Interactable
   - Placement
   - Ground
-  - Trash
-  - 
-  - 
+  - Usable
+  - NPC
+  - Road
   - 
   - 
   - 
@@ -53,3 +74,4 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
+  - A

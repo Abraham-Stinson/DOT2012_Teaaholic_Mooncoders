@@ -34,7 +34,7 @@ public class TrashSpawner : MonoBehaviour
             SetNextTrashTime();
         }
     }
-
+    
     // Ana fonksiyon: eski çöpleri temizle, yeni çöpleri spawn et
     public void HandleNewDayTrash()
     {
