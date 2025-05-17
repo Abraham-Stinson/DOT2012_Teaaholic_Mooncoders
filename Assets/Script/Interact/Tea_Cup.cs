@@ -5,10 +5,10 @@ using System.Collections;
 public class Tea_Cup : MonoBehaviour
 {
     [Header("Tea_Cup")]
-    [SerializeField] private float maxTeaCupMagazine = 5f;
+    [SerializeField] public float maxTeaCupMagazine = 5f;
     [SerializeField] private float maxTeaCupTeaMagazine = 3f;
     [SerializeField] private float minTeaCupMagazine = 0f;
-    [SerializeField] private float currentTeaCupMagazine;
+    [SerializeField] public float currentTeaCupMagazine;
     [SerializeField] private float currentTeaCupTeaMagazine;
     [SerializeField] public bool isOnTray = false;
     [SerializeField] public bool isFillOraletorCoffee = false;
@@ -78,6 +78,7 @@ public class Tea_Cup : MonoBehaviour
 
     public void AddTea()
     {
+        
         if (!isFillOraletorCoffee && !isFillTea)
         {
             isFillTea = true;

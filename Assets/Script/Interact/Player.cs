@@ -10,20 +10,12 @@ public class Player : MonoBehaviour
 {
     public GarbageScript garbageScript;
     [Header("Player")]
-    [SerializeField] private Transform playerCam;
-    [SerializeField][Min(1)] private float rayCastRange = 10f;
+    [SerializeField] public Transform playerCam;
+    [SerializeField][Min(1)] public float rayCastRange = 10f;
     [SerializeField] private bool isPicked = false; //aaa
     [Header("UI")]
     [SerializeField] private GameObject mainInfoUI;
     [SerializeField] private TextMeshProUGUI mainInfoUIText;
-    /*[SerializeField] private GameObject pickUpUI;
-    [SerializeField] private GameObject putDownUI;
-    [SerializeField] private GameObject useUI;
-    [SerializeField] private GameObject pourUI;
-    [SerializeField] private GameObject putOnTray;
-    [SerializeField] private GameObject cleanTrashUI;
-    [SerializeField] private GameObject CleanTheDirt;
-    public UnityEngine.UI.Image thrashCleanProgressBar;*/
 
     [Header("Layers")]
     [SerializeField] private LayerMask interactionLayer;
@@ -34,7 +26,7 @@ public class Player : MonoBehaviour
     [Header("First Person Hand")]
     [SerializeField] private Transform firstPersonHand;//when pick up objects it will show on this transform
     [SerializeField] public GameObject inHandItem;//what we picked up
-    private RaycastHit hit;
+    public RaycastHit hit;
     private GameObject lastHighlightedObject;
 
     [Header("Inputs")]
@@ -54,7 +46,7 @@ public class Player : MonoBehaviour
         pickAndPutInput.action.performed += PickAndPut;
         useInput.action.performed += Use;
         useHoldInput.action.performed += UseHold;
-
+        inHandItem = null;
         // Find the NPC system in the scene
     }
     void Update()
@@ -213,9 +205,7 @@ public class Player : MonoBehaviour
                 
             if (!teaCupScript.isFullTea && kettleScript.currentKettleMagazine > 0 && !teaCupScript.isFillOraletorCoffee && kettleScript.isBrewed)
             {
-                teaCupScript.AddTea();
-                kettleScript.PourTea();
-                Debug.Log("Çay eklendi");
+                kettleScript.PourTea(teaCupScript);
             }
             else if (!kettleScript.isBrewed)
             {

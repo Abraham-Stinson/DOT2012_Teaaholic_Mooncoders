@@ -13,18 +13,19 @@ public class NPC : MonoBehaviour, IInteractable
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float sitOffset = 0.5f; // How much to offset when sitting
     [SerializeField] private Animator animator;
-    
+
     [Header("Drinking Settings")]
     [SerializeField] private float minDrinkDuration = 3f; // Minimum time to drink (seconds)
     [SerializeField] private float maxDrinkDuration = 8f; // Maximum time to drink (seconds)
-    
+
     [Header("Order Settings")]
-    [SerializeField] private string[] drinkOptions = new string[] {
-        "Light_Tea", "Rabbit_Blood_Tea", "Brewed_Tea", 
-        "Coffee_Drink", "Banana_Oralet", "Kiwi_Oralet", 
+    [SerializeField]
+    private string[] drinkOptions = new string[] {
+        "Light_Tea", "Rabbit_Blood_Tea", "Brewed_Tea",
+        "Coffee_Drink", "Banana_Oralet", "Kiwi_Oralet",
         "Orange_Oralet", "Strawberry_Oralet"
     };
-    
+
     // State fields
     private NavMeshAgent navAgent;
     private NPCGroup group;
@@ -43,37 +44,37 @@ public class NPC : MonoBehaviour, IInteractable
     private Transform cashierPosition;
     private Transform exitPosition;
     private GameObject currentCup;
-    
+
     // Public property for isPaying
     public bool isPaying
     {
         get { return _isPaying; }
     }
-    
+
     // Animation parameters 
     private static readonly int IsIdle = Animator.StringToHash("IsIdle");
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsSitting = Animator.StringToHash("IsSitting");
     private static readonly int IsDrinking = Animator.StringToHash("IsDrinking");
     private static readonly int IsPlaying = Animator.StringToHash("IsPlaying");
-    
+
     private void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
-        
+
         if (navAgent == null)
         {
             navAgent = gameObject.AddComponent<NavMeshAgent>();
         }
-        
+
         if (animator == null)
         {
             animator = GetComponent<Animator>();
         }
-        
+
         navAgent.speed = walkSpeed;
     }
-    
+
     /// <summary>
     /// Initialize the NPC with its group and leader status
     /// </summary>
@@ -83,19 +84,19 @@ public class NPC : MonoBehaviour, IInteractable
         isGroupLeader = leader;
         isReady = true;
     }
-    
+
     /// <summary>
     /// Move to a specific position
     /// </summary>
     public void MoveTo(Transform destination, Action onComplete = null)
     {
         if (!isReady || navAgent == null || destination == null) return;
-        
+
         targetPosition = destination;
-        
+
         StartCoroutine(MoveToDestination(destination.position, onComplete));
     }
-    
+
     /// <summary>
     /// Coroutine to move to a destination with a callback
     /// </summary>
@@ -103,16 +104,16 @@ public class NPC : MonoBehaviour, IInteractable
     {
         animator?.SetBool(IsWalking, true);
         navAgent.SetDestination(destination);
-        
+
         while (navAgent.pathPending || navAgent.remainingDistance > navAgent.stoppingDistance)
         {
             yield return null;
         }
-        
+
         animator?.SetBool(IsWalking, false);
         onComplete?.Invoke();
     }
-    
+
     /// <summary>
     /// Assigns a chair to this NPC and moves them to sit on it
     /// </summary>
@@ -120,49 +121,49 @@ public class NPC : MonoBehaviour, IInteractable
     {
         assignedChair = chair;
         chair.SetOccupied(true);
-        
+
         // Move to the chair position
         StartCoroutine(SitOnChair());
     }
-    
+
     /// <summary>
     /// Coroutine to handle the sitting process
     /// </summary>
     private IEnumerator SitOnChair()
     {
         if (assignedChair == null) yield break;
-        
+
         // First, move to the chair
         animator?.SetBool(IsWalking, true);
         navAgent.SetDestination(assignedChair.GetSitPosition().position);
-        
+
         while (navAgent.pathPending || navAgent.remainingDistance > navAgent.stoppingDistance)
         {
             yield return null;
         }
-        
+
         // Rotate to face the table
         transform.rotation = assignedChair.GetSitPosition().rotation;
-        
+
         // Play sitting animation
         animator?.SetBool(IsWalking, false);
         animator?.SetBool(IsSitting, true);
-        
+
         // Adjust position for sitting
         transform.position = new Vector3(
             assignedChair.GetSitPosition().position.x,
             transform.position.y - sitOffset,
             assignedChair.GetSitPosition().position.z
         );
-        
+
         // Disable NavMeshAgent while sitting
         navAgent.enabled = false;
         isSeated = true;
-        
+
         // Notify the group that this NPC has sat down
         group.OnNPCSatDown(this);
     }
-    
+
     /// <summary>
     /// Make the NPC order a drink
     /// </summary>
@@ -170,7 +171,7 @@ public class NPC : MonoBehaviour, IInteractable
     {
         requestedDrink = drinkOptions[UnityEngine.Random.Range(0, drinkOptions.Length)];
         Debug.Log($"NPC ordered drink: {requestedDrink}");
-        
+
         // Update the table UI
         if (assignedChair != null && assignedChair.GetTable() != null)
         {
@@ -178,7 +179,7 @@ public class NPC : MonoBehaviour, IInteractable
             table.UpdateNPCRequest(this, requestedDrink);
         }
     }
-    
+
     /// <summary>
     /// Make the NPC order a refreshed drink (second order)
     /// </summary>
@@ -186,12 +187,12 @@ public class NPC : MonoBehaviour, IInteractable
     {
         // Pick a random drink
         string baseDrink = drinkOptions[UnityEngine.Random.Range(0, drinkOptions.Length)];
-        
+
         // Add "Tazele:" prefix
         requestedDrink = "Tazele:" + baseDrink;
-        
+
         Debug.Log($"NPC ordered refresh drink: {requestedDrink}");
-        
+
         // Update the table UI
         if (assignedChair != null && assignedChair.GetTable() != null)
         {
@@ -199,7 +200,7 @@ public class NPC : MonoBehaviour, IInteractable
             table.UpdateNPCRequest(this, requestedDrink);
         }
     }
-    
+
     /// <summary>
     /// Sets the cashier position for payment
     /// </summary>
@@ -207,7 +208,7 @@ public class NPC : MonoBehaviour, IInteractable
     {
         cashierPosition = cashier;
     }
-    
+
     /// <summary>
     /// Sets the exit position for leaving
     /// </summary>
@@ -215,7 +216,7 @@ public class NPC : MonoBehaviour, IInteractable
     {
         exitPosition = exit;
     }
-    
+
     /// <summary>
     /// Update this NPC's patience level based on the group's patience
     /// </summary>
@@ -224,27 +225,27 @@ public class NPC : MonoBehaviour, IInteractable
     {
         patiencePercentage = groupPatiencePercentage;
     }
-    
+
     /// <summary>
     /// Drink the beverage served to this NPC
     /// </summary>
     public IEnumerator DrinkBeverage()
     {
         if (!hasDrink) yield break;
-        
+
         Debug.Log($"[NPC] {gameObject.name} içecek içmeye başladı");
         animator?.SetBool(IsDrinking, true);
-        
+
         // Generate a random drinking duration between minDrinkDuration and maxDrinkDuration
         float drinkingTime = UnityEngine.Random.Range(minDrinkDuration, maxDrinkDuration);
-        
+
         Debug.Log($"[NPC] {gameObject.name} {drinkingTime:F1} saniye içecek içecek");
         yield return new WaitForSeconds(drinkingTime); // Random drinking animation time
-        
+
         Debug.Log($"[NPC] {gameObject.name} içecek içmeyi bitirdi");
         animator?.SetBool(IsDrinking, false);
         hasDrink = false; // Cup is now empty
-        
+
         // Make the cup dirty
         if (currentCup != null)
         {
@@ -252,13 +253,13 @@ public class NPC : MonoBehaviour, IInteractable
             // First mark the cup as dirty
             DirtyStatus dirtyStatus = currentCup.GetComponent<DirtyStatus>();
             bool wasDirty = false;
-            
+
             if (dirtyStatus != null)
             {
                 wasDirty = dirtyStatus.isDirty;
                 dirtyStatus.isDirty = true;
             }
-            
+
             // Empty the cup contents - NPC has drunk it
             Tea_Cup teaCup = currentCup.GetComponent<Tea_Cup>();
             if (teaCup != null)
@@ -269,20 +270,20 @@ public class NPC : MonoBehaviour, IInteractable
                 teaCup.isFullTea = false;
                 teaCup.isFullOraletorCoffee = false;
                 teaCup.inCup = "Empty";
-                
+
                 // Use EmptyCup to update the visuals
                 teaCup.EmptyCup();
             }
-            
+
             // Make sure the dirty status is maintained after EmptyCup
             if (dirtyStatus != null && !dirtyStatus.isDirty && wasDirty)
             {
                 dirtyStatus.isDirty = true;
             }
-            
+
             // Change cup layer back to interactable so player can pick it up
             currentCup.layer = LayerMask.NameToLayer("Interactable");
-            
+
             // Make sure the cup stays on the table but can be picked up
             Rigidbody rb = currentCup.GetComponent<Rigidbody>();
             if (rb != null)
@@ -291,11 +292,11 @@ public class NPC : MonoBehaviour, IInteractable
                 rb.isKinematic = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             }
-            
+
             // Make sure the cup stays at its position on the table
             // We do not need to change its parent as it was already set to the table
         }
-        
+
         // Notify group that drinking is complete
         Debug.Log($"[NPC] {gameObject.name} içmeyi bitirdi, gruba bildirim yapılıyor");
         if (group != null)
@@ -307,17 +308,17 @@ public class NPC : MonoBehaviour, IInteractable
             Debug.LogError($"[NPC] {gameObject.name}: NPC'nin grup referansı yok! İçme bildirimi yapılamıyor.");
         }
     }
-    
+
     /// <summary>
     /// Makes the NPC start playing a game
     /// </summary>
     public void StartPlaying()
     {
         if (!isSeated || !hasGameBox) return;
-        
+
         animator?.SetBool(IsPlaying, true);
     }
-    
+
     /// <summary>
     /// Makes the NPC stop playing a game
     /// </summary>
@@ -325,22 +326,23 @@ public class NPC : MonoBehaviour, IInteractable
     {
         animator?.SetBool(IsPlaying, false);
     }
-    
+
     /// <summary>
     /// Makes the NPC go to the exit and leave
     /// </summary>
     public void ExitShop()
     {
         if (isExiting) return;
-        
+
         Debug.Log($"[NPC] {gameObject.name} için ExitShop çağrıldı");
         isExiting = true;
-        
+
         if (isSeated)
         {
             Debug.Log($"[NPC] {gameObject.name} oturuyordu, önce kalkacak");
             // First, stand up from the chair
-            StartCoroutine(GetUpProcess(() => {
+            StartCoroutine(GetUpProcess(() =>
+            {
                 // After getting up, decide where to go
                 if (isGroupLeader && cashierPosition != null && !_isPaying)
                 {
@@ -388,36 +390,37 @@ public class NPC : MonoBehaviour, IInteractable
             }
         }
     }
-    
+
     /// <summary>
     /// Exit through cashier (for group leaders who need to pay)
     /// </summary>
     public void ExitShopThroughCashier()
     {
         if (isExiting) return;
-        
+
         Debug.Log($"[NPC] {gameObject.name} için ExitShopThroughCashier çağrıldı");
         isExiting = true;
-        
+
         if (!isGroupLeader)
         {
             Debug.LogWarning($"[NPC] {gameObject.name}: ExitShopThroughCashier grup lideri olmayan NPC için çağrıldı");
             ExitShopDirectly(); // Fallback to direct exit
             return;
         }
-        
+
         if (cashierPosition == null)
         {
             Debug.LogError($"[NPC] {gameObject.name}: Kasiyer pozisyonu tanımlanmamış!");
             ExitShopDirectly(); // Fallback to direct exit
             return;
         }
-        
+
         if (isSeated)
         {
             Debug.Log($"[NPC] {gameObject.name} oturuyordu, önce kalkacak sonra kasaya gidecek");
             // First, stand up from the chair
-            StartCoroutine(GetUpProcess(() => {
+            StartCoroutine(GetUpProcess(() =>
+            {
                 Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi kasaya gidiyor");
                 ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
@@ -431,17 +434,17 @@ public class NPC : MonoBehaviour, IInteractable
             MoveTo(cashierPosition, OnArrivedAtCashier);
         }
     }
-    
+
     /// <summary>
     /// Exit directly to exit point (skip cashier)
     /// </summary>
     public void ExitShopDirectly()
     {
         if (isExiting) return;
-        
+
         Debug.Log($"[NPC] {gameObject.name} için ExitShopDirectly çağrıldı");
         isExiting = true;
-        
+
         if (exitPosition == null)
         {
             Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu tanımlanmamış!");
@@ -450,12 +453,13 @@ public class NPC : MonoBehaviour, IInteractable
             Destroy(gameObject, 0.5f);
             return;
         }
-        
+
         if (isSeated)
         {
             Debug.Log($"[NPC] {gameObject.name} oturuyordu, önce kalkacak sonra çıkışa gidecek");
             // First, stand up from the chair
-            StartCoroutine(GetUpProcess(() => {
+            StartCoroutine(GetUpProcess(() =>
+            {
                 Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi çıkışa gidiyor");
                 ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
@@ -469,7 +473,7 @@ public class NPC : MonoBehaviour, IInteractable
             MoveTo(exitPosition, OnArrivedAtExit);
         }
     }
-    
+
     /// <summary>
     /// Display a message above the NPC
     /// </summary>
@@ -481,11 +485,11 @@ public class NPC : MonoBehaviour, IInteractable
         {
             player.ShowUIMessage(message);
         }
-        
+
         // Also log the message for debugging
         Debug.Log($"NPC {gameObject.name}: {message}");
     }
-    
+
     /// <summary>
     /// Called when the NPC arrives at the cashier
     /// </summary>
@@ -493,7 +497,7 @@ public class NPC : MonoBehaviour, IInteractable
     {
         Debug.Log($"[NPC] {gameObject.name} kasiyere vardı");
         _isPaying = true;
-        
+
         // Make NPC face the cashier (assuming cashier is facing -Z direction)
         // Look at the cashier (get position but ignore Y to keep NPC upright)
         if (cashierPosition != null)
@@ -506,16 +510,17 @@ public class NPC : MonoBehaviour, IInteractable
             }
             Debug.Log($"[NPC] {gameObject.name} kasiyere döndü");
         }
-        
+
         // Play idle animation when at cashier
         animator?.SetBool(IsWalking, false);
         animator?.SetBool(IsIdle, true);
-        
+
         // Show message that NPC is paying
         ShowMessageAboveNPC("Ödeme yapıyor");
-        
+
         // Start patience timer for payment - give a longer timeout for payment
-        StartCoroutine(PatienceCountdown(() => {
+        StartCoroutine(PatienceCountdown(() =>
+        {
             // Patience expired during payment, just leave
             Debug.Log($"[NPC] {gameObject.name} için ödeme süresi doldu, ödemeden çıkıyor");
             _isPaying = false;
@@ -524,7 +529,7 @@ public class NPC : MonoBehaviour, IInteractable
             MoveTo(exitPosition, OnArrivedAtExit);
         }, 40f)); // 40 saniye - ödemede daha uzun sabır süresi
     }
-    
+
     /// <summary>
     /// Called when the NPC arrives at the exit
     /// </summary>
@@ -532,11 +537,11 @@ public class NPC : MonoBehaviour, IInteractable
     {
         Debug.Log($"[NPC] {gameObject.name} çıkış noktasına vardı");
         ShowMessageAboveNPC("Dükkandan çıktı");
-        
+
         // Çıkış noktasında görsel bir efekt (fade-out) uygula
         StartCoroutine(FadeOutAndDestroy());
     }
-    
+
     /// <summary>
     /// Fade out the NPC and destroy it
     /// </summary>
@@ -553,12 +558,12 @@ public class NPC : MonoBehaviour, IInteractable
             // Animator yoksa, basit bir shader efekti veya scale azaltma
             float duration = 1.0f;
             float elapsed = 0;
-            
+
             // Tüm renderer'ları bul
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
             List<Material> materials = new List<Material>();
             List<Color> originalColors = new List<Color>();
-            
+
             // Tüm materyallerin orijinal rengini kaydet
             foreach (Renderer renderer in renderers)
             {
@@ -568,40 +573,40 @@ public class NPC : MonoBehaviour, IInteractable
                     originalColors.Add(mat.color);
                 }
             }
-            
+
             // Zamanla renklerinin alpha değerini azalt
             while (elapsed < duration)
             {
                 float t = elapsed / duration;
-                
+
                 for (int i = 0; i < materials.Count; i++)
                 {
                     Color color = originalColors[i];
                     color.a = 1f - t;
                     materials[i].color = color;
                 }
-                
+
                 // Boyutu da azalt
                 transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, t * 0.5f);
-                
+
                 elapsed += Time.deltaTime;
                 yield return null;
             }
         }
-        
+
         // Eğer geçici bir çıkış noktası kullanıyorsak, onu temizle
         if (exitPosition != null && exitPosition.name.StartsWith("ExitPoint_"))
         {
             Destroy(exitPosition.gameObject);
         }
-        
+
         // Notify the group
         group.OnNPCLeft(this);
-        
+
         // Destroy NPC
         Destroy(gameObject);
     }
-    
+
     /// <summary>
     /// Interface method for player interaction
     /// </summary>
@@ -619,7 +624,7 @@ public class NPC : MonoBehaviour, IInteractable
             CheckDrinkServing();
         }
     }
-    
+
     /// <summary>
     /// Process payment when player interacts with NPC at cashier
     /// </summary>
@@ -628,10 +633,10 @@ public class NPC : MonoBehaviour, IInteractable
         Debug.Log($"[NPC] {gameObject.name}: Ödeme işlemi tamamlandı!");
         ShowMessageAboveNPC("Ödeme tamamlandı");
         _isPaying = false;
-        
+
         // Reset idle animation
         animator?.SetBool(IsIdle, false);
-        
+
         // Go to exit
         if (exitPosition != null)
         {
@@ -646,14 +651,12 @@ public class NPC : MonoBehaviour, IInteractable
             Destroy(gameObject, 0.5f);
         }
     }
-    
+
     /// <summary>
     /// Check if player is giving the correct drink
     /// </summary>
     private void CheckDrinkServing()
     {
-        Debug.Log("[NPC] CheckDrinkServing() çağrıldı - İçecek kontrolü başlıyor");
-        
         // Get reference to the player
         Player player = FindObjectOfType<Player>();
         
@@ -671,19 +674,55 @@ public class NPC : MonoBehaviour, IInteractable
         
         Debug.Log($"[NPC] Oyuncunun elinde: {player.inHandItem.name}");
         
+        // Check if player is holding a cup directly
         Tea_Cup teaCup = player.inHandItem.GetComponent<Tea_Cup>();
         
-        if (teaCup == null)
-        {
-            Debug.Log("[NPC] Eldeki nesne bir Tea_Cup değil");
-            return;
-        }
+        // Check if player is holding a tray
+        bool isTray = player.inHandItem.CompareTag("Tray");
+        GameObject cupToServe = null;
+        GameObject originalTray = null;
         
         // Get the actual drink type by removing "Tazele:" prefix if present
         string actualRequestedDrink = requestedDrink;
         if (requestedDrink.StartsWith("Tazele:"))
         {
             actualRequestedDrink = requestedDrink.Substring(7); // Remove "Tazele:" prefix
+        }
+        
+        if (teaCup == null && isTray)
+        {
+            Debug.Log("[NPC] Oyuncunun elinde tepsi var, tepsi üzerindeki içecekler kontrol ediliyor");
+            originalTray = player.inHandItem;
+            
+            // Check if any of the tray's children is a cup with the requested drink
+            for (int i = 0; i < player.inHandItem.transform.childCount; i++)
+            {
+                Transform child = player.inHandItem.transform.GetChild(i);
+                Tea_Cup childTeaCup = child.GetComponent<Tea_Cup>();
+                
+                if (childTeaCup != null && childTeaCup.inCup == actualRequestedDrink)
+                {
+                    Debug.Log($"[NPC] Tepsideki {childTeaCup.inCup} içecek bulundu!");
+                    teaCup = childTeaCup;
+                    cupToServe = child.gameObject;
+                    break;
+                }
+            }
+            
+            if (teaCup == null)
+            {
+                Debug.Log("[NPC] Tepsideki içeceklerden hiçbiri NPC'nin isteğine uygun değil");
+                return;
+            }
+        }
+        else if (teaCup == null)
+        {
+            Debug.Log("[NPC] Eldeki nesne bir Tea_Cup veya tepsi değil");
+            return;
+        }
+        else
+        {
+            cupToServe = player.inHandItem;
         }
         
         Debug.Log($"[NPC] Bardaktaki içerik: {teaCup.inCup}, NPC'nin istediği: {requestedDrink} (Saf içerik: {actualRequestedDrink})");
@@ -706,8 +745,20 @@ public class NPC : MonoBehaviour, IInteractable
                 table.UpdateNPCRequest(this, "");
             }
             
+            // If serving from tray, detach the cup from the tray first
+            if (isTray && cupToServe != null && originalTray != null)
+            {
+                Debug.Log("[NPC] Bardak tepsiden alınıyor...");
+                // Store the tray in player's hand for later reassignment
+                cupToServe.transform.SetParent(null);
+                
+                // Make sure the player still has the tray in hand
+                player.inHandItem = originalTray;
+                Debug.Log($"[NPC] Oyuncunun elindeki tepsi korunuyor: {player.inHandItem.name}");
+            }
+            
             // Place the cup on the table
-            PlaceCupOnTable(player.inHandItem);
+            PlaceCupOnTable(cupToServe, isTray, originalTray, player);
             
             // Start drinking after a short delay
             StartCoroutine(DrinkBeverage());
@@ -726,12 +777,25 @@ public class NPC : MonoBehaviour, IInteractable
     /// <summary>
     /// Place the cup on the table in front of the NPC
     /// </summary>
-    private void PlaceCupOnTable(GameObject cup)
+    private void PlaceCupOnTable(GameObject cup, bool isFromTray = false, GameObject tray = null, Player player = null)
     {
         if (cup == null || assignedChair == null) return;
         
         // Get the cup position for this chair
         Transform cupPosition = assignedChair.GetCupPosition();
+        
+        // If player is null, try to get the reference
+        if (player == null)
+        {
+            player = FindObjectOfType<Player>();
+        }
+        
+        Debug.Log($"[NPC] PlaceCupOnTable - isFromTray: {isFromTray}, cup: {cup.name}");
+        
+        if (player != null && isFromTray)
+        {
+            Debug.Log($"[NPC] Tepsi üzerinden bardak servis ediliyor. Tray: {(tray != null ? tray.name : "null")}");
+        }
         
         if (cupPosition != null)
         {
@@ -766,10 +830,20 @@ public class NPC : MonoBehaviour, IInteractable
             // Make it non-interactable until NPC leaves
             cup.layer = LayerMask.NameToLayer("Default");
             
-            // Get player reference and clear their hand
-            Player player = FindObjectOfType<Player>();
-            if (player != null)
+            // Only clear player's hand if the cup was directly held (not from tray)
+            if (player != null && isFromTray)
             {
+                Debug.Log("[NPC] Tepsi üzerinden servis edildi - tepsi oyuncunun elinde kalıyor");
+                
+                // Make sure player still has the tray
+                if (tray != null)
+                {
+                    player.inHandItem = tray;
+                }
+            }
+            else if (player != null && !isFromTray)
+            {
+                Debug.Log("[NPC] Doğrudan servis edildi - oyuncunun eli boşaltılıyor");
                 player.inHandItem = null;
                 player.SetPickedStatus(false);
             }
@@ -813,17 +887,27 @@ public class NPC : MonoBehaviour, IInteractable
                 // Make it non-interactable until NPC leaves
                 cup.layer = LayerMask.NameToLayer("Default");
                 
-                // Get player reference and clear their hand
-                Player player = FindObjectOfType<Player>();
-                if (player != null)
+                if (player != null && isFromTray)
                 {
+                    Debug.Log("[NPC] Tepsi üzerinden servis edildi (fallback) - tepsi oyuncunun elinde kalıyor");
+                    
+                    // Make sure player still has the tray
+                    if (tray != null)
+                    {
+                        player.inHandItem = tray;
+                    }
+                }
+                // Only clear player's hand if the cup was directly held (not from tray)
+                else if (player != null && !isFromTray)
+                {
+                    Debug.Log("[NPC] Doğrudan servis edildi (fallback) - oyuncunun eli boşaltılıyor");
                     player.inHandItem = null;
                     player.SetPickedStatus(false);
                 }
             }
         }
     }
-    
+
     /// <summary>
     /// Gets the requested drink for this NPC
     /// </summary>
@@ -832,7 +916,7 @@ public class NPC : MonoBehaviour, IInteractable
         Debug.Log($"NPC requested drink: {requestedDrink}");
         return requestedDrink;
     }
-    
+
     /// <summary>
     /// Get the NPC's patience as a string (low, medium, high)
     /// </summary>
@@ -845,11 +929,11 @@ public class NPC : MonoBehaviour, IInteractable
             level = "orta";
         else
             level = "fazla";
-        
+
         Debug.Log($"NPC patience: {level} ({patiencePercentage:P0})");
         return level;
     }
-    
+
     /// <summary>
     /// Returns whether this NPC has a drink
     /// </summary>
@@ -857,7 +941,7 @@ public class NPC : MonoBehaviour, IInteractable
     {
         return hasDrink;
     }
-    
+
     /// <summary>
     /// Sets whether this NPC has a game box
     /// </summary>
@@ -865,7 +949,7 @@ public class NPC : MonoBehaviour, IInteractable
     {
         hasGameBox = has;
     }
-    
+
     /// <summary>
     /// Returns whether this NPC is the group leader
     /// </summary>
@@ -873,66 +957,66 @@ public class NPC : MonoBehaviour, IInteractable
     {
         return isGroupLeader;
     }
-    
+
     /// <summary>
     /// Coroutine to handle patience countdown
     /// </summary>
     private IEnumerator PatienceCountdown(Action onExpired, float waitTime = 20f)
     {
         isWaiting = true;
-        
+
         // Belirtilen süre kadar bekle - varsayılan 20 saniye, ama ödemede daha uzun
         yield return new WaitForSeconds(waitTime);
-        
+
         isWaiting = false;
         onExpired?.Invoke();
     }
-    
+
     /// <summary>
     /// Handles getting up from the chair
     /// </summary>
     public void GetUpFromChair(System.Action onComplete = null)
     {
-        if (!isSeated) 
+        if (!isSeated)
         {
             onComplete?.Invoke();
             return;
         }
-        
+
         StartCoroutine(GetUpProcess(onComplete));
     }
-    
+
     /// <summary>
     /// Coroutine to handle getting up process
     /// </summary>
     private IEnumerator GetUpProcess(System.Action onComplete = null)
     {
         ShowMessageAboveNPC("Kalkıyor");
-        
+
         // Play getting up animation
         animator?.SetBool(IsSitting, false);
-        
+
         yield return new WaitForSeconds(1f); // Animation time
-        
+
         // Re-enable NavMeshAgent
         navAgent.enabled = true;
         isSeated = false;
-        
+
         // Adjust position back
         transform.position = new Vector3(
             transform.position.x,
             transform.position.y + sitOffset,
             transform.position.z
         );
-        
+
         // Free the chair
         if (assignedChair != null)
         {
             assignedChair.SetOccupied(false);
             assignedChair = null;
         }
-        
+
         group.OnNPCGotUp(this);
         onComplete?.Invoke();
     }
-} 
+}
