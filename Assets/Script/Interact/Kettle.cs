@@ -6,7 +6,7 @@ public class Kettle : MonoBehaviour
     [Header("About Kettle")]
     [SerializeField] private Animator animator;
     [SerializeField] private bool isPourAnimation;
-    [SerializeField] private float maxKettleMagazine = 10f;
+    [SerializeField] public float maxKettleMagazine = 10f;
     [SerializeField] private float minKettleMagazine = 0f;
     [SerializeField] public float currentKettleMagazine;
     [SerializeField] public bool isHaveTea;
@@ -18,7 +18,7 @@ public class Kettle : MonoBehaviour
 
     [Header("CoolDown")]
     [SerializeField] private float coolDownTime = 1f;
-    private bool isOnCoolDown = false;
+    [SerializeField] private bool isOnCoolDown = false;
     
     void Start()
     {
@@ -37,7 +37,7 @@ public class Kettle : MonoBehaviour
     /// <summary>
     /// Pour tea from the kettle
     /// </summary>
-    public void PourTea()
+    public void PourTea(Tea_Cup teaCup)
     {
         if (isOnCoolDown)
         {
@@ -48,6 +48,8 @@ public class Kettle : MonoBehaviour
         // Check if we have brewed tea to pour
         if (currentKettleMagazine > 0 && isBrewed)
         {
+            teaCup.AddTea();
+            Debug.Log("Çay dökülüyor");
             isPourAnimation = true;
             animator.SetBool("isPour", isPourAnimation);
             currentKettleMagazine -= 1;
