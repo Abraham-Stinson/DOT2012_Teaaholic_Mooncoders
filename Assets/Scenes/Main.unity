@@ -7390,10 +7390,7 @@ MonoBehaviour:
   pauseMenuCanvas: {fileID: 2048760524}
   pauseAction: {fileID: -3871431315947648754, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   gameplayActions:
-  - {fileID: 6278750740550776510, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   - {fileID: 3216161973931065576, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
-  - {fileID: -4324247481939427159, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
-  - {fileID: -1449099201447570195, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   - {fileID: -1487084534325870183, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   - {fileID: 1883127306925870050, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   playerControlScripts:
