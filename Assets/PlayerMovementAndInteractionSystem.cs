@@ -246,8 +246,8 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b3d80284-f4a0-43d0-a52b-e58caa397ab8"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""id"": ""8c5e6dc0-bdec-442a-a67b-81b7d1a1e97e"",
+                    ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -257,8 +257,8 @@ public partial class @PlayerMovementAndInteractionSystem: IInputActionCollection
                 },
                 {
                     ""name"": """",
-                    ""id"": ""8c5e6dc0-bdec-442a-a67b-81b7d1a1e97e"",
-                    ""path"": ""<Gamepad>/rightStick"",
+                    ""id"": ""7805cbd7-0c31-447f-9824-a0fc2adcf9c3"",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
