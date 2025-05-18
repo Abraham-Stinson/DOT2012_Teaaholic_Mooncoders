@@ -19,6 +19,7 @@ public class PauseMenuController : MonoBehaviour
     {
         if (pauseMenuCanvas != null)
             pauseMenuCanvas.SetActive(false);
+
     }
 
     private void OnEnable()
@@ -118,6 +119,18 @@ public class PauseMenuController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        foreach (var actionRef in gameplayActions)
+        {
+            if (actionRef != null)
+                actionRef.action.Enable();
+        }
+
+        foreach (var script in playerControlScripts)
+        {
+            script.enabled = true;
+        }
+
 
         SceneManager.LoadScene("MainMenu");
     }
