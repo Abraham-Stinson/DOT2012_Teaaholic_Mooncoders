@@ -2,12 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Controls a table and its associated chairs
-/// </summary>
 public class TableController : MonoBehaviour, IInteractable
 {
     [Header("Table Settings")]
+    [SerializeField] public string tableName;
     [SerializeField] private List<Chair> chairs = new List<Chair>();
     [SerializeField] private Transform gameBoxPosition;
     [SerializeField] private GameObject tavlaGamePrefab;
@@ -18,6 +16,11 @@ public class TableController : MonoBehaviour, IInteractable
     [SerializeField] private GameObject tavlaGamePlaced; // Visual when placed on table
     [SerializeField] private GameObject iskambilGamePlaced;
     [SerializeField] private GameObject okeyGamePlaced;
+    
+    [Header("Adisyon Sistemi")]
+    [SerializeField] private Transform adisyonPosition; // Adisyon 3D nesnesi konumu
+    [SerializeField] private GameObject adisyonObject; // Adisyon 3D nesnesi prefab
+    [SerializeField] public GameObject adisyonUI; // Adisyon 3D nesnesi prefab
     
     // State tracking
     private bool isOccupied = false;
@@ -97,7 +100,8 @@ public class TableController : MonoBehaviour, IInteractable
                     
                     // Reset player pickup state to ensure they can pick up new items
                     player.SetPickedStatus(false);
-                    
+                    //Adisyon nesnesini göster
+                    adisyonObject.SetActive(true);
                     // Show message
                     player.ShowUIMessage($"{gameType} oyununu masaya koydunuz");
                 }
@@ -151,6 +155,7 @@ public class TableController : MonoBehaviour, IInteractable
         isOccupied = true;
         occupyingGroup = group;
         Debug.Log($"Table {name} is now occupied by group");
+        
     }
     
     /// <summary>
@@ -162,10 +167,7 @@ public class TableController : MonoBehaviour, IInteractable
         occupyingGroup = null;
         Debug.Log($"Table {name} is now available");
     }
-    
-    /// <summary>
-    /// Place a game box on the table
-    /// </summary>
+    // Place a game box on the table
     public void PlaceGameBox(string gameType)
     {
         currentGameType = gameType;
@@ -205,9 +207,7 @@ public class TableController : MonoBehaviour, IInteractable
         }
     }
     
-    /// <summary>
-    /// Make the game box pickable again after NPCs leave
-    /// </summary>
+    // Make the game box pickable again after NPCs leave
     public void MakeGameBoxPickable()
     {
         // Remove the placed game visual
@@ -215,7 +215,9 @@ public class TableController : MonoBehaviour, IInteractable
         {
             Destroy(currentGameObject);
         }
-        
+
+        //Adisyonu yok et
+        adisyonObject.SetActive(false);
         // Spawn the pickable version
         GameObject pickablePrefab = null;
         

@@ -96,6 +96,13 @@ public class Player : MonoBehaviour
                 npc.interact();
                 return;
             }
+
+            if (hit.collider.GetComponent<Adisyon>() != null)
+            {
+                Debug.Log($"Adisyon bulundu: {hit.collider.name}, interact() çağrılıyor...");
+                hit.collider.GetComponent<Adisyon>().interact();
+                return;
+            }
             
             // Masa kontrolü
             TableController table = hit.collider.GetComponent<TableController>();

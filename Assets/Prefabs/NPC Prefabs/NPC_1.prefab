@@ -1107,7 +1107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56f6d9a8f12cd54b8b732959be24d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 5
+  walkSpeed: 20
   sitOffset: -0.4
   animator: {fileID: 6994841605647538328}
   minDrinkDuration: 20
@@ -1116,6 +1116,20 @@ MonoBehaviour:
   - Light_Tea
   - Rabbit_Blood_Tea
   - Brewed_Tea
+  - Coffee_Drink
+  - Banana_Oralet
+  - Kiwi_Oralet
+  - Orange_Oralet
+  - Strawberry_Oralet
+  drinkPrices:
+  - 15
+  - 15
+  - 15
+  - 25
+  - 20
+  - 20
+  - 20
+  - 20
 --- !u!95 &6994841605647538328
 Animator:
   serializedVersion: 7

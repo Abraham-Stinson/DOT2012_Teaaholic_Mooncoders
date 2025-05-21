@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
+    public Adisyon adisyonScript;
     [Header("Menü Elemanları")]
     [SerializeField] private GameObject pauseMenuCanvas;
     [SerializeField] private Button continueButton;
@@ -18,7 +19,7 @@ public class PauseMenuController : MonoBehaviour
     // Kamera kontrolü için referans
     private Player playerController;
     
-    private bool isPaused = false;
+    public bool isPaused = false;
     
     private void Awake()
     {
@@ -74,6 +75,19 @@ public class PauseMenuController : MonoBehaviour
     
     public void TogglePauseMenu(InputAction.CallbackContext context)
     {
+        if (adisyonScript == null)
+        {
+            Debug.Log("Adisyon scripti bulunamadı, yeni bir referans alınıyor.");
+            adisyonScript = FindObjectOfType<Adisyon>();
+            
+        }
+
+        if (adisyonScript!=null&&adisyonScript.isAdisyonOpen)
+        {
+            Debug.Log("Adisyon açık, menüyü açma");
+            return; // Eğer adisyon açık ise menüyü açma
+        }
+
         if (isPaused)
         {
             ContinueGame();
