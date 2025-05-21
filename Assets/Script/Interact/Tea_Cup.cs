@@ -9,7 +9,7 @@ public class Tea_Cup : MonoBehaviour
     [SerializeField] private float maxTeaCupTeaMagazine = 3f;
     [SerializeField] private float minTeaCupMagazine = 0f;
     [SerializeField] public float currentTeaCupMagazine;
-    [SerializeField] private float currentTeaCupTeaMagazine;
+    [SerializeField] public float currentTeaCupTeaMagazine;
     [SerializeField] public bool isOnTray = false;
     [SerializeField] public bool isFillOraletorCoffee = false;
     [SerializeField] public bool isFullOraletorCoffee = false;
@@ -87,14 +87,14 @@ public class Tea_Cup : MonoBehaviour
         {
             currentTeaCupMagazine += 1;
             currentTeaCupTeaMagazine += 1;
-            if(currentTeaCupMagazine>=3){
+            /*if(currentTeaCupMagazine>=3){
                 isFullTea = true;
-            }
+            }*/
         }
-        else
+        /*else
         {
             isFullTea = true;
-        }
+        }*/
         ChangeMeshTea();
     }
 

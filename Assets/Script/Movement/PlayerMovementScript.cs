@@ -6,6 +6,9 @@ public class PlayerMovementScript : MonoBehaviour
 {
     PlayerMovementAndInteractionSystem playerInput;
     CharacterController characterController;
+    public PauseMenuController pauseMenuController;
+    Player player;
+    public Adisyon adisyonScript;
     [Header("Movement")]
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -33,6 +36,7 @@ public class PlayerMovementScript : MonoBehaviour
     {
         playerInput = new PlayerMovementAndInteractionSystem();
         characterController = GetComponent<CharacterController>();
+        pauseMenuController=GetComponent<PauseMenuController>();
 
         // If no camera transform assigned, try to find camera in children
         if (cameraTransform == null)
@@ -157,6 +161,19 @@ public class PlayerMovementScript : MonoBehaviour
     void Update()
     {
         HandleGravity();
+        
+        // Check if pauseMenuController is null and try to find it
+        if (pauseMenuController == null)
+        {
+            pauseMenuController = FindObjectOfType<PauseMenuController>();
+        }
+        
+        // Check if game is paused (safely handling null reference)
+        if (pauseMenuController != null && pauseMenuController.isPaused) return;
+        
+        // If adisyon is open, prevent movement    
+        if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
+
         HandleRotation();
 
         // Calculate movement direction based on character's forward direction

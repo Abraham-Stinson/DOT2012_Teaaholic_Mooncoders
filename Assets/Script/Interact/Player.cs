@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    PlayerMovementScript playerMovementScript;
     public GarbageScript garbageScript;
     [Header("Player")]
     [SerializeField] public Transform playerCam;
@@ -43,6 +44,12 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        // Initialize playerMovementScript to avoid null references
+        playerMovementScript = GetComponent<PlayerMovementScript>();
+        if (playerMovementScript == null)
+        {
+            playerMovementScript = FindObjectOfType<PlayerMovementScript>();
+        }
         pickAndPutInput.action.performed += PickAndPut;
         useInput.action.performed += Use;
         useHoldInput.action.performed += UseHold;
@@ -94,6 +101,17 @@ public class Player : MonoBehaviour
             {
                 Debug.Log($"NPC bulundu: {npc.name}, interact() çağrılıyor...");
                 npc.interact();
+                return;
+            }
+
+            if (hit.collider.GetComponent<Adisyon>() != null)
+            {
+                Debug.Log($"Adisyon bulundu: {hit.collider.name}, interact() çağrılıyor...");
+                if(playerMovementScript.adisyonScript == null)
+                {
+                    playerMovementScript.adisyonScript = hit.collider.GetComponent<Adisyon>();
+                }
+                hit.collider.GetComponent<Adisyon>().interact();
                 return;
             }
             

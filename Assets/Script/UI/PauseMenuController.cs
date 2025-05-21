@@ -1,137 +1,184 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
+    public Adisyon adisyonScript;
     [Header("Menü Elemanları")]
     [SerializeField] private GameObject pauseMenuCanvas;
-
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button exitButton;
+    
     [Header("Input Ayarları")]
-    [SerializeField] private InputActionReference pauseAction; // ESC tuşu gibi
-    [SerializeField] private InputActionReference[] gameplayActions; // Player hareket, bakış, etkileşim vs
-    [SerializeField] private MonoBehaviour[] playerControlScripts;
-
-
-    private bool isPaused = false;
-
+    [SerializeField] private InputActionReference pauseAction;
+    [SerializeField] private PlayerInput playerInput; // Oyuncunun input sistemi
+    
+    // Kamera kontrolü için referans
+    private Player playerController;
+    
+    public bool isPaused = false;
+    
     private void Awake()
     {
+        // Canvas başlangıçta kapalı olmalı
         if (pauseMenuCanvas != null)
+        {
             pauseMenuCanvas.SetActive(false);
-
+        }
+        
+        // Player referansını bul
+        playerController = FindObjectOfType<Player>();
+        
+        // PlayerInput referansı yoksa bul
+        if (playerInput == null)
+        {
+            playerInput = FindObjectOfType<PlayerInput>();
+        }
     }
-
+    
     private void OnEnable()
     {
-        if (pauseAction != null)
-        {
-            pauseAction.action.Enable();
-            pauseAction.action.performed += OnPausePressed;
-        }
+        // Input action'ları etkinleştir
+        pauseAction.action.Enable();
+        pauseAction.action.performed += TogglePauseMenu;
+        
+        // Buton click event'larını bağla
+        if (continueButton != null)
+            continueButton.onClick.AddListener(ContinueGame);
+            
+        if (restartButton != null)
+            restartButton.onClick.AddListener(RestartGame);
+            
+        if (exitButton != null)
+            exitButton.onClick.AddListener(ToMainMenu);
     }
-
+    
     private void OnDisable()
     {
-        if (pauseAction != null)
+        // Input action'ları devre dışı bırak
+        pauseAction.action.performed -= TogglePauseMenu;
+        pauseAction.action.Disable();
+        
+        // Buton click event'larını temizle
+        if (continueButton != null)
+            continueButton.onClick.RemoveListener(ContinueGame);
+            
+        if (restartButton != null)
+            restartButton.onClick.RemoveListener(RestartGame);
+            
+        if (exitButton != null)
+            exitButton.onClick.RemoveListener(ToMainMenu);
+    }
+    
+    public void TogglePauseMenu(InputAction.CallbackContext context)
+    {
+        if (adisyonScript == null)
         {
-            pauseAction.action.performed -= OnPausePressed;
-            pauseAction.action.Disable();
+            Debug.Log("Adisyon scripti bulunamadı, yeni bir referans alınıyor.");
+            adisyonScript = FindObjectOfType<Adisyon>();
+            
+        }
+
+        if (adisyonScript!=null&&adisyonScript.isAdisyonOpen)
+        {
+            Debug.Log("Adisyon açık, menüyü açma");
+            return; // Eğer adisyon açık ise menüyü açma
+        }
+
+        if (isPaused)
+        {
+            ContinueGame();
+        }
+        else
+        {
+            PauseGame();
         }
     }
-
-    private void OnPausePressed(InputAction.CallbackContext context)
-    {
-        if (isPaused)
-            ContinueGame();
-        else
-            PauseGame();
-    }
-
+    
     public void PauseGame()
     {
+        // Oyunu duraklat
         Time.timeScale = 0f;
         isPaused = true;
-
+        
+        // Mouse imlecini görünür yap ve kilidi kaldır
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        // Tüm gameplay inputlarını devre dışı bırak
-        foreach (var actionRef in gameplayActions)
+        
+        // Oyuncu kontrollerini devre dışı bırak
+        if (playerInput != null)
         {
-            if (actionRef != null)
-                actionRef.action.Disable();
+            // UI action map'i dışındaki tüm action map'leri devre dışı bırak
+            playerInput.DeactivateInput();
+            // Sadece UI action map'ini etkinleştir (menü için)
+            playerInput.actions.FindActionMap("UI").Enable();
         }
-
-        foreach (var script in playerControlScripts)
-        {
-            script.enabled = false;
-        }
-
-
+        
+        // Menüyü göster
         if (pauseMenuCanvas != null)
+        {
             pauseMenuCanvas.SetActive(true);
-
+        }
+        
+        // Debug log
         Debug.Log("Oyun duraklatıldı");
     }
-
+    
     public void ContinueGame()
     {
+        // Oyunu devam ettir
         Time.timeScale = 1f;
         isPaused = false;
-
+        
+        // Mouse imlecini gizle ve kilitle
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        // Tüm gameplay inputlarını tekrar etkinleştir
-        foreach (var actionRef in gameplayActions)
+        
+        // Oyuncu kontrollerini tekrar etkinleştir
+        if (playerInput != null)
         {
-            if (actionRef != null)
-                actionRef.action.Enable();
+            playerInput.ActivateInput();
         }
-
-        foreach (var script in playerControlScripts)
-        {
-            script.enabled = true;
-        }
-
-
+        
+        // Menüyü gizle
         if (pauseMenuCanvas != null)
+        {
             pauseMenuCanvas.SetActive(false);
-
+        }
+        
+        // Debug log
         Debug.Log("Oyun devam ediyor");
     }
-
+    
     public void RestartGame()
     {
+        // Zaman ölçeğini normale döndür
         Time.timeScale = 1f;
         isPaused = false;
-
+        
+        // Mouse ayarlarını sıfırla
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
+        
+        // Aktif sahneyi yeniden yükle
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+        // Debug log
+        Debug.Log("Oyun yeniden başlatılıyor");
     }
-
+    
     public void ToMainMenu()
     {
+        // Zaman ölçeğini normale döndür
         Time.timeScale = 1f;
-
+        
+        // Mouse ayarlarını sıfırla
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        foreach (var actionRef in gameplayActions)
-        {
-            if (actionRef != null)
-                actionRef.action.Enable();
-        }
-
-        foreach (var script in playerControlScripts)
-        {
-            script.enabled = true;
-        }
-
-
+        
         SceneManager.LoadScene("MainMenu");
     }
-}
+} 
