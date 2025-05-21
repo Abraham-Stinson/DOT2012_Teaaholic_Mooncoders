@@ -19,8 +19,8 @@ public class TableController : MonoBehaviour, IInteractable
     
     [Header("Adisyon Sistemi")]
     [SerializeField] private Transform adisyonPosition; // Adisyon 3D nesnesi konumu
-    [SerializeField] private GameObject adisyonObject; // Adisyon 3D nesnesi prefab
-    [SerializeField] public GameObject adisyonUI; // Adisyon 3D nesnesi prefab
+    [SerializeField] public GameObject adisyonObject; // Adisyon 3D nesnesi 
+    [SerializeField] public GameObject adisyonUI; // Adisyon UI nesnesi 
     
     // State tracking
     private bool isOccupied = false;

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class WearManager : MonoBehaviour
 {
 
-    [SerializeField, Min (1f)][Range (1f,100f)] private float wear = 0;
+    [SerializeField, Min(1f)][Range(1f, 100f)] private float wear = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI wearText;
     [SerializeField] private float refreshRate = 0.1f;
@@ -23,6 +23,20 @@ public class WearManager : MonoBehaviour
 
     void RefreshUI()
     {
-        wearText.text="%"+ wear.ToString();
+        wearText.text = "%" + wear.ToString();
+    }
+    
+    public void AddWear(float amount)
+    {
+        wear += amount;
+        if(wear > 100f)
+        {
+            wear = 100f;
+        }
+        else if(wear < 0f)
+        {
+            wear = 0f;
+        }
+        RefreshUI();
     }
 }

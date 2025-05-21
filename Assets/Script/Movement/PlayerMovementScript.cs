@@ -7,7 +7,8 @@ public class PlayerMovementScript : MonoBehaviour
     PlayerMovementAndInteractionSystem playerInput;
     CharacterController characterController;
     public PauseMenuController pauseMenuController;
-    Adisyon adisyonScript;
+    Player player;
+    public Adisyon adisyonScript;
     [Header("Movement")]
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -169,12 +170,6 @@ public class PlayerMovementScript : MonoBehaviour
         
         // Check if game is paused (safely handling null reference)
         if (pauseMenuController != null && pauseMenuController.isPaused) return;
-        
-        // Check if adisyon is open
-        if (adisyonScript == null)
-        {
-            adisyonScript = FindObjectOfType<Adisyon>();
-        }
         
         // If adisyon is open, prevent movement    
         if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;

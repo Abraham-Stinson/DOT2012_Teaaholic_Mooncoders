@@ -28,10 +28,10 @@ public class NPC : MonoBehaviour, IInteractable
     // State fields
     private NavMeshAgent navAgent;
     private NPCGroup group;
-    private bool isGroupLeader = false;
+    [SerializeField] private bool isGroupLeader = false;
     private bool isWaiting = false;
     private float patiencePercentage = 1.0f;
-    private Chair assignedChair;
+
     private string requestedDrink = "";
     private bool hasDrink = false;
     private bool hasGameBox = false;
@@ -43,6 +43,12 @@ public class NPC : MonoBehaviour, IInteractable
     private Transform cashierPosition;
     private Transform exitPosition;
     private GameObject currentCup;
+    [SerializeField] private float adisyonFee;
+    [SerializeField] private Chair assignedChair;
+    [SerializeField] public TableController table;
+
+    [SerializeField] private MoneyManager moneyManager;
+    [SerializeField] private WearManager wearManager;
 
     public bool isPaying
     {
@@ -58,6 +64,8 @@ public class NPC : MonoBehaviour, IInteractable
 
     private void Awake()
     {
+        moneyManager = FindObjectOfType<MoneyManager>();
+        wearManager = FindObjectOfType<WearManager>();
         navAgent = GetComponent<NavMeshAgent>();
 
         if (navAgent == null)
@@ -154,7 +162,8 @@ public class NPC : MonoBehaviour, IInteractable
         // Update the table UI
         if (assignedChair != null && assignedChair.GetTable() != null)
         {
-            TableController table = assignedChair.GetTable();
+            table = assignedChair.GetTable();
+            Debug.Log($"Table found for NPC: {table.tableName}");
             table.UpdateNPCRequest(this, requestedDrink);
         }
 
@@ -181,7 +190,7 @@ public class NPC : MonoBehaviour, IInteractable
 
         if (assignedChair != null && assignedChair.GetTable() != null)// Update the table UI
         {
-            TableController table = assignedChair.GetTable();
+            table = assignedChair.GetTable();
             table.UpdateNPCRequest(this, requestedDrink);
         }
 
@@ -574,13 +583,101 @@ public class NPC : MonoBehaviour, IInteractable
     // Process payment when player interacts with NPC at cashier
     private void ProcessPayment()
     {
+
         float finalBill = group != null ? group.GetTotalBill() : totalBill;
         Debug.Log($"[NPC] {gameObject.name}: {finalBill} TL ödeme işlemi tamamlandı!");
         ShowMessageAboveNPC($"{finalBill} TL ödeme tamamlandı");
         _isPaying = false;
-
         // Reset idle animation
         animator?.SetBool(IsIdle, false);
+
+        // Calculate the percentage difference between adisyonFee and finalBill
+        float percentageDifference = ((adisyonFee - finalBill) / finalBill) * 100f;
+        float randomChance = UnityEngine.Random.Range(0f, 100f);
+
+        if (adisyonFee <= finalBill)
+        {
+            moneyManager.AddMoney(finalBill);
+            wearManager.AddWear(0);
+        }
+        else if (percentageDifference > 0 && percentageDifference <= 20)
+        {
+            if (randomChance <= 80)
+            {
+                moneyManager.AddMoney(adisyonFee);
+                wearManager.AddWear(2);
+            }
+            else
+            {
+                moneyManager.AddMoney(finalBill);
+                wearManager.AddWear(4);
+            }
+        }
+        else if (percentageDifference > 20 && percentageDifference <= 40)
+        {
+            if (randomChance <= 60)
+            {
+                moneyManager.AddMoney(adisyonFee);
+                wearManager.AddWear(4);
+            }
+            else
+            {
+                moneyManager.AddMoney(finalBill);
+                wearManager.AddWear(8);
+            }
+        }
+        else if (percentageDifference > 40 && percentageDifference <= 60)
+        {
+            if (randomChance <= 40)
+            {
+                moneyManager.AddMoney(adisyonFee);
+                wearManager.AddWear(6);
+            }
+            else
+            {
+                moneyManager.AddMoney(finalBill);
+                wearManager.AddWear(12);
+            }
+        }
+        else if (percentageDifference > 60 && percentageDifference <= 80)
+        {
+            if (randomChance <= 20)
+            {
+                moneyManager.AddMoney(adisyonFee);
+                wearManager.AddWear(8);
+            }
+            else
+            {
+                moneyManager.AddMoney(finalBill);
+                wearManager.AddWear(16);
+            }
+        }
+        else if (percentageDifference > 80 && percentageDifference <= 100)
+        {
+            if (randomChance <= 10)
+            {
+                moneyManager.AddMoney(adisyonFee);
+                wearManager.AddWear(10);
+            }
+            else
+            {
+                moneyManager.AddMoney(finalBill);
+                wearManager.AddWear(20);
+            }
+        }
+        else // percentageDifference > 100
+        {
+            if (randomChance <= 0) // This will never happen, but included for completeness
+            {
+                moneyManager.AddMoney(adisyonFee);
+                wearManager.AddWear(12);
+            }
+            else
+            {
+                moneyManager.AddMoney(finalBill);
+                wearManager.AddWear(25);
+            }
+        }
 
         // Hesabı sıfırla
         if (group != null)
@@ -690,7 +787,7 @@ public class NPC : MonoBehaviour, IInteractable
             // Atanmış masadaki içecek talebini güncelle
             if (assignedChair != null && assignedChair.GetTable() != null)
             {
-                TableController table = assignedChair.GetTable();
+                table = assignedChair.GetTable();
                 table.UpdateNPCRequest(this, "");
             }
 
@@ -746,7 +843,7 @@ public class NPC : MonoBehaviour, IInteractable
         if (cupPosition != null)
         {
             // Get table reference
-            TableController table = assignedChair.GetTable();
+            table = assignedChair.GetTable();
 
             // Set the cup as a child of the table
             if (table != null)
@@ -804,7 +901,7 @@ public class NPC : MonoBehaviour, IInteractable
             if (tablePosition != null)
             {
                 // Get table reference
-                TableController table = assignedChair.GetTable();
+                table = assignedChair.GetTable();
 
                 // Set the cup as a child of the table
                 if (table != null)
@@ -908,6 +1005,7 @@ public class NPC : MonoBehaviour, IInteractable
     // Handles getting up from the chair
     public void GetUpFromChair(System.Action onComplete = null)
     {
+
         if (!isSeated)
         {
             onComplete?.Invoke();
@@ -920,7 +1018,6 @@ public class NPC : MonoBehaviour, IInteractable
     private IEnumerator GetUpProcess(System.Action onComplete = null)
     {
         ShowMessageAboveNPC("Kalkıyor");
-
         // Play getting up animation
         animator?.SetBool(IsSitting, false);
 
@@ -981,5 +1078,34 @@ public class NPC : MonoBehaviour, IInteractable
     public void ResetBill()
     {
 
+    }
+
+    public void UpdateAdisyon()
+    {
+        // Önce sandalye kontrol
+        if (assignedChair == null)
+        {
+            Debug.LogError("[AdisyonÜcreti] NPC henüz bir sandalyeye atanmamış!");
+            return;
+        }
+
+        // Önce NPC'nin bağlı olduğu masayı bul
+        table = assignedChair.GetComponentInParent<TableController>();
+        if (table == null)
+        {
+            Debug.LogError("[AdisyonÜcreti] Masa bulunamadı!");
+            return;
+        }
+
+        // Masanın adisyon scriptini bul
+        Adisyon tableAdisyon = table.GetComponentInChildren<Adisyon>();
+        if (tableAdisyon == null)
+        {
+            Debug.LogError("[AdisyonÜcreti] Masada Adisyon scripti bulunamadı! Masa: " + table.tableName);
+            return;
+        }
+
+        adisyonFee = tableAdisyon.GetTotalPrice();
+        Debug.Log($"[AdisyonÜcreti] {gameObject.name} için adisyon güncellendi - Tutar: {adisyonFee} TL");
     }
 }

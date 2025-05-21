@@ -2790,30 +2790,30 @@ MonoBehaviour:
     quantity: 0
     quantityTextUI: {fileID: 666196652448691589}
     price: 15
-    plusButtonGO: {fileID: 0}
-    plusButton: {fileID: 0}
-    minusButtonGO: {fileID: 0}
-    minusButton: {fileID: 0}
+    plusButtonGO: {fileID: 2787880519240719280}
+    plusButton: {fileID: 4892059731308150838}
+    minusButtonGO: {fileID: 8065094227481213406}
+    minusButton: {fileID: 253266501749063255}
     TotalPriceUI: {fileID: 4013426698865604567}
   - itemName: Oralet
     itemNameTextUI: {fileID: 4387761186741515496}
     quantity: 0
     quantityTextUI: {fileID: 4502606053677253602}
     price: 20
-    plusButtonGO: {fileID: 0}
-    plusButton: {fileID: 0}
-    minusButtonGO: {fileID: 0}
-    minusButton: {fileID: 0}
+    plusButtonGO: {fileID: 615518638153570834}
+    plusButton: {fileID: 1580997709798241254}
+    minusButtonGO: {fileID: 9071207093628543817}
+    minusButton: {fileID: 1790123798959495877}
     TotalPriceUI: {fileID: 7000210561592484855}
   - itemName: Kahve
     itemNameTextUI: {fileID: 429622611560334901}
     quantity: 0
     quantityTextUI: {fileID: 9107161539561627724}
     price: 25
-    plusButtonGO: {fileID: 0}
-    plusButton: {fileID: 0}
-    minusButtonGO: {fileID: 0}
-    minusButton: {fileID: 0}
+    plusButtonGO: {fileID: 2647287225926961188}
+    plusButton: {fileID: 6373128083428193808}
+    minusButtonGO: {fileID: 7136870803681103265}
+    minusButton: {fileID: 2801976195425819971}
     TotalPriceUI: {fileID: 5476792374665449178}
 --- !u!33 &5526912184645899492
 MeshFilter:
@@ -4453,6 +4453,7 @@ MonoBehaviour:
   adisyonPosition: {fileID: 7226465785206562743}
   adisyonObject: {fileID: 4299641455617911664}
   adisyonUI: {fileID: 6733887571834654086}
+  adisyonScript: {fileID: 6673383426713514800}
 --- !u!65 &3952484098767515073
 BoxCollider:
   m_ObjectHideFlags: 0

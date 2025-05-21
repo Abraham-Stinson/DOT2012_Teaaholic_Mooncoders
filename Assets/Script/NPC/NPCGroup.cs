@@ -284,6 +284,7 @@ public class NPCGroup : MonoBehaviour
     // Called when an NPC finishes drinking
     public void OnNPCFinishedDrinking(NPC npc)
     {
+        
         Debug.Log($"[NPCGroup] {npc.name} içecek içmeyi bitirdi, sayaçlar güncelleniyor");
         finishedDrinkingCount++;
         
@@ -337,6 +338,7 @@ public class NPCGroup : MonoBehaviour
     // Prepare the group to leave the shop
     private IEnumerator PrepareToLeave()
     {
+        
         Debug.Log("[NPCGroup] Grup çıkış için hazırlanıyor - 5 saniye bekleniyor");
         yield return new WaitForSeconds(5f); // Finish playing
         
@@ -347,6 +349,11 @@ public class NPCGroup : MonoBehaviour
             if (npc != null)
             {
                 npc.StopPlaying();
+            }
+            if (npc.IsGroupLeader())
+            {
+                Debug.Log("[Adisyon] Grup lideri adisyonu güncelliyor");
+                npc.UpdateAdisyon();
             }
         }
         

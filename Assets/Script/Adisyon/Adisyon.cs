@@ -9,6 +9,7 @@ public class Adisyon : MonoBehaviour, IInteractable
 {
     [SerializeField] private TableController tableController; // Reference to the TableController script
     PauseMenuController pauseMenuController; // Reference to the PauseMenuController script
+    PlayerMovementScript playerMovementScript; // Reference to the PlayerMovementScript script
     
     [Header("Adisyon Settings")]
     public bool isAdisyonOpen; // Indicates if the adisyon is open
@@ -40,6 +41,9 @@ public class Adisyon : MonoBehaviour, IInteractable
     void Awake()
     {
         tableController = GetComponentInParent<TableController>();
+        // Initialize controller and scripts references
+        pauseMenuController = FindObjectOfType<PauseMenuController>();
+        playerMovementScript = FindObjectOfType<PlayerMovementScript>();
     }
     
     void Start()
@@ -69,6 +73,14 @@ public class Adisyon : MonoBehaviour, IInteractable
         if (isAdisyonOpen)
         {
             Debug.Log("Adisyon UI closed");
+            if (playerMovementScript != null)
+            {
+                playerMovementScript.adisyonScript = null;
+            }
+            else
+            {
+                Debug.LogWarning("PlayerMovementScript is null in Adisyon.CloseAdisyonUI");
+            }
             isAdisyonOpen = false;
             OpenAdisyonUI(false);
         }
@@ -361,6 +373,10 @@ public class Adisyon : MonoBehaviour, IInteractable
         DecreaseQuantity(itemIndex);
     }
     
+    public float GetTotalPrice()
+    {
+        return adisyonTotalPrice;
+    }
     // Inspector'dan atanabilen button callback fonksiyonları
     // Bu fonksiyonlar Button onClick olaylarına doğrudan Inspector'dan atanabilir
     public void OnItemPlus0() { OnPlusButtonClick(0); }

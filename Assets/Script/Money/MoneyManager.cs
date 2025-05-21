@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class MoneyManager : MonoBehaviour
 {
 
-    [SerializeField][Min (1f)] private float money = 0;
+    [SerializeField][Min(1f)] private float money = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private float refreshRate = 0.1f;
@@ -23,6 +23,12 @@ public class MoneyManager : MonoBehaviour
 
     void RefreshUI()
     {
-        moneyText.text=money.ToString("F2");
+        moneyText.text = money.ToString("F2");
+    }
+
+    public void AddMoney(float amount)
+    {
+        money += amount;
+        RefreshUI();
     }
 }
