@@ -72,6 +72,7 @@ public class Adisyon : MonoBehaviour, IInteractable
         // Logic to close the adisyon UI
         if (isAdisyonOpen)
         {
+            Time.timeScale = 1f; // Game time scale reset
             Debug.Log("Adisyon UI closed");
             if (playerMovementScript != null)
             {
@@ -102,6 +103,7 @@ public class Adisyon : MonoBehaviour, IInteractable
         // Logic to open or close the adisyon UI
         if (open)
         {
+            Time.timeScale = 0f; // Game time scale reset
             isAdisyonOpen = true;
             // Logic to open the adisyon UI
             Debug.Log("Adisyon UI opened");
@@ -376,6 +378,17 @@ public class Adisyon : MonoBehaviour, IInteractable
     public float GetTotalPrice()
     {
         return adisyonTotalPrice;
+    }
+
+    public void ResetAdisyon()
+    {
+        for (int i = 0; i < receiptItems.Count; i++)
+        {
+            receiptItems[i].quantity = 0;
+            UpdateItemUI(i);
+        }
+        adisyonTotalPrice = 0;
+        UpdateTotalPrice();
     }
     // Inspector'dan atanabilen button callback fonksiyonları
     // Bu fonksiyonlar Button onClick olaylarına doğrudan Inspector'dan atanabilir

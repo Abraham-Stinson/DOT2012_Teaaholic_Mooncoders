@@ -49,6 +49,7 @@ public class NPC : MonoBehaviour, IInteractable
 
     [SerializeField] private MoneyManager moneyManager;
     [SerializeField] private WearManager wearManager;
+    Adisyon tableAdisyon;
 
     public bool isPaying
     {
@@ -583,7 +584,7 @@ public class NPC : MonoBehaviour, IInteractable
     // Process payment when player interacts with NPC at cashier
     private void ProcessPayment()
     {
-
+        
         float finalBill = group != null ? group.GetTotalBill() : totalBill;
         Debug.Log($"[NPC] {gameObject.name}: {finalBill} TL ödeme işlemi tamamlandı!");
         ShowMessageAboveNPC($"{finalBill} TL ödeme tamamlandı");
@@ -597,7 +598,7 @@ public class NPC : MonoBehaviour, IInteractable
 
         if (adisyonFee <= finalBill)
         {
-            moneyManager.AddMoney(finalBill);
+            moneyManager.AddMoney(adisyonFee);
             wearManager.AddWear(0);
         }
         else if (percentageDifference > 0 && percentageDifference <= 20)
@@ -684,6 +685,7 @@ public class NPC : MonoBehaviour, IInteractable
         {
             group.ResetBill();
         }
+        tableAdisyon.ResetAdisyon();
         totalBill = 0f;
 
         // Go to exit
@@ -1098,7 +1100,7 @@ public class NPC : MonoBehaviour, IInteractable
         }
 
         // Masanın adisyon scriptini bul
-        Adisyon tableAdisyon = table.GetComponentInChildren<Adisyon>();
+        tableAdisyon = table.GetComponentInChildren<Adisyon>();
         if (tableAdisyon == null)
         {
             Debug.LogError("[AdisyonÜcreti] Masada Adisyon scripti bulunamadı! Masa: " + table.tableName);

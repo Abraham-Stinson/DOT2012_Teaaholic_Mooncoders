@@ -13637,7 +13637,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuController: {fileID: 2034626286}
-  walkSpeed: 5
+  adisyonScript: {fileID: 0}
+  walkSpeed: 10
   runMultiply: 2
   cameraTransform: {fileID: 1329170500}
   mouseSensitivity: 0.125
