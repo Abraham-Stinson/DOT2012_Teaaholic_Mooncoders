@@ -584,6 +584,13 @@ public class NPC : MonoBehaviour, IInteractable
     // Process payment when player interacts with NPC at cashier
     private void ProcessPayment()
     {
+        if(adisyonFee <= 0)
+        {
+            _isPaying = false;
+            
+            Debug.Log($"[NPC] {gameObject.name}: Ödeme yapılacak bir hesap yok!");
+            return;
+        }
         
         float finalBill = group != null ? group.GetTotalBill() : totalBill;
         Debug.Log($"[NPC] {gameObject.name}: {finalBill} TL ödeme işlemi tamamlandı!");

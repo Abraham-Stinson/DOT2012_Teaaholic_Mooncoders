@@ -114,6 +114,13 @@ public class Player : MonoBehaviour
                 hit.collider.GetComponent<Adisyon>().interact();
                 return;
             }
+
+            if (hit.collider.GetComponent<DoorTrigger>() != null)
+            {
+                Debug.Log($"Kapı ile etkileşime geçildi");
+                hit.collider.GetComponent<DoorTrigger>().interact();
+                return;
+            }
             
             // Masa kontrolü
             TableController table = hit.collider.GetComponent<TableController>();
@@ -152,7 +159,7 @@ public class Player : MonoBehaviour
 
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin"))
             {
-                if (inHandItem != null && (inHandItem.layer == 6) && !(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
+                if (inHandItem != null && (inHandItem.layer == 6) && !(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag" || inHandItem.tag == "Iskambil" || inHandItem.tag == "Tavla" || inHandItem.tag == "Okey"))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
                 {
                     Destroy(inHandItem);
                     isPicked = false;
