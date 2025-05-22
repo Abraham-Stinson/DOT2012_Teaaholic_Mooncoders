@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class MoneyManager : MonoBehaviour
 {
-
+    [SerializeField] private float dayTotalMoney = 0;
     [SerializeField][Min(1f)] private float money = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
@@ -28,7 +28,17 @@ public class MoneyManager : MonoBehaviour
 
     public void AddMoney(float amount)
     {
+        dayTotalMoney += amount;
         money += amount;
         RefreshUI();
+    }
+
+    public float GetDayTotalMoney()
+    {
+        return dayTotalMoney;
+    } 
+    public void ResetDayTotalMoney()
+    {
+        dayTotalMoney = 0;
     }
 }

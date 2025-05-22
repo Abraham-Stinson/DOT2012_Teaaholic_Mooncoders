@@ -508,7 +508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a4ebfd0d90824488483fe12ea2d390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fullMagazine: 10
+  maxMagazine: 10
   currentMagazine: 10
   typeOfProduct: Banana
   productParts:

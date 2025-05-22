@@ -1073,7 +1073,7 @@ GameObject:
   - component: {fileID: 7539385645335387837}
   m_Layer: 10
   m_Name: NPC_1
-  m_TagString: Untagged
+  m_TagString: NPC_Customer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1130,6 +1130,12 @@ MonoBehaviour:
   - 20
   - 20
   - 20
+  isGroupLeader: 0
+  adisyonFee: 0
+  assignedChair: {fileID: 0}
+  table: {fileID: 0}
+  moneyManager: {fileID: 0}
+  wearManager: {fileID: 0}
 --- !u!95 &6994841605647538328
 Animator:
   serializedVersion: 7

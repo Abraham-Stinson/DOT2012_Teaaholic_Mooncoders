@@ -1,15 +1,33 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class WearManager : MonoBehaviour
 {
-
     [SerializeField, Min(1f)][Range(1f, 100f)] private float wear = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI wearText;
     [SerializeField] private float refreshRate = 0.1f;
     private float nextRefreshTime;
+
+    [Header("Vignette Settings")]
+    [SerializeField] private Volume postProcessVolume;
+    [SerializeField] private float maxVignetteIntensity = 0.5f;
+    [SerializeField] private float vignetteDuration = 1f;
+    private Vignette vignette;
+    private float vignetteTimer;
+    private float previousWear;
+
+    void Start()
+    {
+        if (postProcessVolume != null)
+        {
+            postProcessVolume.profile.TryGet(out vignette);
+        }
+        previousWear = wear;
+    }
 
     // Update is called once per frame
     void Update()
@@ -18,6 +36,21 @@ public class WearManager : MonoBehaviour
         {
             RefreshUI();
             nextRefreshTime = Time.time + refreshRate;
+        }
+
+        // Handle vignette effect
+        if (vignette != null)
+        {
+            if (vignetteTimer > 0)
+            {
+                vignetteTimer -= Time.deltaTime;
+                float normalizedTime = vignetteTimer / vignetteDuration;
+                vignette.intensity.value = Mathf.Lerp(0, maxVignetteIntensity, normalizedTime);
+            }
+            else
+            {
+                vignette.intensity.value = 0;
+            }
         }
     }
 
@@ -28,6 +61,7 @@ public class WearManager : MonoBehaviour
     
     public void AddWear(float amount)
     {
+        float oldWear = wear;
         wear += amount;
         if(wear > 100f)
         {
@@ -37,6 +71,13 @@ public class WearManager : MonoBehaviour
         {
             wear = 0f;
         }
+
+        // Trigger vignette effect if wear increased
+        if (wear > oldWear && vignette != null)
+        {
+            vignetteTimer = vignetteDuration;
+        }
+
         RefreshUI();
     }
 }

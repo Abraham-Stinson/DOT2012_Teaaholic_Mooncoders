@@ -1,10 +1,18 @@
 using System;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class DayNightCycleController : MonoBehaviour
 {
+    [Header("Player")]
+    [SerializeField] private Player player;
+    [SerializeField] private GameObject playerObject;
+    [SerializeField] private Transform playerDayStartPosition;
+    [Header("Money Manager")]
+    [SerializeField] private MoneyManager moneyManager;
     [Header("Time Settings")]
     [Tooltip("Real seconds per one in-game minute")]
     public float minuteDurationSeconds = 0.6667f;
@@ -27,12 +35,18 @@ public class DayNightCycleController : MonoBehaviour
     private int hour;
     private int minute;
     private float timer = 0f;
-    private bool isPaused = false;
+    private bool isDayFinished = false;
     private bool npcSpawningDisabled = false; // Track if NPC spawning is disabled
 
     private const float sunrise = 6f;
     private const float sunPeak = 13f;
     private const float sunset = 18f;
+
+    [Header("Gün Sonu Ekranı")]
+    [SerializeField] private GameObject endOfDayScreenUI;
+    [SerializeField] private TextMeshProUGUI totalMoneyEarnedText;
+    [SerializeField] private TextMeshProUGUI totalMoneySpentText;
+    [SerializeField] private TextMeshProUGUI totalMoneyDifferenceText;
 
     private void Start()
     {
@@ -42,7 +56,7 @@ public class DayNightCycleController : MonoBehaviour
         npcSpawningDisabled = false;
         UpdateTimeUI();
         UpdateSunLight();
-        
+
         // Find NPCManager if not assigned
         if (npcManager == null)
         {
@@ -56,10 +70,10 @@ public class DayNightCycleController : MonoBehaviour
 
     private void Update()
     {
-        if (isPaused) return;
+        if (isDayFinished) return;
 
         timer += Time.deltaTime;
-        
+
         if (timer >= minuteDurationSeconds)
         {
             timer -= minuteDurationSeconds;
@@ -91,7 +105,7 @@ public class DayNightCycleController : MonoBehaviour
         // Gece yarısında (00:00) zamanı durdur
         if (hour == 0 && minute == 0)
         {
-            isPaused = true;
+            isDayFinished = true;
             Debug.Log("Gün sonu - Zaman durduruldu");
         }
 
@@ -157,16 +171,49 @@ public class DayNightCycleController : MonoBehaviour
     }
 
     // Kapı ile etkileşim olduğunda çağrılacak
-    public void OnMainDoorInteraction()
+    public void OnDoorInteraction()
     {
-        if (!isPaused) return;
+        if (!isDayFinished)
+        {
+            Debug.Log("Gün bitmedi");
+            return;
+        }
+        if (IsThereAnyNPC()) {
+            Debug.Log("NPC var");
+            return;
+        }
+        Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
+        Cursor.visible = true; // Fare imlecini görünür yap
+        Time.timeScale = 0f; // Zamanı durdur
+        endOfDayScreenUI.SetActive(true);
+        totalMoneyEarnedText.color = Color.green;
+        totalMoneySpentText.color = Color.red;
+        totalMoneyEarnedText.text = "Toplam Kazanılan Para: " + moneyManager.GetDayTotalMoney().ToString("F2");
+        totalMoneySpentText.text = "Toplam Harcanan Para: ";
+        totalMoneyDifferenceText.text = "Toplam Fark: " + moneyManager.GetDayTotalMoney()/* - moneyManager.GetDayTotalMoney())*/.ToString("F2");
 
+        //Gün sonu ekranı gelsin ve toplam kazanılan para ve toplam harcanan para gösterilsin ve farkı alınsın
+
+
+
+    }
+    public void OnNextDayInteraction()
+    {
+        //Oyuncuyu gün başlatma pozisyonuna koy
+        playerObject.transform.position = playerDayStartPosition.position;
+        playerObject.transform.rotation = playerDayStartPosition.rotation;
+
+        Cursor.lockState = CursorLockMode.Locked; // Fare imlecini serbest bırak
+        Cursor.visible = false; // Fare imlecini görünür yap
+        Mouse.current.WarpCursorPosition(Vector2.zero); // Reset mouse position to (0,0)
+        endOfDayScreenUI.SetActive(false);
+        Time.timeScale = 1f; // Zamanı durdur
         day++;
         hour = startHour;
         minute = 0;
-        isPaused = false;
+        isDayFinished = false;
         timer = 0f;
-        
+
         // Yeni gün başladığında müşteri spawning'i tekrar aktif et
         if (npcSpawningDisabled && npcManager != null)
         {
@@ -177,5 +224,18 @@ public class DayNightCycleController : MonoBehaviour
 
         UpdateTimeUI();
         UpdateSunLight();
+    }
+    
+    bool IsThereAnyNPC()
+    {
+        if (GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0)
+        {
+            Debug.Log("NPC var");
+        }
+        else
+        {
+            Debug.Log("NPC yok");
+        }
+        return GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
     }
 }
