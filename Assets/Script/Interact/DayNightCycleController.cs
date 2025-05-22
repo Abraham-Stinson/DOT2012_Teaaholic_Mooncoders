@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class DayNightCycleController : MonoBehaviour
 {
     [Header("Player")]
+    [SerializeField] private int howManyDaysPlayerPlay = 30;
     [SerializeField] private Player player;
     [SerializeField] private GameObject playerObject;
     [SerializeField] private Transform playerDayStartPosition;
@@ -182,6 +183,14 @@ public class DayNightCycleController : MonoBehaviour
             Debug.Log("NPC var");
             return;
         }
+
+        day++;
+        hour = startHour;
+        minute = 0;
+        isDayFinished = false;
+        timer = 0f;
+
+
         Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
         Cursor.visible = true; // Fare imlecini görünür yap
         Time.timeScale = 0f; // Zamanı durdur
@@ -199,6 +208,10 @@ public class DayNightCycleController : MonoBehaviour
     }
     public void OnNextDayInteraction()
     {
+        if (day >= howManyDaysPlayerPlay)
+        {
+            //Oyun burada bitiyor 
+        }
         //Oyuncuyu gün başlatma pozisyonuna koy
         playerObject.transform.position = playerDayStartPosition.position;
         playerObject.transform.rotation = playerDayStartPosition.rotation;
@@ -208,11 +221,7 @@ public class DayNightCycleController : MonoBehaviour
         Mouse.current.WarpCursorPosition(Vector2.zero); // Reset mouse position to (0,0)
         endOfDayScreenUI.SetActive(false);
         Time.timeScale = 1f; // Zamanı durdur
-        day++;
-        hour = startHour;
-        minute = 0;
-        isDayFinished = false;
-        timer = 0f;
+        
 
         // Yeni gün başladığında müşteri spawning'i tekrar aktif et
         if (npcSpawningDisabled && npcManager != null)
