@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
+    [SerializeField] private DayNightCycleController dayNightCycleControllerScript;
     public Adisyon adisyonScript;
     [Header("Menü Elemanları")]
     [SerializeField] private GameObject pauseMenuCanvas;
@@ -100,6 +101,7 @@ public class PauseMenuController : MonoBehaviour
     
     public void PauseGame()
     {
+        
         // Oyunu duraklat
         Time.timeScale = 0f;
         isPaused = true;
