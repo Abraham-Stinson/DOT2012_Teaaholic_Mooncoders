@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class DayNightCycleController : MonoBehaviour
 {
+    [SerializeField]
+    private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
     [Header("Player")]
     [SerializeField] private int howManyDaysPlayerPlay = 30;
     [SerializeField] private Player player;
@@ -32,9 +34,9 @@ public class DayNightCycleController : MonoBehaviour
     public Light sunLight;
     public NPCManager npcManager; // Reference to NPC Manager
 
-    private int day = 1;
-    private int hour;
-    private int minute;
+    [SerializeField] private int day = 1;
+    [SerializeField] private int hour;
+    [SerializeField] private int minute;
     private float timer = 0f;
     private bool isDayFinished = false;
     private bool npcSpawningDisabled = false; // Track if NPC spawning is disabled
@@ -71,7 +73,7 @@ public class DayNightCycleController : MonoBehaviour
 
     private void Update()
     {
-        if (isDayFinished) return;
+        if (isDayFinished||pauseMenuControllerScript.isPaused) return;
 
         timer += Time.deltaTime;
 
@@ -96,16 +98,17 @@ public class DayNightCycleController : MonoBehaviour
         }
 
         // Saat 12'den sonra müşteri spawning'i durdur
-        if (hour >= 12 && !npcSpawningDisabled && npcManager != null)
+        if (hour >= 12 )
         {
-            npcSpawningDisabled = true;
-            npcManager.enabled = false; // NPCManager'ı devre dışı bırak
-            Debug.Log("Saat 12:00 oldu - Müşteri spawning durduruldu");
+            
         }
 
         // Gece yarısında (00:00) zamanı durdur
-        if (hour == 0 && minute == 0)
+        if (hour == 0 && minute == 0&& !npcSpawningDisabled && npcManager != null)
         {
+            npcSpawningDisabled = true;
+            npcManager.enabled = false; // NPCManager'ı devre dışı bırak
+            Debug.Log("Saat 00:00 oldu - Müşteri spawning durduruldu");
             isDayFinished = true;
             Debug.Log("Gün sonu - Zaman durduruldu");
         }
@@ -187,7 +190,6 @@ public class DayNightCycleController : MonoBehaviour
         day++;
         hour = startHour;
         minute = 0;
-        isDayFinished = false;
         timer = 0f;
 
 
@@ -208,14 +210,18 @@ public class DayNightCycleController : MonoBehaviour
     }
     public void OnNextDayInteraction()
     {
-        if (day >= howManyDaysPlayerPlay)
+        if (day > howManyDaysPlayerPlay)
         {
             //Oyun burada bitiyor 
+            Debug.Log("[OYUN BITTI ALOOO]Oyun bitti");
+            return;
         }
         //Oyuncuyu gün başlatma pozisyonuna koy
         playerObject.transform.position = playerDayStartPosition.position;
         playerObject.transform.rotation = playerDayStartPosition.rotation;
 
+        isDayFinished = false;
+        
         Cursor.lockState = CursorLockMode.Locked; // Fare imlecini serbest bırak
         Cursor.visible = false; // Fare imlecini görünür yap
         Mouse.current.WarpCursorPosition(Vector2.zero); // Reset mouse position to (0,0)

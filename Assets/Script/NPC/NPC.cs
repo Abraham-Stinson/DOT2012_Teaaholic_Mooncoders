@@ -167,20 +167,6 @@ public class NPC : MonoBehaviour, IInteractable
             Debug.Log($"Table found for NPC: {table.tableName}");
             table.UpdateNPCRequest(this, requestedDrink);
         }
-
-        // İçecek fiyatını gruba bildir
-        if (drinkPriceMap.TryGetValue(requestedDrink, out float price))
-        {
-            if (group != null)
-            {
-                group.AddToBill(price);
-            }
-            else
-            {
-                totalBill += price;
-            }
-            Debug.Log($"NPC ordered {requestedDrink} for {price} TL");
-        }
     }
 
     public void OrderDrinkRefresh()
