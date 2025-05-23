@@ -19,7 +19,10 @@ public class Kettle : MonoBehaviour
     [Header("CoolDown")]
     [SerializeField] private float coolDownTime = 1f;
     [SerializeField] private bool isOnCoolDown = false;
-    
+
+    [Header("Effects")]
+    [SerializeField] private ParticleSystem steamParticle;
+
     void Start()
     {
         currentKettleMagazine = minKettleMagazine;
@@ -27,6 +30,14 @@ public class Kettle : MonoBehaviour
         isHaveHotWater = false;
         isBrewed = false;
         currentBrewTimeOfTea = brewTimeOfTea;
+        if (steamParticle != null)
+        {
+            steamParticle.Stop(true);
+        }
+        else
+        {
+            Debug.LogError("Steam Particle System is not assigned!");
+        }
     }
 
     void Update()
@@ -175,19 +186,38 @@ public class Kettle : MonoBehaviour
     {
         if (shouldContinue)
         {
+            if (steamParticle != null && !steamParticle.isPlaying)
+            {
+                steamParticle.Play(true);
+                Debug.Log("[ParticleSystem] Started playing");
+            }
+
             if (currentBrewTimeOfTea > 0)
             {
                 currentBrewTimeOfTea -= Time.deltaTime;
             }
             else
             {
-                // Only log the message when the tea first becomes brewed
                 if (!isBrewed)
                 {
+                    if (steamParticle != null)
+                    {
+                        steamParticle.Stop(true);
+                        Debug.Log("[ParticleSystem] Stopped playing");
+                    }
+                    
                     Debug.Log("ÇAY DEMLENDİ!");
                     isBrewed = true;
                     currentKettleMagazine = maxKettleMagazine;
                 }
+            }
+        }
+        else
+        {
+            if (steamParticle != null && steamParticle.isPlaying)
+            {
+                steamParticle.Stop(true);
+                Debug.Log("[ParticleSystem] Stopped - not on kettle base");
             }
         }
     }
@@ -217,6 +247,10 @@ public class Kettle : MonoBehaviour
         isHaveTea = false;
         isBrewed = false;
         Debug.Log("Kettle boşaltıldı");
+        if (steamParticle != null && steamParticle.isPlaying)
+        {
+            steamParticle.Stop(true);
+        }
     }
     
     /// <summary>
