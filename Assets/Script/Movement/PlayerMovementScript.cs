@@ -6,6 +6,9 @@ public class PlayerMovementScript : MonoBehaviour
 {
     PlayerMovementAndInteractionSystem playerInput;
     CharacterController characterController;
+    public PauseMenuController pauseMenuController;
+    Player player;
+    public Adisyon adisyonScript;
     [Header("Movement")]
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -33,6 +36,7 @@ public class PlayerMovementScript : MonoBehaviour
     {
         playerInput = new PlayerMovementAndInteractionSystem();
         characterController = GetComponent<CharacterController>();
+        pauseMenuController=GetComponent<PauseMenuController>();
 
         // If no camera transform assigned, try to find camera in children
         if (cameraTransform == null)
@@ -58,7 +62,7 @@ public class PlayerMovementScript : MonoBehaviour
         playerInput.ChrachterController.Move.performed += OnMovementInput;
         playerInput.ChrachterController.Run.started += OnRun;
         playerInput.ChrachterController.Run.canceled += OnRun;
-        
+
         // Mouse input callback
         playerInput.ChrachterController.Look.performed += OnLookInput;
     }
@@ -74,7 +78,7 @@ public class PlayerMovementScript : MonoBehaviour
         currentRunMovement.z = currentMovement.z * runMultiply;
 
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
-        
+
         // Update animation parameters based on movement
         UpdateAnimationState();
     }
@@ -82,7 +86,7 @@ public class PlayerMovementScript : MonoBehaviour
     void OnRun(InputAction.CallbackContext context)
     {
         isRunPressed = context.ReadValueAsButton();
-        
+
         // Update animation parameters when run state changes
         UpdateAnimationState();
     }
@@ -122,7 +126,7 @@ public class PlayerMovementScript : MonoBehaviour
             cameraPitch = Mathf.Clamp(cameraPitch, -upDownRange, upDownRange);
             cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
-        
+
         // Reset mouse delta after applying rotation
         mouseDelta = Vector2.zero;
     }
@@ -130,7 +134,7 @@ public class PlayerMovementScript : MonoBehaviour
     void UpdateAnimationState()
     {
         if (animator == null) return;
-        
+
         if (isMovementPressed)
         {
             if (isRunPressed)
@@ -157,6 +161,19 @@ public class PlayerMovementScript : MonoBehaviour
     void Update()
     {
         HandleGravity();
+        
+        // Check if pauseMenuController is null and try to find it
+        if (pauseMenuController == null)
+        {
+            pauseMenuController = FindObjectOfType<PauseMenuController>();
+        }
+        
+        // Check if game is paused (safely handling null reference)
+        if (pauseMenuController != null && pauseMenuController.isPaused) return;
+        
+        // If adisyon is open, prevent movement    
+        if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
+
         HandleRotation();
 
         // Calculate movement direction based on character's forward direction
@@ -165,7 +182,7 @@ public class PlayerMovementScript : MonoBehaviour
 
         float speed = isRunPressed ? walkSpeed * runMultiply : walkSpeed;
         characterController.Move(moveDirection * speed * Time.deltaTime);
-        
+
         // Ensure animation state is updated each frame
         UpdateAnimationState();
     }

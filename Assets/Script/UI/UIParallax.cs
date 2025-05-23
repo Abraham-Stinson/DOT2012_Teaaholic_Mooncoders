@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem; // Yeni Input System desteði
 
 public class UIParallax : MonoBehaviour
 {
-    public float moveAmount = 10f;      // Ne kadar hareket etsin (piksel cinsinden)
-    public float smoothSpeed = 5f;      // Ne kadar yumuþak geçiþ olsun
+    public float moveAmount = 10f;
+    public float smoothSpeed = 5f;
 
     private RectTransform rectTransform;
     private Vector2 initialPosition;
@@ -16,12 +17,13 @@ public class UIParallax : MonoBehaviour
 
     void Update()
     {
+        // Yeni Input System'den mouse pozisyonunu oku
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
 
-        float mouseX = (Input.mousePosition.x / Screen.width) * 2 - 1;
-        float mouseY = (Input.mousePosition.y / Screen.height) * 2 - 1;
+        float mouseX = (mousePosition.x / Screen.width) * 2 - 1;
+        float mouseY = (mousePosition.y / Screen.height) * 2 - 1;
 
         Vector2 targetPos = initialPosition + new Vector2(mouseX, mouseY) * moveAmount;
         rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPos, Time.deltaTime * smoothSpeed);
     }
-
 }

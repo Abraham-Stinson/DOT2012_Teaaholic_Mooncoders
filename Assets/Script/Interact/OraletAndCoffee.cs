@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class OraletAndCoffee : MonoBehaviour
 {
-    [SerializeField] int fullMagazine = 10;
+    public int maxMagazine = 10;
     public int currentMagazine = 10;
     public string typeOfProduct = "";
 
@@ -15,7 +15,7 @@ public class OraletAndCoffee : MonoBehaviour
 
     void Start()
     {
-        currentMagazine = fullMagazine;
+        currentMagazine = maxMagazine;
         ChangeAppearanceOfProduct();
     }
 

@@ -28,6 +28,7 @@ TagManager:
   - CashierSpot
   - Iskambil
   - Tavla
+  - NPC_Customer
   layers:
   - Default
   - TransparentFX
