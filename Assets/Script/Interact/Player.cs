@@ -43,6 +43,8 @@ public class Player : MonoBehaviour
 
     [Header("Hot Water")]
     [SerializeField] private Animator hotWaterAnimator;
+    [SerializeField] private ParticleSystem tapSteamParticle;
+    [SerializeField] private GameObject tapSteamParticleGO;
 
 
     void Start()
@@ -898,8 +900,10 @@ public class Player : MonoBehaviour
 
     IEnumerator PlayHotWaterTapAnimation()
     {
+        tapSteamParticle.Play(true);
         hotWaterAnimator.SetBool("isUseHotWater", true);
         yield return new WaitForSeconds(1f);
         hotWaterAnimator.SetBool("isUseHotWater", false);
+        tapSteamParticle.Stop(true); // false parametresi ile mevcut parçacıklar tamamlanana kadar görünür kalır
     }
 }
