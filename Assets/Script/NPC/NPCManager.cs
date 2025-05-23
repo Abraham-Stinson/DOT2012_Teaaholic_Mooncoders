@@ -27,6 +27,7 @@ public class NPCManager : MonoBehaviour
     [Header("Exit Settings")]
     [SerializeField] private Transform exitPoint; // Exit point for NPCs
     [SerializeField] private Transform cashierPoint; // Cashier position for payment
+    [SerializeField] private BoxCollider exitTriggerZone; // Çıkış trigger zone'u
     
     [Header("Tables")]
     [SerializeField] private List<TableController> availableTables = new List<TableController>();
@@ -40,6 +41,35 @@ public class NPCManager : MonoBehaviour
     {
         // Start spawning NPCs
         spawnRoutine = StartCoroutine(SpawnGroupsRoutine());
+
+        // Exit trigger zone'u oluştur
+        if (exitTriggerZone == null)
+        {
+            CreateExitTriggerZone();
+        }
+    }
+    
+    private void CreateExitTriggerZone()
+    {
+        // Yeni bir GameObject oluştur
+        GameObject exitZone = new GameObject("ExitTriggerZone");
+        exitZone.transform.SetParent(transform);
+        
+        // BoxCollider ekle
+        exitTriggerZone = exitZone.AddComponent<BoxCollider>();
+        exitTriggerZone.isTrigger = true;
+        
+        // Çıkış noktasının konumuna yerleştir
+        if (exitPoint != null)
+        {
+            exitZone.transform.position = exitPoint.position;
+            // Trigger zone'un boyutunu ayarla (genişlik, yükseklik, derinlik)
+            exitTriggerZone.size = new Vector3(3f, 3f, 3f);
+        }
+        else
+        {
+            Debug.LogError("Exit point is not set in NPCManager!");
+        }
     }
     
     /// <summary>
@@ -161,7 +191,7 @@ public class NPCManager : MonoBehaviour
         if (activeGroups.Contains(group))
         {
             activeGroups.Remove(group);
-            Destroy(group.gameObject, 2f); // Destroy the group after a delay
+            Destroy(group.gameObject, 0.5f); // Destroy the group after a short delay
         }
     }
     
@@ -175,6 +205,22 @@ public class NPCManager : MonoBehaviour
         if (spawnRoutine != null)
         {
             StopCoroutine(spawnRoutine);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // NPC'nin çıkış trigger zone'una girdiğini kontrol et
+        NPC npc = other.GetComponent<NPC>();
+        if (npc != null)
+        {
+            // NPC'yi yok et
+            NPCGroup group = npc.GetComponentInParent<NPCGroup>();
+            if (group != null)
+            {
+                group.OnNPCLeft(npc);
+            }
+            Destroy(npc.gameObject);
         }
     }
 } 

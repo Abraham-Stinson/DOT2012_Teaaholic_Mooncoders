@@ -573,8 +573,21 @@ public class NPC : MonoBehaviour, IInteractable
         if(adisyonFee <= 0)
         {
             _isPaying = false;
+            Debug.Log($"[NPC] {gameObject.name}: Ödeme yapılacak bir hesap yok, direkt çıkışa gidiyor!");
+            ShowMessageAboveNPC("Hesap yok, çıkıyor");
             
-            Debug.Log($"[NPC] {gameObject.name}: Ödeme yapılacak bir hesap yok!");
+            // Direkt çıkışa git
+            if (exitPosition != null)
+            {
+                ShowMessageAboveNPC("Dükkandan çıkıyor");
+                MoveTo(exitPosition, OnArrivedAtExit);
+            }
+            else
+            {
+                Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu tanımlanmamış! NPC çıkamıyor.");
+                group.OnNPCLeft(this);
+                Destroy(gameObject, 0.5f);
+            }
             return;
         }
         

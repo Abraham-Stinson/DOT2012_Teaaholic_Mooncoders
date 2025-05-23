@@ -6737,6 +6737,7 @@ MonoBehaviour:
   doorAnimationName: MainDoor
   exitPoint: {fileID: 442602767}
   cashierPoint: {fileID: 1089186786}
+  exitTriggerZone: {fileID: 442602768}
   availableTables:
   - {fileID: 2604092660507127789}
   - {fileID: 1239917083}
@@ -7092,12 +7093,15 @@ MonoBehaviour:
       - text: "Aleyk\xFCmselam. Buyurun. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: Selam
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Merhaba. Ne vard\u0131?"
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
     - npcQuote: "Ben ve bir ka\xE7 arkada\u015F\u0131m grev yap\u0131yoruz. Evden
         at\u0131ld\u0131k. Bu gecelik Burada kalabilir miyiz? "
       playerOptions:
@@ -7105,12 +7109,15 @@ MonoBehaviour:
           \u015Eu olay\u0131n asl\u0131n\u0131 astar\u0131n\u0131 bir anlat. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "\u015Eu olay\u0131n tamam\u0131n\u0131 anlat bakal\u0131m. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: 'Allah Allah  '
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
     - npcQuote: "Garda\u015F biz devletin \u015Feker fabrikas\u0131nda \xE7al\u0131\u015F\u0131yoruz.
         Bizim k\xF6r olas\u0131ca bir m\xFCd\xFCr var. Bu m\xFCd\xFCr bizi sebepsiz
         yere i\u015Ften \xE7\u0131kard\u0131\u011F\u0131 yetmezmi\u015F gibi \xFCst\xFCne
@@ -7119,12 +7126,15 @@ MonoBehaviour:
       - text: "Garda\u015F \u015Fikayet etmediniz mi? "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "E sizde gidip \u015Fikayet etseydiniz adam\u0131. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Git polise \u015Fikayet et."
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
     - npcQuote: "\u015Eikayet etmez olur muyuz. Ettik \u015Fikayet ama m\xFCd\xFCr\xFCn
         \xFCst r\xFCtbelilerden tan\u0131d\u0131klar\u0131 varm\u0131\u015F. \u015Eikayet
         etti\u011Fimizle kald\u0131k"
@@ -7133,12 +7143,15 @@ MonoBehaviour:
           ya? "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Evden niye at\u0131ld\u0131n\u0131z? "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Evden at\u0131lma hikayen ne!? "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
     - npcQuote: "Hah i\u015Fte. Evin sahibi de bizim m\xFCd\xFCr. Zaman\u0131nda
         ucuzdan verdi bize evi. Paray\u0131 da elden istiyordu. Bizi kap\u0131 d\u0131\u015F\u0131na
         att\u0131\u011F\u0131nda anlad\u0131k vergi falan \xF6demiyormu\u015F. Biz
@@ -7148,22 +7161,27 @@ MonoBehaviour:
       - text: "Ge\xE7mi\u015F olsun. Vallaha \xE7ok \xFCz\xFCld\xFCm. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Ge\xE7mi\u015F olsun. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Zorla anlat\u0131yon. "
         wearEffect: 0
         moneyEffect: 0
+        nextDialogueIndex: -1
     - npcQuote: "Eyvallah garda\u015F. D\xFCkkan\u0131n m\xFCsaitse 1 2 g\xFCn burada
         kalabilir miyiz? "
       playerOptions:
       - text: Tabi ki, kalabilirsiniz
         wearEffect: -15
         moneyEffect: 0
+        nextDialogueIndex: -1
       - text: "Gidin benim ba\u015F\u0131m\u0131 belaya sokmay\u0131n. E\u015Fim
           \xE7ocu\u011Fum var benim"
         wearEffect: 15
         moneyEffect: 0
+        nextDialogueIndex: -1
   dayNightController: {fileID: 190237885}
   wearManager: {fileID: 1974237919}
   moneyManager: {fileID: 457943707}
@@ -7868,6 +7886,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 442602767}
+  - component: {fileID: 442602768}
   m_Layer: 0
   m_Name: NPCDeSpawnPoint
   m_TagString: Untagged
@@ -7890,6 +7909,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &442602768
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 442602766}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 6.7644267, y: 5.472006, z: 5.681025}
+  m_Center: {x: 0, y: 2.236003, z: 0}
 --- !u!1 &451066950
 GameObject:
   m_ObjectHideFlags: 0

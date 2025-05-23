@@ -292,8 +292,18 @@ public class SpecialNPC : MonoBehaviour
             }
         }
 
-        currentDialogueIndex++;
-        ShowCurrentDialogue();
+        // Bir sonraki diyalog indeksini belirle
+        int nextIndex = selectedOption.nextDialogueIndex;
+        
+        if (nextIndex == -1) // Eğer -1 ise diyalog biter
+        {
+            EndDialogue();
+        }
+        else
+        {
+            currentDialogueIndex = nextIndex;
+            ShowCurrentDialogue();
+        }
     }
 
     private void EndDialogue()
@@ -451,4 +461,5 @@ public class DialogueOption
     public string text;
     public float wearEffect;
     public float moneyEffect;
+    public int nextDialogueIndex = -1; // Bu seçenek seçildiğinde gidilecek diyalog indeksi
 }
