@@ -80,13 +80,20 @@ public class PauseMenuController : MonoBehaviour
         {
             Debug.Log("Adisyon scripti bulunamadı, yeni bir referans alınıyor.");
             adisyonScript = FindObjectOfType<Adisyon>();
-            
         }
 
-        if (adisyonScript!=null&&adisyonScript.isAdisyonOpen)
+        // Adisyon açıksa menüyü açma
+        if (adisyonScript != null && adisyonScript.isAdisyonOpen)
         {
             Debug.Log("Adisyon açık, menüyü açma");
-            return; // Eğer adisyon açık ise menüyü açma
+            return;
+        }
+
+        // SpecialNPC diyaloğu açıksa menüyü açma
+        if (SpecialNPC.isInAnyDialogue)
+        {
+            Debug.Log("NPC diyaloğu açık, menüyü açma");
+            return;
         }
 
         if (isPaused)

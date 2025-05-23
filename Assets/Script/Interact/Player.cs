@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    SpecialNPC specialNPC;
     PlayerMovementScript playerMovementScript;
     public GarbageScript garbageScript;
     [Header("Player")]
@@ -106,6 +107,20 @@ public class Player : MonoBehaviour
             {
                 Debug.Log($"NPC bulundu: {npc.name}, interact() çağrılıyor...");
                 npc.interact();
+                return;
+            }
+
+            // Check for Special NPC
+            specialNPC = hit.collider.GetComponent<SpecialNPC>();
+            if (specialNPC == null && hit.collider.transform.parent != null)
+            {
+                specialNPC = hit.collider.transform.parent.GetComponent<SpecialNPC>();
+            }
+
+            if (specialNPC != null)
+            {
+                Debug.Log($"Özel NPC bulundu: {specialNPC.GetNPCName()}, interact() çağrılıyor...");
+                specialNPC.interact();
                 return;
             }
 
@@ -613,6 +628,22 @@ public class Player : MonoBehaviour
                 }
                 return;
             }
+
+            // Special NPC kontrolünü NPC kontrolünden sonra ekleyelim
+            specialNPC = hit.collider.GetComponent<SpecialNPC>();
+            if (specialNPC == null && hit.collider.transform.parent != null)
+            {
+                specialNPC = hit.collider.transform.parent.GetComponent<SpecialNPC>();
+            }
+
+            // Sadece hasReachedWaitingPosition true ise ve daha önce etkileşime girilmediyse UI mesajını göster
+            if (specialNPC != null && !specialNPC.hasInteracted && specialNPC.hasReachedWaitingPosition)
+            {
+                ShowUIMessage($"{specialNPC.GetNPCName()}\nKonuşmak için F tuşuna basın");
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                lastHighlightedObject = hit.collider.gameObject;
+                return;
+            }
         }
 
         // Original UI logic continues from here
@@ -714,6 +745,7 @@ public class Player : MonoBehaviour
                     ShowUIMessage("Çay koymak için F tuşuna basın");
                 }
             }
+            
 
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {

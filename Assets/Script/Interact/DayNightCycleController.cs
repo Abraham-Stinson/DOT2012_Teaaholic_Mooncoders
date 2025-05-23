@@ -243,14 +243,26 @@ public class DayNightCycleController : MonoBehaviour
     
     bool IsThereAnyNPC()
     {
-        if (GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0)
+        bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
+        bool hasPrivateNPCs = GameObject.FindGameObjectsWithTag("NPC_Private").Length > 0;
+
+        if (hasCustomers || hasPrivateNPCs)
         {
             Debug.Log("NPC var");
+            return true;
         }
-        else
-        {
-            Debug.Log("NPC yok");
-        }
-        return GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
+        
+        Debug.Log("NPC yok");
+        return false;
+    }
+
+    public int GetCurrentDay()
+    {
+        return day;
+    }
+
+    public int GetCurrentHour()
+    {
+        return hour;
     }
 }

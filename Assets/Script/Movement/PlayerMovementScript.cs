@@ -168,8 +168,8 @@ public class PlayerMovementScript : MonoBehaviour
             pauseMenuController = FindObjectOfType<PauseMenuController>();
         }
         
-        // Check if game is paused (safely handling null reference)
-        if (pauseMenuController != null && pauseMenuController.isPaused) return;
+        // Check if game is paused or dialogue is active
+        if ((pauseMenuController != null && pauseMenuController.isPaused) || SpecialNPC.isInAnyDialogue) return;
         
         // If adisyon is open, prevent movement    
         if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
