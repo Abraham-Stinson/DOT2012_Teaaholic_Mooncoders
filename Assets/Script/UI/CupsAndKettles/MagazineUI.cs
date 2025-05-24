@@ -17,7 +17,7 @@ public class MagazineUI : MonoBehaviour
     [SerializeField] private GameObject hitUI;
     [SerializeField] private UnityEngine.UI.Image onHandImageUI;
     [SerializeField] private UnityEngine.UI.Image hitImageUI;
-    
+
     [Header("Inside Look UI")]
     [SerializeField] private GameObject insideLookUI;
     [SerializeField] private TextMeshProUGUI hitInsideTextUI;
@@ -35,7 +35,7 @@ public class MagazineUI : MonoBehaviour
     [Header("Dirty Held UI")]
     [SerializeField] private GameObject dirtyHeldUI;
     [SerializeField] private TextMeshProUGUI dirtyHeldTextUI;
-    
+
     [Header("Performance Settings")]
     [SerializeField] private float refreshRate = 0.1f;
     private float nextRefreshTime;
@@ -44,7 +44,7 @@ public class MagazineUI : MonoBehaviour
     {
         // Initialize UI states
         DisableAllUI();
-        
+
         // Validate required components
         if (player == null)
         {
@@ -104,10 +104,10 @@ public class MagazineUI : MonoBehaviour
         }
 
         GameObject heldItem = player.inHandItem;
-        
+
         // Check for dirty status
         UpdateDirtyStatus(heldItem, dirtyHeldUI, dirtyHeldTextUI);
-        
+
         // Check held item type and update UI accordingly
         if (heldItem.CompareTag("Tray"))
         {
@@ -153,10 +153,10 @@ public class MagazineUI : MonoBehaviour
         }
 
         GameObject lookingAt = player.hit.collider.gameObject;
-        
+
         // Check for dirty status
         UpdateDirtyStatus(lookingAt, dirtyLookUI, dirtyLookTextUI);
-        
+
         // Check item type and update UI accordingly
         if (lookingAt.TryGetComponent(out Kettle kettleScript))
         {
@@ -180,14 +180,14 @@ public class MagazineUI : MonoBehaviour
             if (insideLookUI) insideLookUI.SetActive(false);
         }
     }
-    
+
     /// <summary>
     /// Updates the dirty status UI for an object
     /// </summary>
     private void UpdateDirtyStatus(GameObject item, GameObject dirtyUI, TextMeshProUGUI dirtyTextUI)
     {
         if (item == null || dirtyUI == null || dirtyTextUI == null) return;
-        
+
         if (item.TryGetComponent(out DirtyStatus dirtyStatus))
         {
             dirtyUI.SetActive(true);
@@ -198,40 +198,40 @@ public class MagazineUI : MonoBehaviour
             dirtyUI.SetActive(false);
         }
     }
-    
+
     /// <summary>
     /// Handles the UI display for a tray
     /// </summary>
     private void HandleTrayUI(GameObject tray)
     {
         if (tray == null) return;
-        
+
         // Count items on the tray
         int itemCount = tray.transform.childCount;
-        
+
         if (onHandUI) onHandUI.SetActive(true);
         if (insideHeldUI) insideHeldUI.SetActive(true);
-        
+
         if (onHandImageUI) onHandImageUI.fillAmount = itemCount > 0 ? 1f : 0f;
-        
+
         if (heldInsideTextUI)
         {
             heldInsideTextUI.text = $"Tepside: {itemCount} ürün";
         }
     }
-    
+
     /// <summary>
     /// Handles UI display for kettle objects
     /// </summary>
-    private void HandleKettleUI(Kettle kettleScript, GameObject uiElement, UnityEngine.UI.Image fillImage, 
+    private void HandleKettleUI(Kettle kettleScript, GameObject uiElement, UnityEngine.UI.Image fillImage,
                                 GameObject textContainer, TextMeshProUGUI textUI, string[] texts)
     {
-        if (kettleScript == null || uiElement == null || fillImage == null || 
+        if (kettleScript == null || uiElement == null || fillImage == null ||
             textContainer == null || textUI == null) return;
-        
+
         uiElement.SetActive(true);
         textContainer.SetActive(true);
-        
+
         // Make sure the array has enough elements
         if (texts.Length >= 2)
         {
@@ -243,16 +243,16 @@ public class MagazineUI : MonoBehaviour
             textUI.text = $"İçinde: {kettleScript.currentKettleMagazine}";
         }
     }
-    
+
     /// <summary>
     /// Handles UI display for tea cup objects
     /// </summary>
-    private void HandleTeaCupUI(Tea_Cup teaCupScript, GameObject uiElement, UnityEngine.UI.Image fillImage, 
+    private void HandleTeaCupUI(Tea_Cup teaCupScript, GameObject uiElement, UnityEngine.UI.Image fillImage,
                               GameObject textContainer, TextMeshProUGUI textUI, string[] texts)
     {
         if (teaCupScript == null || uiElement == null || fillImage == null ||
             textContainer == null || textUI == null) return;
-        
+
         if (teaCupScript.isFillTea && !teaCupScript.isFullTea)
         {
             uiElement.SetActive(true);
@@ -265,7 +265,7 @@ public class MagazineUI : MonoBehaviour
             uiElement.SetActive(true);
             textContainer.SetActive(true);
             fillImage.fillAmount = 0.5f; // Half filled
-            
+
             switch (teaCupScript.inCup)
             {
                 case "Coffee_Powder":
@@ -293,7 +293,7 @@ public class MagazineUI : MonoBehaviour
             uiElement.SetActive(true);
             textContainer.SetActive(true);
             fillImage.fillAmount = 1.0f; // Fully filled
-            
+
             switch (teaCupScript.inCup)
             {
                 case "Coffee_Drink":
@@ -321,7 +321,7 @@ public class MagazineUI : MonoBehaviour
             uiElement.SetActive(true);
             textContainer.SetActive(true);
             fillImage.fillAmount = (float)teaCupScript.currentTeaCupMagazine / (float)teaCupScript.maxTeaCupMagazine;
-            
+
             switch (teaCupScript.currentTeaCupTeaMagazine)
             {
                 case 1:
@@ -345,7 +345,7 @@ public class MagazineUI : MonoBehaviour
             textContainer.SetActive(false);
         }
     }
-    
+
     /// <summary>
     /// Handles UI display for tea can objects
     /// </summary>
@@ -354,10 +354,10 @@ public class MagazineUI : MonoBehaviour
     {
         if (teaCanScript == null || uiElement == null || fillImage == null ||
             textContainer == null || textUI == null) return;
-        
+
         uiElement.SetActive(true);
         textContainer.SetActive(true);
-        
+
         // Make sure texts has enough elements
         if (texts.Length >= 8)
         {
@@ -370,29 +370,29 @@ public class MagazineUI : MonoBehaviour
             textUI.text = $"İçinde: {teaCanScript.currentTeaCanMagazine}";
         }
     }
-    
+
     /// <summary>
     /// Handles UI display for oralet and coffee objects
     /// </summary>
-    private void HandleOraletAndCoffeeUI(OraletAndCoffee oraletAndCoffeeScript, GameObject uiElement, 
-                                       UnityEngine.UI.Image fillImage, GameObject textContainer, 
+    private void HandleOraletAndCoffeeUI(OraletAndCoffee oraletAndCoffeeScript, GameObject uiElement,
+                                       UnityEngine.UI.Image fillImage, GameObject textContainer,
                                        TextMeshProUGUI textUI, string[] texts)
     {
         if (oraletAndCoffeeScript == null || uiElement == null || fillImage == null ||
             textContainer == null || textUI == null) return;
-        
+
         uiElement.SetActive(true);
         textContainer.SetActive(true);
-        
+
         fillImage.fillAmount = (float)oraletAndCoffeeScript.currentMagazine / (float)oraletAndCoffeeScript.maxMagazine;
-        
+
         // Make sure texts has enough elements
         if (texts.Length < 9)
         {
             textUI.text = $"İçinde: {oraletAndCoffeeScript.currentMagazine} {oraletAndCoffeeScript.typeOfProduct}";
             return;
         }
-        
+
         switch (oraletAndCoffeeScript.typeOfProduct)
         {
             case "Coffee":

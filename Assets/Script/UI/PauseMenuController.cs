@@ -15,6 +15,8 @@ public class PauseMenuController : MonoBehaviour
     
     [Header("Input Ayarları")]
     [SerializeField] private InputActionReference pauseAction;
+    [SerializeField] private InputActionReference[] gameplayActions; // Player hareket, bakış, etkileşim vs
+    [SerializeField] private MonoBehaviour[] playerControlScripts;
     [SerializeField] private PlayerInput playerInput; // Oyuncunun input sistemi
     
     // Kamera kontrolü için referans

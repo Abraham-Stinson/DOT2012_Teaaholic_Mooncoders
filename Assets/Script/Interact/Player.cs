@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField][Min(1)] public float rayCastRange = 10f;
     [SerializeField] private bool isPicked = false; //aaa
     [Header("UI")]
+    [SerializeField] private GameObject handbookUI;
     [SerializeField] private GameObject mainInfoUI;
     [SerializeField] private TextMeshProUGUI mainInfoUIText;
 
@@ -34,6 +35,9 @@ public class Player : MonoBehaviour
     [SerializeField] private InputActionReference pickAndPutInput;
     [SerializeField] private InputActionReference useInput;
     [SerializeField] private InputActionReference useHoldInput;
+    [SerializeField] private InputActionReference escapeInput;
+    [SerializeField] private MonoBehaviour[] playerControlScripts;
+
 
     [Header("Trash Clean")]
     [SerializeField] private float cleaningTime = 3f;
@@ -144,6 +148,62 @@ public class Player : MonoBehaviour
                 table.interact();
                 return;
             }
+
+            // Handbook kontrolü (toggle + cursor + timescale)
+            if (hit.collider.CompareTag("Handbook"))
+            {
+                Debug.Log("Handbook objesiyle etkileşime girildi.");
+
+                if (handbookUI != null)
+                {
+                    bool isActive = handbookUI.activeSelf;
+                    handbookUI.SetActive(!isActive);
+
+                    // Cursor ve Time.timeScale kontrolü
+                    if (!isActive)
+                    {
+                        // Açıldı
+                        Cursor.lockState = CursorLockMode.None;
+                        Cursor.visible = true;
+                        Time.timeScale = 0f;
+
+                        escapeInput.action.Disable();
+
+                        foreach (var script in playerControlScripts)
+                        {
+                            if (script != null)
+                                script.enabled = false;
+                        }
+
+
+                        Debug.Log("Handbook UI açıldı, oyun duraklatıldı, imleç aktif.");
+                    }
+                    else
+                    {
+                        // Kapatıldı
+                        Cursor.lockState = CursorLockMode.Locked;
+                        Cursor.visible = false;
+                        Time.timeScale = 1f;
+
+                        escapeInput.action.Enable();
+
+                        foreach (var script in playerControlScripts)
+                        {
+                            if (script != null)
+                                script.enabled = true;
+                        }
+
+                        Debug.Log("Handbook UI kapatıldı, oyun devam ediyor, imleç gizlendi.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("handbookUI referansı atanmadı!");
+                }
+
+                return;
+            }
+
 
             // Normal useable layer kontrolü
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
