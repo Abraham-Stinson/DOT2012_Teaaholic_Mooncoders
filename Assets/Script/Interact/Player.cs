@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,12 +15,26 @@ public class Player : MonoBehaviour
     [SerializeField] public Transform playerCam;
     [SerializeField][Min(1)] public float rayCastRange = 10f;
     [SerializeField] private bool isPicked = false; //aaa
+
     [Header("UI")]
     [SerializeField] private GameObject handbookUI;
     [SerializeField] private GameObject f_interact;
     [SerializeField] private GameObject e_interact;
     [SerializeField] private GameObject mainInfoUI;
     [SerializeField] private TextMeshProUGUI mainInfoUIText;
+
+    [Header("Sprites")]
+    [SerializeField] private GameObject bubblePrefab;
+    [SerializeField] private Sprite tavlaBubble;
+    [SerializeField] private Sprite okeyBubble;
+    [SerializeField] private Sprite iskambilBubble;
+    [SerializeField] private Sprite defaultBubble;
+
+    private Dictionary<Transform, GameObject> activeBubbles = new();
+    private TableController currentTable = null;
+    private GameObject currentBubble = null;
+    private string lastGameRequest = null;
+
 
     [Header("Layers")]
     [SerializeField] private LayerMask interactionLayer;
@@ -623,22 +638,17 @@ public class Player : MonoBehaviour
                 return;
             }
 
-            // Check for Table - DÜZELTME: TableController bulamazsak, transform.parent'tan kontrol edeceğiz
+            // Masa kontrolü
             TableController table = hit.collider.GetComponent<TableController>();
-
-            // Eğer doğrudan objede TableController yoksa, parent'ını kontrol et
-            if (table == null)
+            if (table == null && hit.collider.transform.parent != null)
             {
-                if (hit.collider.transform.parent != null)
-                {
-                    table = hit.collider.transform.parent.GetComponent<TableController>();
-                    //Debug.Log($"[UI] Table için parent objesine bakıldı: {(table != null ? "Bulundu" : "Bulunamadı")}");
-                }
+                table = hit.collider.transform.parent.GetComponent<TableController>();
             }
 
             if (table != null)
             {
-                // Eğer masada grup var ve grup oturmuşsa
+                currentTable = table;
+
                 if (table.HasGroup() && table.IsGroupSeated())
                 {
                     Debug.Log($"[UI] Masa bulundu ve grubu oturmuş durumda: {table.name}");
@@ -679,236 +689,235 @@ public class Player : MonoBehaviour
                 }
                 return;
             }
-        }
-
-        // Original UI logic continues from here
-        if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
-        {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-            lastHighlightedObject = hit.collider.gameObject;
-            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
-            {
-                var kettleScript = hit.collider.GetComponent<Kettle>();
-                if (kettleScript.currentKettleMagazine > 0)
-                {
-                    ShowUIMessage("");
-                    e_interact.SetActive(true);
-                }
-                else
-                {
-                    if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
-                    {
-                        ShowUIMessage("");
-                        e_interact.SetActive(true);
-                    }
-                    else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
-                    {
-                        ShowUIMessage("");
-                        e_interact.SetActive(true);
-                    }
-                    else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
-                    {
-                        if (kettleScript.CheckIsOnKettleBase())
-                        {
-                            ShowUIMessage("Demleniyor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı");
-                        }
-                        else
-                        {
-                            ShowUIMessage("");
-                            e_interact.SetActive(true);
-                        }
-                    }
-                    else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
-                    {
-                        ShowUIMessage("");
-                        e_interact.SetActive(true);
-                    }
-                }
-            }
             else
-            {
-                ShowUIMessage("");
-                e_interact.SetActive(true);
-            }
-        }
 
-        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && inHandItem != null &&
-            !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
-        {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = null;
-            ShowUIMessage("");
-            e_interact.SetActive(true);
-        }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null &&
-            (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
-        {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = null;
-            ShowUIMessage("");
-            e_interact.SetActive(true);
-        }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
-        {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = hit.collider.gameObject;
-            ShowUIMessage("");
-            f_interact.SetActive(true);
-        }
-
-        if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
-        {
-            if (inHandItem != null)
+            // Original UI logic continues from here
+            if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
             {
-                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                lastHighlightedObject = hit.collider.gameObject;
+                if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
                 {
-                    if (inHandItem.gameObject.tag == "Tea_Cup" && inHandItem.GetComponent<Tea_Cup>() != null &&
-                        !inHandItem.GetComponent<Tea_Cup>().isOnTray && hit.collider.gameObject.tag == "Tray")
+                    var kettleScript = hit.collider.GetComponent<Kettle>();
+                    if (kettleScript.currentKettleMagazine > 0)
                     {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                        lastHighlightedObject = hit.collider.gameObject;
                         ShowUIMessage("");
                         e_interact.SetActive(true);
                     }
                     else
                     {
-                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-                        lastHighlightedObject = null;
+                        if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
+                        {
+                            ShowUIMessage("");
+                            e_interact.SetActive(true);
+                        }
+                        else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                        {
+                            ShowUIMessage("");
+                            e_interact.SetActive(true);
+                        }
+                        else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
+                        {
+                            if (kettleScript.CheckIsOnKettleBase())
+                            {
+                                ShowUIMessage("Demleniyor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı");
+                            }
+                            else
+                            {
+                                ShowUIMessage("");
+                                e_interact.SetActive(true);
+                            }
+                        }
+                        else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
+                        {
+                            ShowUIMessage("");
+                            e_interact.SetActive(true);
+                        }
+                    }
+                }
+                else
+                {
+                    ShowUIMessage("");
+                    e_interact.SetActive(true);
+                }
+            }
+
+            if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && inHandItem != null &&
+                !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+            {
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                lastHighlightedObject = null;
+                ShowUIMessage("");
+                e_interact.SetActive(true);
+            }
+            if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null &&
+                (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
+            {
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                lastHighlightedObject = null;
+                ShowUIMessage("");
+                e_interact.SetActive(true);
+            }
+            if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
+            {
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                lastHighlightedObject = hit.collider.gameObject;
+                ShowUIMessage("");
+                f_interact.SetActive(true);
+            }
+
+            if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
+            {
+                if (inHandItem != null)
+                {
+                    if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                    {
+                        if (inHandItem.gameObject.tag == "Tea_Cup" && inHandItem.GetComponent<Tea_Cup>() != null &&
+                            !inHandItem.GetComponent<Tea_Cup>().isOnTray && hit.collider.gameObject.tag == "Tray")
+                        {
+                            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                            lastHighlightedObject = hit.collider.gameObject;
+                            ShowUIMessage("");
+                            e_interact.SetActive(true);
+                        }
+                        else
+                        {
+                            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                            lastHighlightedObject = null;
+                        }
                     }
                 }
             }
-        }
 
-        if (didHit && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-        {//KETTLE DAN ÇAY KOYMA UI
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-            {
-                if (hit.collider.CompareTag("Tea_Cup"))
+            if (didHit && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+            {//KETTLE DAN ÇAY KOYMA UI
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
                 {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
+                    if (hit.collider.CompareTag("Tea_Cup"))
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                }
+
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                {
+                    if (hit.collider.CompareTag("Hot_Water") /*&& inHandItem.GetComponent<Kettle>().isHaveTea*/)
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                }
+            }
+
+            if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+            {//bardağa Kahve veya oralet koyma
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                {
+                    if (hit.collider.CompareTag("Tea_Cup"))
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                }
+            }
+
+            if (didHit && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+            {//KETTLE DAN ÇAY KOYMA UI
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                {
+                    if (hit.collider.CompareTag("Hot_Water"))
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                }
+
+                // Bu kısım aslında Tea_Cup kontrolü içinde olmamalı, dışarı alalım
+            }
+
+            // Tea Can kontrolünü ayrı bir blok olarak yazalım
+            if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
+            {
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                {
+                    if (hit.collider.CompareTag("Kettle"))
+                    {
+                        hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                }
+            }
+
+            // DirtyStatus kontrolünü ayrı bir blok olarak yazalım
+            if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
+            {
+                if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
+                {
+                    if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
+                    {
+                        lastHighlightedObject = hit.collider.gameObject;
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                }
+            }
+
+            // Garbage Bin kontrolünü ayrı bir blok olarak yazalım
+            if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
+            {
+                if (inHandItem != null && (inHandItem.layer == 6))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
+                {
+                    if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
+                    {
+                        ShowUIMessage("");
+                        f_interact.SetActive(true);
+                    }
+                    else
+                    {
+                        ShowUIMessage("Bu eşya çöpe atılamaz");
+                    }
+                }
+            }
+
+            // Garbage Container kontrolünü ayrı bir blok olarak yazalım
+            if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
+            {
+                if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
+                {
                     ShowUIMessage("");
                     f_interact.SetActive(true);
                 }
             }
 
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-            {
-                if (hit.collider.CompareTag("Hot_Water") /*&& inHandItem.GetComponent<Kettle>().isHaveTea*/)
-                {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
-                    f_interact.SetActive(true);
-                }
-            }
-        }
-
-        if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-        {//bardağa Kahve veya oralet koyma
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-            {
-                if (hit.collider.CompareTag("Tea_Cup"))
-                {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
-                    f_interact.SetActive(true);
-                }
-            }
-        }
-
-        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-        {//KETTLE DAN ÇAY KOYMA UI
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-            {
-                if (hit.collider.CompareTag("Hot_Water"))
-                {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
-                    f_interact.SetActive(true);
-                }
-            }
-
-            // Bu kısım aslında Tea_Cup kontrolü içinde olmamalı, dışarı alalım
-        }
-
-        // Tea Can kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
-        {
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-            {
-                if (hit.collider.CompareTag("Kettle"))
-                {
-                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                    lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
-                    f_interact.SetActive(true);
-                }
-            }
-        }
-
-        // DirtyStatus kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
-        {
-            if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
-            {
-                if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
-                {
-                    lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
-                    f_interact.SetActive(true);
-                }
-            }
-        }
-
-        // Garbage Bin kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
-        {
-            if (inHandItem != null && (inHandItem.layer == 6))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
-            {
-                if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
+            // Trash kontrolünü ayrı bir blok olarak yazalım
+            if (didHit && hit.collider.gameObject.tag == "Trash")
+            {//THRASH UI
+                if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
                 {
                     ShowUIMessage("");
                     f_interact.SetActive(true);
                 }
                 else
                 {
-                    ShowUIMessage("Bu eşya çöpe atılamaz");
+                    ShowUIMessage("Çöpü temizlemek için paspasa ihtiyacınız var");
                 }
-            }
-        }
 
-        // Garbage Container kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
-        {
-            if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
-            {
-                ShowUIMessage("");
-                f_interact.SetActive(true);
+                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                lastHighlightedObject = hit.collider.gameObject;
             }
-        }
-
-        // Trash kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && hit.collider.gameObject.tag == "Trash")
-        {//THRASH UI
-            if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
-            {
-                ShowUIMessage("");
-                f_interact.SetActive(true);
-            }
-            else
-            {
-                ShowUIMessage("Çöpü temizlemek için paspasa ihtiyacınız var");
-            }
-
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-            lastHighlightedObject = hit.collider.gameObject;
         }
     }
-
-
     #endregion
 
     public void ShowUIMessage(string message)
