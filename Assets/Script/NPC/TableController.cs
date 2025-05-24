@@ -27,7 +27,8 @@ public class TableController : MonoBehaviour, IInteractable
     private NPCGroup occupyingGroup;
     private GameObject currentGameObject;
     private string currentGameType;
-    
+    private bool gamePlaced = false;
+
     private void Start()
     {
         // Initialize chairs if not already set in inspector
@@ -93,7 +94,7 @@ public class TableController : MonoBehaviour, IInteractable
                     Debug.Log($"Placing correct game {gameType} on table");
                     // Place the game on the table
                     PlaceGameBox(gameType);
-                    
+
                     // Destroy the pickup item
                     Destroy(player.inHandItem);
                     player.inHandItem = null;
@@ -104,6 +105,7 @@ public class TableController : MonoBehaviour, IInteractable
                     adisyonObject.SetActive(true);
                     // Show message
                     player.ShowUIMessage($"{gameType} oyununu masaya koydunuz");
+
                 }
                 else
                 {
@@ -138,7 +140,12 @@ public class TableController : MonoBehaviour, IInteractable
     {
         return chairs.Count >= groupSize;
     }
-    
+
+    public bool IsGamePlaced()
+    {
+        return gamePlaced;
+    }
+
     /// <summary>
     /// Get all chairs associated with this table
     /// </summary>
@@ -204,6 +211,8 @@ public class TableController : MonoBehaviour, IInteractable
             {
                 occupyingGroup.ReceiveGameBox(gameType);
             }
+
+            gamePlaced = true;
         }
     }
     
@@ -249,6 +258,7 @@ public class TableController : MonoBehaviour, IInteractable
         }
         
         currentGameType = null;
+        gamePlaced = false;
     }
     
     /// <summary>
