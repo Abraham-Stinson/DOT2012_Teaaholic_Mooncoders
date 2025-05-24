@@ -83,7 +83,8 @@ public class SpecialNPC : MonoBehaviour
         {
             if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance < 0.1f)
             {
-                animator.SetTrigger("Idle");
+                animator.SetBool("isIdle",true);
+                animator.SetBool("isWalking",false);
                 navMeshAgent.enabled = false;
                 hasReachedWaitingPosition = true;
                 Debug.Log($"NPC {npcName} bekleme noktasına ulaştı");
@@ -134,7 +135,8 @@ public class SpecialNPC : MonoBehaviour
             navMeshAgent.enabled = true;
             navMeshAgent.speed = moveSpeed;
             navMeshAgent.SetDestination(waitingPosition.position);
-            animator.SetTrigger("Walk");
+            animator.SetBool("isWalking", true);
+            animator.SetBool("isIdle", false);
             Debug.Log($"NPC {npcName} spawn oldu ve bekleme noktasına gidiyor");
         }
         else
@@ -173,7 +175,7 @@ public class SpecialNPC : MonoBehaviour
         currentDialogueIndex = 0;
         
         // Pause game
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -319,7 +321,7 @@ public class SpecialNPC : MonoBehaviour
         }
         
         // Oyunu normal hızına döndür
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -331,7 +333,8 @@ public class SpecialNPC : MonoBehaviour
             
             if (animator != null)
             {
-                animator.SetTrigger("Walk");
+                animator.SetBool("isIdle",false);
+                animator.SetBool("isWalking",true);
             }
             
             StartCoroutine(WaitForExit());
@@ -357,7 +360,7 @@ public class SpecialNPC : MonoBehaviour
         // Çıkış noktasına ulaştığında
         if (animator != null)
         {
-            animator.SetTrigger("Idle");
+            animator.SetBool("isIdle",true);
         }
 
         // Çıkış animasyonu için 2 saniye bekle
@@ -429,7 +432,8 @@ public class SpecialNPC : MonoBehaviour
             navMeshAgent.speed = moveSpeed;
             yield return null; // NavMeshAgent'ın aktifleşmesi için bir frame daha bekle
             navMeshAgent.SetDestination(waitingPosition.position);
-            animator.SetTrigger("Walk");
+            animator.SetBool("isIdle", false);
+            animator.SetBool("isWalking", true);
             Debug.Log($"NPC {npcName} spawn oldu ve bekleme noktasına gidiyor");
         }
         else

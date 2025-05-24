@@ -7082,7 +7082,7 @@ MonoBehaviour:
   - {fileID: 1201372423}
   - {fileID: 898414211}
   npcSpawnDataList:
-  - npcPrefab: {fileID: 7380058172463639992, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+  - npcPrefab: {fileID: 2284876664122768610, guid: 2c61c08250e90be49850fe7e80812514, type: 3}
     npcName: "\u0130\u015F\xE7i"
     spawnDay: 1
     minSpawnHour: 9
