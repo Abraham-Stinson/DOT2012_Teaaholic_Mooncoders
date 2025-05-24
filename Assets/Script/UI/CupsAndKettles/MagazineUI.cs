@@ -79,6 +79,7 @@ public class MagazineUI : MonoBehaviour
         if (insideHeldUI) insideHeldUI.SetActive(false);
         if (dirtyLookUI) dirtyLookUI.SetActive(false);
         if (dirtyHeldUI) dirtyHeldUI.SetActive(false);
+     
     }
 
     /// <summary>
