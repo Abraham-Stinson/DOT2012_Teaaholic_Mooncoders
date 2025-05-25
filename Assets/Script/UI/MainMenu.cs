@@ -1,41 +1,19 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("---------- Scene Names ----------")]
+    [Header("---------- SceneNames ----------")]
     public string MainScene;
-
     public void LoadSceneNewGame()
     {
-        // Yeni oyun başlatıldığında tüm kayıtları temizle
-        PlayerPrefs.DeleteKey("SavedDay");
-        PlayerPrefs.DeleteKey("SavedHour");
-        PlayerPrefs.DeleteKey("SavedMinute");
-
-        // Pozisyon kayıtları da silinsin (önceden kaydedilmiş objeler varsa)
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
-
         SceneManager.LoadScene(MainScene);
-    }
-
-    public void LoadSceneContinue()
-    {
-        // Eğer kayıt varsa, devam et
-        if (PlayerPrefs.HasKey("SavedDay"))
-        {
-            SceneManager.LoadScene(MainScene);
-        }
-        else
-        {
-            Debug.Log("Kayıt bulunamadı.");
-        }
     }
 
     public void QuitGame()
     {
         Application.Quit();
-        Debug.Log("Oyun kapatılıyor...");
+        Debug.Log("Oyun kapat�l�yor..."); // Bu sadece Editor'da g�rsel geri bildirim i�indir
     }
+
 }

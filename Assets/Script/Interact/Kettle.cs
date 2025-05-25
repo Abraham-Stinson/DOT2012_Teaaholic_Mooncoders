@@ -64,9 +64,8 @@ public class Kettle : MonoBehaviour
             isPourAnimation = true;
             animator.SetBool("isPour", isPourAnimation);
             currentKettleMagazine -= 1;
-
-            SoundManager.Instance.PlayCayDoldurma();
-
+            
+            // If we run out of tea, update all related states
             if (currentKettleMagazine <= 0)
             {
                 currentKettleMagazine = 0; // Ensure it doesn't go negative
