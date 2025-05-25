@@ -160,8 +160,8 @@
                 },
                 {
                     "name": "",
-                    "id": "b3d80284-f4a0-43d0-a52b-e58caa397ab8",
-                    "path": "<Mouse>/delta",
+                    "id": "8c5e6dc0-bdec-442a-a67b-81b7d1a1e97e",
+                    "path": "<Gamepad>/rightStick",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -171,8 +171,8 @@
                 },
                 {
                     "name": "",
-                    "id": "8c5e6dc0-bdec-442a-a67b-81b7d1a1e97e",
-                    "path": "<Gamepad>/rightStick",
+                    "id": "7805cbd7-0c31-447f-9824-a0fc2adcf9c3",
+                    "path": "<Mouse>/delta",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -254,6 +254,34 @@
                     "processors": "",
                     "groups": "",
                     "action": "ESC",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "27bde27c-5683-41d0-865f-cbc2740169cb",
+            "actions": [
+                {
+                    "name": "Back",
+                    "type": "Button",
+                    "id": "efdf3827-8bf1-49d4-b5ff-56eecb6098fc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5a87ddd2-38d1-4482-8969-e8b34cc5ea65",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

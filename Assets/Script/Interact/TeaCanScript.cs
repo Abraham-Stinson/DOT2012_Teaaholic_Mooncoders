@@ -3,7 +3,7 @@ using UnityEngine;
 public class TeaCanScript : MonoBehaviour
 {
     [Header("About Tea Can")]
-    [SerializeField] private int maxTeaCanMagazine = 10;
+    [SerializeField] public int maxTeaCanMagazine = 10;
     [SerializeField] public int currentTeaCanMagazine;
 
     [Header("Tea Can Objects")]
