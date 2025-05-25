@@ -7082,7 +7082,11 @@ MonoBehaviour:
   - {fileID: 1201372423}
   - {fileID: 898414211}
   npcSpawnDataList:
+<<<<<<< Updated upstream
   - npcPrefab: {fileID: 2284876664122768610, guid: 2c61c08250e90be49850fe7e80812514, type: 3}
+=======
+  - npcPrefab: {fileID: 1998057600501230174, guid: 9c74e4f391074414b9e3b2faf2ad455d, type: 3}
+>>>>>>> Stashed changes
     npcName: "Yabanc\u0131"
     spawnDay: 5
     minSpawnHour: 9
@@ -7196,7 +7200,11 @@ MonoBehaviour:
         wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
+<<<<<<< Updated upstream
   - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+=======
+  - npcPrefab: {fileID: 6025492527754746494, guid: eccdabf432a78454a98cbe5695478239, type: 3}
+>>>>>>> Stashed changes
     npcName: "Topuk\xE7u Naz\u0131m"
     spawnDay: 1
     minSpawnHour: 9
@@ -7238,7 +7246,11 @@ MonoBehaviour:
         wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
+<<<<<<< Updated upstream
   - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+=======
+  - npcPrefab: {fileID: 792114658254320597, guid: 8bfdb75e880a25d48b580ee2c967c734, type: 3}
+>>>>>>> Stashed changes
     npcName: Polis
     spawnDay: 1
     minSpawnHour: 9
@@ -7374,7 +7386,11 @@ MonoBehaviour:
         wearEffect: 15
         moneyEffect: -1000
         nextDialogueIndex: 10
+<<<<<<< Updated upstream
   - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+=======
+  - npcPrefab: {fileID: 6025492527754746494, guid: eccdabf432a78454a98cbe5695478239, type: 3}
+>>>>>>> Stashed changes
     npcName: "Topuk\xE7u Naz\u0131m"
     spawnDay: 1
     minSpawnHour: 9
@@ -7392,7 +7408,11 @@ MonoBehaviour:
         wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
+<<<<<<< Updated upstream
   - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+=======
+  - npcPrefab: {fileID: 1632964472743875217, guid: 1190ed997a6b7a14191d976eac1f101a, type: 3}
+>>>>>>> Stashed changes
     npcName: "Yabanc\u0131"
     spawnDay: 1
     minSpawnHour: 9
