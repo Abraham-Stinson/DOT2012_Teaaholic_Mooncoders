@@ -6311,7 +6311,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 231622895}
-  - component: {fileID: 231622897}
   - component: {fileID: 231622896}
   m_Layer: 0
   m_Name: NPCManager
@@ -6351,12 +6350,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 4
+  - 120
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 10
+  - 121
   - 101
   - 81
   - 61
@@ -6378,18 +6377,6 @@ MonoBehaviour:
   - {fileID: 1672744781}
   - {fileID: 490150073}
   - {fileID: 937279664}
---- !u!114 &231622897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231622893}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c5be1268315373459c83b1d87fb9d4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &234792370
 GameObject:
   m_ObjectHideFlags: 0
