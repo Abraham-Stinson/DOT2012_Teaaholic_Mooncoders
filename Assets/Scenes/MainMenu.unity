@@ -4069,7 +4069,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NewGamePanel: {fileID: 995214225}
   SettingsPanel: {fileID: 1773500917}
-  MainScene: Main
+  MainScene: EntryScene_1
 --- !u!4 &1905147217
 Transform:
   m_ObjectHideFlags: 0
