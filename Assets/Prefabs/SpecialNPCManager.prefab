@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3864148759503032891
+--- !u!1 &5956972931756724375
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5785410705358492651}
-  - component: {fileID: 6917574157944741690}
+  - component: {fileID: 503827310730970046}
+  - component: {fileID: 376772418543900188}
   m_Layer: 0
   m_Name: SpecialNPCManager
   m_TagString: Untagged
@@ -17,13 +17,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5785410705358492651
+--- !u!4 &503827310730970046
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3864148759503032891}
+  m_GameObject: {fileID: 5956972931756724375}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -189.6802, y: -8.58162, z: 212.6246}
@@ -32,13 +32,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6917574157944741690
+--- !u!114 &376772418543900188
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3864148759503032891}
+  m_GameObject: {fileID: 5956972931756724375}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1f4a96e1d9b7ad4c9846feb0aef8be5, type: 3}
@@ -62,9 +62,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   npcSpawnDataList:
-  - npcPrefab: {fileID: 2284876664122768610, guid: 2c61c08250e90be49850fe7e80812514, type: 3}
+  - npcPrefab: {fileID: 1998057600501230174, guid: 9c74e4f391074414b9e3b2faf2ad455d, type: 3}
     npcName: "Yabanc\u0131"
-    spawnDay: 5
+    spawnDay: 2
     minSpawnHour: 9
     maxSpawnHour: 10
     dialogueData:
@@ -176,9 +176,9 @@ MonoBehaviour:
         wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
-  - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+  - npcPrefab: {fileID: 6025492527754746494, guid: eccdabf432a78454a98cbe5695478239, type: 3}
     npcName: "Topuk\xE7u Naz\u0131m"
-    spawnDay: 1
+    spawnDay: 2
     minSpawnHour: 9
     maxSpawnHour: 10
     dialogueData:
@@ -218,9 +218,9 @@ MonoBehaviour:
         wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
-  - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+  - npcPrefab: {fileID: 792114658254320597, guid: 8bfdb75e880a25d48b580ee2c967c734, type: 3}
     npcName: Polis
-    spawnDay: 1
+    spawnDay: 2
     minSpawnHour: 9
     maxSpawnHour: 10
     dialogueData:
@@ -354,9 +354,9 @@ MonoBehaviour:
         wearEffect: 15
         moneyEffect: -1000
         nextDialogueIndex: 10
-  - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+  - npcPrefab: {fileID: 6025492527754746494, guid: eccdabf432a78454a98cbe5695478239, type: 3}
     npcName: "Topuk\xE7u Naz\u0131m"
-    spawnDay: 1
+    spawnDay: 2
     minSpawnHour: 9
     maxSpawnHour: 10
     dialogueData:
@@ -372,7 +372,7 @@ MonoBehaviour:
         wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
-  - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+  - npcPrefab: {fileID: 1632964472743875217, guid: 1190ed997a6b7a14191d976eac1f101a, type: 3}
     npcName: "Yabanc\u0131"
     spawnDay: 1
     minSpawnHour: 9
@@ -436,13 +436,13 @@ MonoBehaviour:
       - text: "\xD6nemli de\u011Fil."
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: 1
+        nextDialogueIndex: -1
     - npcQuote: "Siz de hakl\u0131s\u0131n\u0131z. \u0130yi ak\u015Famlar."
       playerOptions:
       - text: "\u0130yi ak\u015Famlar."
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: 1
+        nextDialogueIndex: -1
     - npcQuote: Camide beni kesin bulur.
       playerOptions:
       - text: 'Kim bulur? '
