@@ -5739,6 +5739,7 @@ GameObject:
   - component: {fileID: 156455255}
   - component: {fileID: 156455254}
   - component: {fileID: 156455256}
+  - component: {fileID: 156455257}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -5853,6 +5854,23 @@ MonoBehaviour:
   - {fileID: 954268818881018212}
   - {fileID: 9158146167225951619}
   - {fileID: 3994254087393065438}
+--- !u!114 &156455257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156455253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdaffe52832b8c94d84816f4001f6d1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bubblePrefab: {fileID: 2604092660507127790}
+  tavlaBubble: {fileID: 21300000, guid: 2a59fd2ef6c07ba43a964e1b3695e4cc, type: 3}
+  okeyBubble: {fileID: 21300000, guid: 7bf5436a0adee2240b6195b8b32a01f0, type: 3}
+  iskambilBubble: {fileID: 21300000, guid: 82b96b5606afea64aa5276f287ba29f8, type: 3}
+  defaultBubble: {fileID: 21300000, guid: a542c7fe4c9ac394aa0657073300ee12, type: 3}
 --- !u!1 &163936273
 GameObject:
   m_ObjectHideFlags: 0
@@ -6177,7 +6195,7 @@ MonoBehaviour:
   playerObject: {fileID: 4805225187014577647}
   playerDayStartPosition: {fileID: 812498408}
   moneyManager: {fileID: 457943707}
-  minuteDurationSeconds: 0
+  minuteDurationSeconds: 0.6667
   startHour: 9
   endHour: 24
   dayUIText: {fileID: 1505088213}
@@ -6333,12 +6351,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 120
+  - 4
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 121
+  - 10
   - 101
   - 81
   - 61
@@ -20440,6 +20458,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc67a1be5557da44d94af0cd6db43e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2604092660507127790 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8621344987789072059, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+  m_PrefabInstance: {fileID: 2604092660507127788}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &2623739135224664883
 MeshRenderer:
   m_ObjectHideFlags: 0
