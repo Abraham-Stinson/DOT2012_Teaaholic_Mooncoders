@@ -59,6 +59,8 @@ public class Kettle : MonoBehaviour
         // Check if we have brewed tea to pour
         if (currentKettleMagazine > 0 && isBrewed)
         {
+            SoundManager.Instance.PlayCayDoldurma();
+
             teaCup.AddTea();
             Debug.Log("Çay dökülüyor");
             isPourAnimation = true;
