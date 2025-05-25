@@ -53,6 +53,27 @@ public class DayNightCycleController : MonoBehaviour
 
     private void Start()
     {
+        if (PlayerPrefs.HasKey("SavedDay"))
+        {
+            day = PlayerPrefs.GetInt("SavedDay");
+            hour = PlayerPrefs.GetInt("SavedHour");
+            minute = PlayerPrefs.GetInt("SavedMinute");
+
+            // Eğer gece yarısı ise yeni güne geç
+            if (hour == 0 && minute == 0)
+            {
+                day++;
+                hour = startHour;
+                minute = 0;
+            }
+        }
+        else
+        {
+            day = 1;
+            hour = startHour;
+            minute = 0;
+        }
+
         day = 1;
         hour = startHour;
         minute = 0;
@@ -73,7 +94,7 @@ public class DayNightCycleController : MonoBehaviour
 
     private void Update()
     {
-        if (isDayFinished||pauseMenuControllerScript.isPaused) return;
+        if (isDayFinished || pauseMenuControllerScript.isPaused) return;
 
         timer += Time.deltaTime;
 
@@ -98,13 +119,13 @@ public class DayNightCycleController : MonoBehaviour
         }
 
         // Saat 12'den sonra müşteri spawning'i durdur
-        if (hour >= 12 )
+        if (hour >= 12)
         {
-            
+
         }
 
         // Gece yarısında (00:00) zamanı durdur
-        if (hour == 0 && minute == 0&& !npcSpawningDisabled && npcManager != null)
+        if (hour == 0 && minute == 0 && !npcSpawningDisabled && npcManager != null)
         {
             npcSpawningDisabled = true;
             npcManager.enabled = false; // NPCManager'ı devre dışı bırak
@@ -182,11 +203,13 @@ public class DayNightCycleController : MonoBehaviour
             Debug.Log("Gün bitmedi");
             return;
         }
-        if (IsThereAnyNPC()) {
+        if (IsThereAnyNPC())
+        {
             Debug.Log("NPC var");
             return;
         }
-
+        
+        SaveGame();
         day++;
         hour = startHour;
         minute = 0;
@@ -221,13 +244,13 @@ public class DayNightCycleController : MonoBehaviour
         playerObject.transform.rotation = playerDayStartPosition.rotation;
 
         isDayFinished = false;
-        
+
         Cursor.lockState = CursorLockMode.Locked; // Fare imlecini serbest bırak
         Cursor.visible = false; // Fare imlecini görünür yap
         Mouse.current.WarpCursorPosition(Vector2.zero); // Reset mouse position to (0,0)
         endOfDayScreenUI.SetActive(false);
         Time.timeScale = 1f; // Zamanı durdur
-        
+
 
         // Yeni gün başladığında müşteri spawning'i tekrar aktif et
         if (npcSpawningDisabled && npcManager != null)
@@ -240,7 +263,7 @@ public class DayNightCycleController : MonoBehaviour
         UpdateTimeUI();
         UpdateSunLight();
     }
-    
+
     bool IsThereAnyNPC()
     {
         bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
@@ -251,7 +274,7 @@ public class DayNightCycleController : MonoBehaviour
             Debug.Log("NPC var");
             return true;
         }
-        
+
         Debug.Log("NPC yok");
         return false;
     }
@@ -264,5 +287,23 @@ public class DayNightCycleController : MonoBehaviour
     public int GetCurrentHour()
     {
         return hour;
+    }
+    
+    private void SaveGame()
+    {
+        PlayerPrefs.SetInt("SavedDay", day);
+        PlayerPrefs.SetInt("SavedHour", hour);
+        PlayerPrefs.SetInt("SavedMinute", minute);
+        SaveManager.SaveAll();
+        Debug.Log("Oyun kaydedildi - Gün: " + day + " Saat: " + hour + ":" + minute);
+    }
+    public void LoadTime()
+    {
+        if (PlayerPrefs.HasKey("SavedDay"))
+        {
+            day = PlayerPrefs.GetInt("SavedDay");
+            hour = PlayerPrefs.GetInt("SavedHour");
+            minute = PlayerPrefs.GetInt("SavedMinute");
+        }
     }
 }
