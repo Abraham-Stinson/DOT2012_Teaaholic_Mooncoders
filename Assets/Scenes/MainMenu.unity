@@ -2603,17 +2603,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ce3e2f2c0c97f47a255fc32f45b3d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cayDoldurmaSesi: {fileID: 0}
-  okeySesi: {fileID: 0}
-  tavlaSesi: {fileID: 0}
-  iskambilSesi: {fileID: 0}
-  OpeningBook: {fileID: 0}
-  ClosingBook: {fileID: 0}
-  Writing: {fileID: 0}
-  Coin: {fileID: 0}
-  Walking: {fileID: 0}
-  SwitchOffOn: {fileID: 0}
-  MainMenuMusic: {fileID: 0}
+  cayDoldurmaSesi: {fileID: 2482850430447470961}
+  okeySesi: {fileID: 2482850430447470961}
+  tavlaSesi: {fileID: 2482850430447470961}
+  iskambilSesi: {fileID: 2482850430447470961}
+  OpeningBook: {fileID: 2482850430447470961}
+  ClosingBook: {fileID: 2482850430447470961}
+  Writing: {fileID: 2482850430447470961}
+  Coin: {fileID: 2482850430447470961}
+  Walking: {fileID: 2482850430447470961}
+  SwitchOffOn: {fileID: 2482850430447470961}
+  MainMenuMusic: {fileID: 2482850430447470961}
 --- !u!82 &4989693015810667648
 AudioSource:
   m_ObjectHideFlags: 0
