@@ -223,6 +223,7 @@ public class NPCGroup : MonoBehaviour
         
         if (gameType == requestedGame)
         {
+            
             // Correct game provided
             Debug.Log($"Correct game provided: {gameType}");
             hasGameBox = true;
