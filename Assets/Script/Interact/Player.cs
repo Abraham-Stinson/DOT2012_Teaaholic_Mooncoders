@@ -91,6 +91,12 @@ public class Player : MonoBehaviour
     #region USE INPUT
     private void Use(InputAction.CallbackContext context) // F
     {
+        if (playerCam == null)
+        {
+            Debug.LogError("Player camera is null! Cannot perform raycast.");
+            return;
+        }
+        
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
             Debug.Log("F key pressed but no object hit by raycast");
@@ -475,6 +481,12 @@ public class Player : MonoBehaviour
     #region Pick and put and tray
     private void PickAndPut(InputAction.CallbackContext context)//E
     {
+        if (playerCam == null)
+        {
+            Debug.LogError("Player camera is null! Cannot perform raycast.");
+            return;
+        }
+        
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
             return;

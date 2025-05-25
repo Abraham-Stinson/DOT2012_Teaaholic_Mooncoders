@@ -123,6 +123,7 @@ public class SoundManager : MonoBehaviour
     public void MenuMusic() => MainMenuMusic?.Play();
     public void PageSwitch() => FlipPage?.Play();
 
+    // Yürüme ve koşma sesleri
     public void Walk()
     {
         if (Walking != null && !Walking.isPlaying)

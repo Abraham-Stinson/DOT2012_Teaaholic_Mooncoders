@@ -128,7 +128,8 @@ public class MarketSystem : MonoBehaviour, IInteractable
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        SoundManager.Instance.PhoneClosed();
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PhoneClosed();
     }
 
     private void InitializeItemDatabase()
@@ -198,7 +199,8 @@ public class MarketSystem : MonoBehaviour, IInteractable
             Time.timeScale = 0;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            SoundManager.Instance.PhoneOpen();
+            if (SoundManager.Instance != null)
+                SoundManager.Instance.PhoneOpen();
 
             if (playerInput != null)
             {
@@ -512,7 +514,8 @@ public class MarketSystem : MonoBehaviour, IInteractable
             }
             
             Debug.Log("Market UI kapatıldı");
-            SoundManager.Instance.PhoneClosed();
+            if (SoundManager.Instance != null)
+                SoundManager.Instance.PhoneClosed();
         }
         else
         {

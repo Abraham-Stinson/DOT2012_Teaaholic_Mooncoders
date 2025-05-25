@@ -142,6 +142,8 @@ public class PlayerMovementScript : MonoBehaviour
 
     void UpdateWalkingSound()
     {
+        if (SoundManager.Instance == null) return;
+        
         if (!isMovementPressed)
         {
             SoundManager.Instance.StopWalkingSounds();
