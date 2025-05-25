@@ -4849,6 +4849,7 @@ GameObject:
   - component: {fileID: 277393422888379673}
   - component: {fileID: 7317419884427981789}
   - component: {fileID: 6582628528546592218}
+  - component: {fileID: -893211590518625529}
   m_Layer: 6
   m_Name: Kettle
   m_TagString: Kettle
@@ -5026,3 +5027,16 @@ MonoBehaviour:
   dirtyMaterial: {fileID: 0}
   cleanMaterial: {fileID: 0}
   cupRenderer: {fileID: 0}
+--- !u!114 &-893211590518625529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4515018610988805773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fbcdcb87629f104bb4edaca55fbeb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveKey: 

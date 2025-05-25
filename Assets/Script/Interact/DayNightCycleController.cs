@@ -103,6 +103,13 @@ public class DayNightCycleController : MonoBehaviour
             timer -= minuteDurationSeconds;
             IncrementTimeByOneMinute();
         }
+
+        /*// 23:59'da kaydet
+        if (hour == 23 && minute == 59)
+        {
+            SaveGame();
+            Debug.Log("Oyun kaydedildi");
+        }*/
     }
 
     private void IncrementTimeByOneMinute()
@@ -209,7 +216,7 @@ public class DayNightCycleController : MonoBehaviour
             return;
         }
 
-        SaveGame();
+        //SaveGame();
         day++;
         hour = startHour;
         minute = 0;
@@ -240,6 +247,7 @@ public class DayNightCycleController : MonoBehaviour
             Debug.Log("[OYUN BITTI ALOOO]Oyun bitti");
             return;
         }
+        SaveGame();
         //Oyuncuyu gün başlatma pozisyonuna koy
         playerObject.transform.position = playerDayStartPosition.position;
         playerObject.transform.rotation = playerDayStartPosition.rotation;
