@@ -96,6 +96,13 @@ public class PauseMenuController : MonoBehaviour
             return;
         }
 
+        // Market UI açıksa menüyü açma
+        if (MarketSystem.isMarketOpen)
+        {
+            Debug.Log("Market UI açık, menüyü açma");
+            return;
+        }
+
         if (isPaused)
         {
             ContinueGame();

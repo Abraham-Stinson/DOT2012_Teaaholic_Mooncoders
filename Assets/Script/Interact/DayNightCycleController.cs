@@ -223,8 +223,9 @@ public class DayNightCycleController : MonoBehaviour
         totalMoneyEarnedText.color = Color.green;
         totalMoneySpentText.color = Color.red;
         totalMoneyEarnedText.text = "Toplam Kazanılan Para: " + moneyManager.GetDayTotalMoney().ToString("F2");
-        totalMoneySpentText.text = "Toplam Harcanan Para: ";
-        totalMoneyDifferenceText.text = "Toplam Fark: " + moneyManager.GetDayTotalMoney()/* - moneyManager.GetDayTotalMoney())*/.ToString("F2");
+        totalMoneySpentText.text = "Toplam Harcanan Para: " + moneyManager.GetTotalSpentMoney().ToString("F2");
+        totalMoneyDifferenceText.text = "Toplam Fark: " + (moneyManager.GetDayTotalMoney() - moneyManager.GetTotalSpentMoney()).ToString("F2");
+        moneyManager.ResetDayMoney();
 
         //Gün sonu ekranı gelsin ve toplam kazanılan para ve toplam harcanan para gösterilsin ve farkı alınsın
 

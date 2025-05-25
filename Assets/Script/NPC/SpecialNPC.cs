@@ -360,7 +360,8 @@ public class SpecialNPC : MonoBehaviour
         // Çıkış noktasına ulaştığında
         if (animator != null)
         {
-            animator.SetBool("isIdle",true);
+            animator.SetBool("isWalking", true);
+            animator.SetBool("isIdle", false);
         }
 
         // Çıkış animasyonu için 2 saniye bekle

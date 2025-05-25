@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class MoneyManager : MonoBehaviour
 {
     [SerializeField] private float dayTotalMoney = 0;
+    [SerializeField] private float dayTotalSpendMoney = 0;
     [SerializeField][Min(1f)] private float money = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
@@ -33,12 +34,36 @@ public class MoneyManager : MonoBehaviour
         RefreshUI();
     }
 
+    public void SpendMoney(float amount)
+    {
+        if (amount <= money)
+        {
+            dayTotalSpendMoney += amount;
+            money -= amount;
+            RefreshUI();
+        }
+        else
+        {
+            Debug.LogWarning("Not enough money to spend!");
+        }
+    }
+
+    public float GetMoney()
+    {
+        return money;
+    }
     public float GetDayTotalMoney()
     {
         return dayTotalMoney;
     } 
-    public void ResetDayTotalMoney()
+    public float GetTotalSpentMoney()
+    {
+        return dayTotalSpendMoney;
+    } 
+
+    public void ResetDayMoney()
     {
         dayTotalMoney = 0;
+        dayTotalSpendMoney = 0;
     }
 }
