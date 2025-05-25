@@ -5040,3 +5040,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   saveKey: 
+  savePosition: 1
+  saveRotation: 1
+  saveScale: 0
+  saveActiveState: 1

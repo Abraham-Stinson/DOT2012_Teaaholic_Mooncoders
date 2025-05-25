@@ -2,11 +2,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MoneyManager : MonoBehaviour
+public class MoneyManager : MonoBehaviour, ICanSave
 {
     [SerializeField] private float dayTotalMoney = 0;
     [SerializeField] private float dayTotalSpendMoney = 0;
     [SerializeField][Min(1f)] private float money = 0;
+    [SerializeField] private float totalEarnedMoney = 0;
+    [SerializeField] private float totalSpentMoney = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI moneyText;
     [SerializeField] private float refreshRate = 0.1f;
@@ -66,4 +68,25 @@ public class MoneyManager : MonoBehaviour
         dayTotalMoney = 0;
         dayTotalSpendMoney = 0;
     }
+
+    public void SaveData()
+    {
+        PlayerPrefs.SetFloat("CurrentMoney", money);
+        PlayerPrefs.SetFloat("DayTotalMoney", dayTotalMoney);
+        PlayerPrefs.SetFloat("TotalSpentMoney", totalSpentMoney);
+        PlayerPrefs.SetFloat("TotalEarnedMoney", totalEarnedMoney);
+    }
+    
+    public void LoadData()
+    {
+        if (PlayerPrefs.HasKey("CurrentMoney"))
+        {
+            money = PlayerPrefs.GetFloat("CurrentMoney");
+            dayTotalMoney = PlayerPrefs.GetFloat("DayTotalMoney");
+            totalSpentMoney = PlayerPrefs.GetFloat("TotalSpentMoney");
+            totalEarnedMoney = PlayerPrefs.GetFloat("TotalEarnedMoney");
+            RefreshUI();
+        }
+    }
+
 }

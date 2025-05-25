@@ -615,6 +615,7 @@ GameObject:
   - component: {fileID: 3654995930897732817}
   - component: {fileID: 2079158220642957752}
   - component: {fileID: -5213353330998687373}
+  - component: {fileID: 9092761343920075629}
   m_Layer: 6
   m_Name: StrawberryProductContainer
   m_TagString: Other_Products
@@ -733,6 +734,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &9092761343920075629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7758966592290445433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fbcdcb87629f104bb4edaca55fbeb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveKey: 
+  savePosition: 1
+  saveRotation: 1
+  saveScale: 0
+  saveActiveState: 1
 --- !u!1 &8636482744736710984
 GameObject:
   m_ObjectHideFlags: 0

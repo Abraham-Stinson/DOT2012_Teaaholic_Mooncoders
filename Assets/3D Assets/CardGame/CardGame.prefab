@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2049882665442255653}
   - component: {fileID: 7714790333396243674}
   - component: {fileID: 1149586046175544445}
+  - component: {fileID: 3318277575191862093}
   m_Layer: 6
   m_Name: CardGame
   m_TagString: Iskambil
@@ -155,3 +156,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3318277575191862093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100772580262015228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fbcdcb87629f104bb4edaca55fbeb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveKey: 

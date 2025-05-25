@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class WearManager : MonoBehaviour
+public class WearManager : MonoBehaviour, ICanSave
 {
     [SerializeField, Min(1f)][Range(1f, 100f)] private float wear = 0;
     [Header("UI Settings")]
@@ -79,5 +79,19 @@ public class WearManager : MonoBehaviour
         }
 
         RefreshUI();
+    }
+
+    public void SaveData()
+    {
+        PlayerPrefs.SetFloat("CurrentWear", wear);
+    }
+    
+    public void LoadData()
+    {
+        if (PlayerPrefs.HasKey("CurrentWear"))
+        {
+            wear = PlayerPrefs.GetFloat("CurrentWear");
+            RefreshUI();
+        }
     }
 }

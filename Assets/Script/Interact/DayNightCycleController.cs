@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class DayNightCycleController : MonoBehaviour
+public class DayNightCycleController : MonoBehaviour, ICanSave
 {
     [SerializeField]
     private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
@@ -61,37 +61,38 @@ public class DayNightCycleController : MonoBehaviour
 
     private void Start()
     {
+        // Zaman akışını başlat
+        Time.timeScale = 1f;
+        
         UpdateNPCSpawnTime();
-        // Zamanı başlat
-        if (PlayerPrefs.HasKey("SavedDay"))
+        
+        // Eğer yeni oyun başlatılıyorsa (kayıt yoksa)
+        if (!PlayerPrefs.HasKey("SavedDay"))
         {
-            day = PlayerPrefs.GetInt("SavedDay");
-            hour = PlayerPrefs.GetInt("SavedHour");
-            minute = PlayerPrefs.GetInt("SavedMinute");
-
-            // Eğer gece yarısı ise yeni güne geç
-            if (hour == 0 && minute == 0)
+            // Yeni oyun başlangıç değerlerini ayarla
+            day = 1;
+            hour = startHour;
+            minute = 0;
+            isDayFinished = false;
+            npcSpawningDisabled = false;
+            
+            // Oyuncuyu başlangıç pozisyonuna koy
+            if (playerObject != null && playerDayStartPosition != null)
             {
-                day++;
-                hour = startHour;
-                minute = 0;
+                playerObject.transform.position = playerDayStartPosition.position;
+                playerObject.transform.rotation = playerDayStartPosition.rotation;
             }
         }
         else
         {
-            day = 1;
-            hour = startHour;
-            minute = 0;
+            // Kaydedilmiş oyunu yükle
+            LoadData();
+            LoadPlayerPosition();
         }
-
-        day = 1;
-        hour = startHour;
-        minute = 0;
-        npcSpawningDisabled = false;
+        
         UpdateTimeUI();
         UpdateSunLight();
 
-        // Find NPCManager if not assigned
         if (npcManager == null)
         {
             npcManager = FindObjectOfType<NPCManager>();
@@ -100,11 +101,23 @@ public class DayNightCycleController : MonoBehaviour
                 Debug.LogWarning("NPCManager bulunamadı!");
             }
         }
+        
+        // Debug kontrolleri
+        Debug.Log($"Start metodu sonunda - Gün: {day}, Saat: {hour}:{minute}, isDayFinished: {isDayFinished}, TimeScale: {Time.timeScale}");
     }
 
     private void Update()
     {
-        if (isDayFinished || pauseMenuControllerScript.isPaused) return;
+        // Debug kontrolü
+        if (Time.frameCount % 300 == 0) // 300 frame'de bir log yaz
+        {
+            Debug.Log($"Update çalışıyor - TimeScale: {Time.timeScale}, isDayFinished: {isDayFinished}, isPaused: {pauseMenuControllerScript?.isPaused}");
+        }
+        
+        if (isDayFinished || (pauseMenuControllerScript != null && pauseMenuControllerScript.isPaused)) 
+        {
+            return;
+        }
 
         timer += Time.deltaTime;
 
@@ -112,14 +125,8 @@ public class DayNightCycleController : MonoBehaviour
         {
             timer -= minuteDurationSeconds;
             IncrementTimeByOneMinute();
+            Debug.Log($"Zaman arttırıldı - Saat: {hour}:{minute}");
         }
-
-        /*// 23:59'da kaydet
-        if (hour == 23 && minute == 59)
-        {
-            SaveGame();
-            Debug.Log("Oyun kaydedildi");
-        }*/
     }
 
     private void IncrementTimeByOneMinute()
@@ -232,7 +239,7 @@ public class DayNightCycleController : MonoBehaviour
         }
 
         UpdateNPCSpawnTime();
-        //SaveGame();
+        SaveGame();
         day++;
         hour = startHour;
         minute = 0;
@@ -269,19 +276,18 @@ public class DayNightCycleController : MonoBehaviour
         playerObject.transform.rotation = playerDayStartPosition.rotation;
 
         isDayFinished = false;
+        Time.timeScale = 1f; // Zamanı başlat
 
-        Cursor.lockState = CursorLockMode.Locked; // Fare imlecini serbest bırak
-        Cursor.visible = false; // Fare imlecini görünür yap
-        Mouse.current.WarpCursorPosition(Vector2.zero); // Reset mouse position to (0,0)
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        Mouse.current.WarpCursorPosition(Vector2.zero);
         endOfDayScreenUI.SetActive(false);
-        Time.timeScale = 1f; // Zamanı durdur
-
 
         // Yeni gün başladığında müşteri spawning'i tekrar aktif et
         if (npcSpawningDisabled && npcManager != null)
         {
             npcSpawningDisabled = false;
-            npcManager.enabled = true; // NPCManager'ı tekrar etkinleştir
+            npcManager.enabled = true;
             Debug.Log("Yeni gün başladı - Müşteri spawning tekrar aktif");
         }
 
@@ -316,19 +322,105 @@ public class DayNightCycleController : MonoBehaviour
 
     private void SaveGame()
     {
+        // Zaman bilgileri
         PlayerPrefs.SetInt("SavedDay", day);
         PlayerPrefs.SetInt("SavedHour", hour);
         PlayerPrefs.SetInt("SavedMinute", minute);
+        
+        // Oyuncu pozisyonu
+        if (playerObject != null)
+        {
+            Vector3 playerPos = playerObject.transform.position;
+            PlayerPrefs.SetFloat("PlayerPosX", playerPos.x);
+            PlayerPrefs.SetFloat("PlayerPosY", playerPos.y);
+            PlayerPrefs.SetFloat("PlayerPosZ", playerPos.z);
+            
+            Vector3 playerRot = playerObject.transform.eulerAngles;
+            PlayerPrefs.SetFloat("PlayerRotX", playerRot.x);
+            PlayerPrefs.SetFloat("PlayerRotY", playerRot.y);
+            PlayerPrefs.SetFloat("PlayerRotZ", playerRot.z);
+        }
+        
+        // Oyun durumu
+        PlayerPrefs.SetInt("IsDayFinished", isDayFinished ? 1 : 0);
+        PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
+        
+        // Money ve Wear değerlerini kaydet
+        if (moneyManager != null)
+        {
+            moneyManager.SaveData();
+        }
+        
+        // Tüm Saveable objeleri kaydet
         SaveManager.SaveAll();
-        Debug.Log("Oyun kaydedildi - Gün: " + day + " Saat: " + hour + ":" + minute);
+        
+        // Kayıtları diske yaz
+        PlayerPrefs.Save();
+        
+        Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
     }
-    public void LoadTime()
+
+    public void LoadData()
     {
         if (PlayerPrefs.HasKey("SavedDay"))
         {
             day = PlayerPrefs.GetInt("SavedDay");
             hour = PlayerPrefs.GetInt("SavedHour");
             minute = PlayerPrefs.GetInt("SavedMinute");
+            isDayFinished = PlayerPrefs.GetInt("IsDayFinished", 0) == 1;
+            npcSpawningDisabled = PlayerPrefs.GetInt("NPCSpawningDisabled", 0) == 1;
+
+            // Eğer gece yarısı ise yeni güne geç
+            if (hour == 0 && minute == 0)
+            {
+                day++;
+                hour = startHour;
+                minute = 0;
+                isDayFinished = false;
+            }
+
+            // Zamanın akması için
+            isDayFinished = false; // Değeri zorla false yapıyoruz
+            Time.timeScale = 1f;
+            
+            Debug.Log($"Oyun yüklendi - Gün: {day}, Saat: {hour}:{minute}, Gün Bitti: {isDayFinished}, TimeScale: {Time.timeScale}");
+        }
+        else
+        {
+            // İlk kez oynanıyor
+            day = 1;
+            hour = startHour;
+            minute = 0;
+            isDayFinished = false;
+            Time.timeScale = 1f;
+            Debug.Log("Yeni oyun başlatıldı");
+        }
+
+        LoadPlayerPosition();
+        UpdateTimeUI();
+        UpdateSunLight();
+    }
+
+    private void LoadPlayerPosition()
+    {
+        if (PlayerPrefs.HasKey("PlayerPosX") && playerObject != null)
+        {
+            Vector3 position = new Vector3(
+                PlayerPrefs.GetFloat("PlayerPosX"),
+                PlayerPrefs.GetFloat("PlayerPosY"),
+                PlayerPrefs.GetFloat("PlayerPosZ")
+            );
+            
+            Vector3 rotation = new Vector3(
+                PlayerPrefs.GetFloat("PlayerRotX"),
+                PlayerPrefs.GetFloat("PlayerRotY"),
+                PlayerPrefs.GetFloat("PlayerRotZ")
+            );
+            
+            playerObject.transform.position = position;
+            playerObject.transform.eulerAngles = rotation;
+            
+            Debug.Log("Oyuncu pozisyonu yüklendi");
         }
     }
 
@@ -356,5 +448,38 @@ public class DayNightCycleController : MonoBehaviour
         }
     }
 
+    public void SaveData()
+    {
+        // Zaman bilgileri
+        PlayerPrefs.SetInt("SavedDay", day);
+        PlayerPrefs.SetInt("SavedHour", hour);
+        PlayerPrefs.SetInt("SavedMinute", minute);
+        
+        // Oyuncu pozisyonu
+        if (playerObject != null)
+        {
+            Vector3 playerPos = playerObject.transform.position;
+            PlayerPrefs.SetFloat("PlayerPosX", playerPos.x);
+            PlayerPrefs.SetFloat("PlayerPosY", playerPos.y);
+            PlayerPrefs.SetFloat("PlayerPosZ", playerPos.z);
+            
+            Vector3 playerRot = playerObject.transform.eulerAngles;
+            PlayerPrefs.SetFloat("PlayerRotX", playerRot.x);
+            PlayerPrefs.SetFloat("PlayerRotY", playerRot.y);
+            PlayerPrefs.SetFloat("PlayerRotZ", playerRot.z);
+        }
+        
+        // Oyun durumu
+        PlayerPrefs.SetInt("IsDayFinished", isDayFinished ? 1 : 0);
+        PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
+        
+        Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+        Debug.Log("Oyundan çıkış yapıldı - Oyun kaydedildi");
+    }
 
 }

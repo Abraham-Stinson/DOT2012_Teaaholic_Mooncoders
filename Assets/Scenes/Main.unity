@@ -6871,7 +6871,400 @@ MonoBehaviour:
   - {fileID: 613494096}
   - {fileID: 1201372423}
   - {fileID: 898414211}
-  npcSpawnDataList: []
+  npcSpawnDataList:
+  - npcPrefab: {fileID: 1998057600501230174, guid: 9c74e4f391074414b9e3b2faf2ad455d, type: 3}
+    npcName: "Yabanc\u0131"
+    spawnDay: 6
+    minSpawnHour: 22
+    maxSpawnHour: 23
+    dialogueData:
+    - npcQuote: "Selam\u0131naleyk\xFCm garda\u015F."
+      playerOptions:
+      - text: "Aleyk\xFCmselam. Buyurun. "
+        wearEffect: -2
+        moneyEffect: 0
+        nextDialogueIndex: 1
+      - text: Selam
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+      - text: "Merhaba. Ne vard\u0131?"
+        wearEffect: 2
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "Ben ve bir ka\xE7 arkada\u015F\u0131m grev yap\u0131yoruz. Evden
+        at\u0131ld\u0131k. Bu gecelik Burada kalabilir miyiz? "
+      playerOptions:
+      - text: "Nerde \xE7al\u0131\u015F\u0131yorsunuz, niye evden at\u0131ld\u0131n\u0131z?
+          \u015Eu olay\u0131n asl\u0131n\u0131 astar\u0131n\u0131 bir anlat. "
+        wearEffect: -2
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "\u015Eu olay\u0131n tamam\u0131n\u0131 anlat bakal\u0131m. "
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "\xD6yle mi olmu\u015F!?"
+        wearEffect: 2
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Garda\u015F biz devletin \u015Feker fabrikas\u0131nda \xE7al\u0131\u015F\u0131yoruz.
+        Bizim k\xF6r olas\u0131ca bir m\xFCd\xFCr var. Bu m\xFCd\xFCr bizi sebepsiz
+        yere i\u015Ften \xE7\u0131kard\u0131\u011F\u0131 yetmezmi\u015F gibi \xFCst\xFCne
+        bir de bizim yerimize akrabalar\u0131n\u0131 i\u015Fe soktu."
+      playerOptions:
+      - text: "Garda\u015F \u015Fikayet etmediniz mi? "
+        wearEffect: -2
+        moneyEffect: 0
+        nextDialogueIndex: 3
+      - text: "E sizde gidip \u015Fikayet etseydiniz adam\u0131. "
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 3
+      - text: "Git polise \u015Fikayet et."
+        wearEffect: 2
+        moneyEffect: 0
+        nextDialogueIndex: 3
+    - npcQuote: "\u015Eikayet etmez olur muyuz. Ettik \u015Fikayet ama m\xFCd\xFCr\xFCn
+        \xFCst r\xFCtbelilerden tan\u0131d\u0131klar\u0131 varm\u0131\u015F. \u015Eikayet
+        etti\u011Fimizle kald\u0131k."
+      playerOptions:
+      - text: "B\xF6yle sistemin \xE7ark\u0131na t\xFCk\xFCreyim. Evden niye at\u0131ld\u0131n\u0131z
+          ya? "
+        wearEffect: -2
+        moneyEffect: 0
+        nextDialogueIndex: 4
+      - text: "Evden niye at\u0131ld\u0131n\u0131z? "
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 4
+      - text: "Evden at\u0131lma hikayen ne!? "
+        wearEffect: 2
+        moneyEffect: 0
+        nextDialogueIndex: 4
+    - npcQuote: "Hah i\u015Fte. Evin sahibi de bizim m\xFCd\xFCr. Zaman\u0131nda
+        ucuzdan verdi bize evi. Paray\u0131 da elden istiyordu. Bizi kap\u0131 d\u0131\u015F\u0131na
+        att\u0131\u011F\u0131nda anlad\u0131k vergi falan \xF6demiyormu\u015F. Biz
+        de halka sesimizi duyural\u0131m bari diye grev yapmaya karar verdik ama
+        derdimizi dinleyen bir sen vars\u0131n."
+      playerOptions:
+      - text: "Ge\xE7mi\u015F olsun. Vallaha \xE7ok \xFCz\xFCld\xFCm. "
+        wearEffect: -2
+        moneyEffect: 0
+        nextDialogueIndex: 5
+      - text: "Ge\xE7mi\u015F olsun. "
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 5
+      - text: "Ald\u0131n kar\u015F\u0131na beni. Zorla anlat\u0131yon."
+        wearEffect: 2
+        moneyEffect: 0
+        nextDialogueIndex: 5
+    - npcQuote: "Eyvallah garda\u015F. D\xFCkkan\u0131n m\xFCsaitse 1 2 g\xFCn burada
+        kalabilir miyiz? "
+      playerOptions:
+      - text: "Tabi ki, kalabilirsiniz. \u015Eu paray\u0131da al\u0131n bir \u015Feyler
+          yersiniz."
+        wearEffect: -25
+        moneyEffect: -200
+        nextDialogueIndex: 6
+      - text: "Gidin benim ba\u015F\u0131m\u0131 belaya sokmay\u0131n. E\u015Fim
+          \xE7ocu\u011Fum var benim."
+        wearEffect: 25
+        moneyEffect: 0
+        nextDialogueIndex: 7
+    - npcQuote: "Eyvallah garda\u015F. Gece kal\u0131r\u0131z g\xF6r\xFCnmeyiz bile
+        sana."
+      playerOptions:
+      - text: "\u0130yi geceler"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+    - npcQuote: "Eyvallah garda\u015F. Sende hakl\u0131s\u0131n."
+      playerOptions:
+      - text: "\u0130yi geceler"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+  - npcPrefab: {fileID: 6025492527754746494, guid: eccdabf432a78454a98cbe5695478239, type: 3}
+    npcName: "Topuk\xE7u Naz\u0131m"
+    spawnDay: 15
+    minSpawnHour: 22
+    maxSpawnHour: 23
+    dialogueData:
+    - npcQuote: "Ahmet abi, hi\xE7 g\xF6r\xFC\u015Femiyoruz."
+      playerOptions:
+      - text: "Senin ne i\u015Fin var burada!? Art\u0131k sizinle \xE7al\u0131\u015Fm\u0131yorum."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "\u015E\u015F\u015F\u015F\u2026 Sessiz ol. Bu i\u015Flerden ancak
+        \xF6l\xFCnce ayr\u0131l\u0131rs\u0131n."
+      playerOptions:
+      - text: Niye geldin buraya?
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Bak. Polis pe\u015Fimde sana bir dosya verece\u011Fim. Bunu saklarsan
+        cebini de doldururum."
+      playerOptions:
+      - text: "\u0130stemiyorum karde\u015Fim. Zorla m\u0131 vereceksin."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 3
+    - npcQuote: "Ahmet k\u0131z\u0131n okuldan sa\u011F salim d\xF6ns\xFCn istiyorsan
+        \xE7ok sesini \xE7\u0131karma. Al \u015Fu dosyay\u0131. Hem kar\u0131n\u0131n
+        ameliyat paras\u0131n\u0131n bir k\u0131sm\u0131n\u0131 da \xE7\u0131kar\u0131rs\u0131n
+        b\xF6ylece."
+      playerOptions:
+      - text: "Tamam. Ver \u015Fu dosyay\u0131."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 4
+    - npcQuote: "Hah \u015F\xF6yle. Bak e\u011Fer polis falan u\u011Frarsa sana dosya
+        vermedim. Hatta buraya bile gelmedim."
+      playerOptions:
+      - text: Tamam.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+  - npcPrefab: {fileID: 792114658254320597, guid: 8bfdb75e880a25d48b580ee2c967c734, type: 3}
+    npcName: Polis
+    spawnDay: 16
+    minSpawnHour: 22
+    maxSpawnHour: 23
+    dialogueData:
+    - npcQuote: Merhabalar beyefendi.
+      playerOptions:
+      - text: "Merhabalar memur bey nas\u0131l yard\u0131mc\u0131 olabilirim."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "Son g\xFCnlerde buralarda hi\xE7 tekinsiz tipler g\xF6rd\xFCn m\xFC?"
+      playerOptions:
+      - text: "Yok hi\xE7 g\xF6rmedim."
+        wearEffect: 2
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: Buralarda herkes tekinsizdir.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "Asl\u0131nda evet birini g\xF6rd\xFCm. \u0130ki g\xFCn \xF6nceydi.
+          Bir adam geldi, beni k\u0131z\u0131m\u0131n can\u0131yla tehdit etti. Daha
+          sonra bana bu belgeleri verdi."
+        wearEffect: -2
+        moneyEffect: 0
+        nextDialogueIndex: 12
+    - npcQuote: Emin misiniz?
+      playerOptions:
+      - text: "Evet. Neden bir olay m\u0131 oldu?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 3
+    - npcQuote: "Bir ihbar ald\u0131k onu soru\u015Fturuyoruz. Ama sen e\u011Fer
+        buralarda siyah giyen kap\xFC\u015Fonlu birileri sana gelip dosya falan vermeye
+        \xE7al\u0131\u015F\u0131rsa bunu ihbar ederdin de\u011Fil mi?"
+      playerOptions:
+      - text: Tabi ki Memur Bey
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 4
+    - npcQuote: "Bak e\u011Fer b\xF6yle bir olay olduysa \u015E\u0130MD\u0130 konu\u015F.
+        \xC7\xFCnk\xFC biz yakalarsak bunun b\xFCy\xFCk cezas\u0131 var."
+      playerOptions:
+      - text: "B\xF6yle bir olay olmad\u0131 memur bey."
+        wearEffect: 30
+        moneyEffect: 0
+        nextDialogueIndex: 5
+      - text: "Asl\u0131nda san\u0131r\u0131m oldu."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 6
+      - text: Oldu memur bey ama...
+        wearEffect: -5
+        moneyEffect: 0
+        nextDialogueIndex: 7
+    - npcQuote: "Yalan s\xF6yledi\u011Fini biliyorum. Sana 5 bin lira ceza yazaca\u011F\u0131m
+        \u015Fimdi."
+      playerOptions:
+      - text: "Yaz\u0131n memur bey. Hak ettim."
+        wearEffect: -10
+        moneyEffect: -5000
+        nextDialogueIndex: 9
+      - text: "Memur bey \u015Furadan 1500 al\u0131n. Beni g\xF6rmeyin."
+        wearEffect: 10
+        moneyEffect: -1500
+        nextDialogueIndex: 10
+      - text: "Memur bey kap\u0131ya 2000 s\u0131k\u0131\u015Fm\u0131\u015F sizin
+          mi acaba?"
+        wearEffect: 15
+        moneyEffect: -2000
+        nextDialogueIndex: 10
+    - npcQuote: "San\u0131r\u0131m oldu mu? Dalga m\u0131 ge\xE7iyorsun lan benle. "
+      playerOptions:
+      - text: Memur bey tehdit edildim.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 8
+    - npcQuote: AMA NE!? NE AMA!?
+      playerOptions:
+      - text: Memur bey tehdit edildim.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 8
+    - npcQuote: "Az \xF6nce korkuyordun \u015Fimdi korkmuyor musun? Sana en az 5
+        bin lira ceza yazaca\u011F\u0131m \u015Fimdi."
+      playerOptions:
+      - text: "Yaz\u0131n memur bey. Hak ettim."
+        wearEffect: -10
+        moneyEffect: -5000
+        nextDialogueIndex: 9
+      - text: "Memur bey \u015Furadan 1500 al\u0131n. Beni g\xF6rmeyin."
+        wearEffect: 10
+        moneyEffect: -1500
+        nextDialogueIndex: 10
+      - text: "Memur bey kap\u0131ya 2000 s\u0131k\u0131\u015Fm\u0131\u015F sizin
+          mi acaba?"
+        wearEffect: 15
+        moneyEffect: -2000
+        nextDialogueIndex: 10
+    - npcQuote: "Ver bakal\u0131m \u015Fu dosyalar\u0131."
+      playerOptions:
+      - text: "Buyurun. \u0130yi ak\u015Famlar. "
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+    - npcQuote: "Ulan sen devletin memuruna r\xFC\u015Fvet mi teklif ediyorsun?"
+      playerOptions:
+      - text: "Hay\u0131r memur bey olur mu \xF6yle \u015Fey. Yerde biraz para buldum
+          belki sizindir diye sordum."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 11
+    - npcQuote: "Haaa\u2026 Bakay\u0131m... Benim yav bunlar. Bu paray\u0131 ve dosyay\u0131
+        al\u0131yorum. Sana ceza yazmayaca\u011F\u0131m."
+      playerOptions:
+      - text: "\u0130yi ak\u015Famlar."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+    - npcQuote: "\u015Eimdi sana 2000 lira ceza yazmak zorunday\u0131m."
+      playerOptions:
+      - text: Tabi ki memur bey hak ettim.
+        wearEffect: -15
+        moneyEffect: -2000
+        nextDialogueIndex: 9
+      - text: "Memur bey \u015Furadan 750 lira al\u0131n. Beni g\xF6rmeyin."
+        wearEffect: 10
+        moneyEffect: -750
+        nextDialogueIndex: 10
+      - text: "Memur bey kap\u0131ya 1000 lira s\u0131k\u0131\u015Fm\u0131\u015F
+          sizin mi acaba?"
+        wearEffect: 15
+        moneyEffect: -1000
+        nextDialogueIndex: 10
+  - npcPrefab: {fileID: 6025492527754746494, guid: eccdabf432a78454a98cbe5695478239, type: 3}
+    npcName: "Topuk\xE7u Naz\u0131m"
+    spawnDay: 17
+    minSpawnHour: 22
+    maxSpawnHour: 23
+    dialogueData:
+    - npcQuote: Dosyalar nerede?
+      playerOptions:
+      - text: "Dosyalar\u0131 polise kapt\u0131rd\u0131m."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "Seni bo\u015Funa m\u0131 tehdit ettim san\u0131yosun?"
+      playerOptions:
+      - text: "K\u0131z\u0131m\u0131n k\u0131l\u0131na dokunay\u0131m deme."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+  - npcPrefab: {fileID: 1632964472743875217, guid: 1190ed997a6b7a14191d976eac1f101a, type: 3}
+    npcName: "Yabanc\u0131"
+    spawnDay: 24
+    minSpawnHour: 22
+    maxSpawnHour: 23
+    dialogueData:
+    - npcQuote: "Merhaba. Sizi rahats\u0131z etti\u011Fim i\xE7in \xF6z\xFCr dilerim."
+      playerOptions:
+      - text: "Esta\u011Ffurullah ne rahats\u0131zl\u0131\u011F\u0131. Bir \u015Fey
+          mi istemi\u015Ftiniz?"
+        wearEffect: -5
+        moneyEffect: 0
+        nextDialogueIndex: 1
+      - text: "Merhaba, ne istemi\u015Ftin?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+      - text: Ne var, ne istiyorsun?
+        wearEffect: 5
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "\u015Eey... Yan\u0131ma para almay\u0131 unutmu\u015Fum da... Paras\u0131z
+        kalabilece\u011Fim bir yer gerekiyor."
+      playerOptions:
+      - text: "\u0130sterseniz bizim evde misafir edelim sizi? Ben de \u015Fimdi
+          \xE7\u0131k\u0131yordum."
+        wearEffect: -15
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "\u0130ki sokak \xF6tede bir cami var oraya sor."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 7
+      - text: "Paran yoksa evine git bac\u0131m."
+        wearEffect: 35
+        moneyEffect: 0
+        nextDialogueIndex: 6
+    - npcQuote: "Size rahats\u0131zl\u0131k vermeyeyim."
+      playerOptions:
+      - text: "Yok can\u0131m ne rahats\u0131zl\u0131\u011F\u0131 vereceksiniz."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 3
+    - npcQuote: "Ben de\u011Fil de... Kocam... Kocam benim pe\u015Fimde."
+      playerOptions:
+      - text: "Kavga m\u0131 ettiniz?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 4
+    - npcQuote: "(G\xF6zl\xFC\u011F\xFCn\xFC \xE7\u0131kar\u0131r. G\xF6z\xFC morarm\u0131\u015Ft\u0131r.)"
+      playerOptions:
+      - text: "Gelin benimle saat ge\xE7 oldu."
+        wearEffect: -20
+        moneyEffect: 0
+        nextDialogueIndex: 5
+      - text: "Han\u0131mefendi benim ba\u015F\u0131m\u0131 belaya sokmay\u0131n."
+        wearEffect: 15
+        moneyEffect: 0
+        nextDialogueIndex: 6
+    - npcQuote: "Te\u015Fekk\xFCrler."
+      playerOptions:
+      - text: "\xD6nemli de\u011Fil."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+    - npcQuote: "Siz de hakl\u0131s\u0131n\u0131z. \u0130yi ak\u015Famlar."
+      playerOptions:
+      - text: "\u0130yi ak\u015Famlar."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+    - npcQuote: Camide beni kesin bulur.
+      playerOptions:
+      - text: 'Kim bulur? '
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 8
+    - npcQuote: Kocam.
+      playerOptions:
+      - text: "Neden ka\xE7\u0131yorsunuz ki, kavga m\u0131 ettiniz?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 4
   dayNightController: {fileID: 190237885}
   wearManager: {fileID: 1974237919}
   moneyManager: {fileID: 457943707}
@@ -7221,7 +7614,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 34, y: -198}
+  m_AnchoredPosition: {x: 34, y: -299}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &384972318
@@ -7273,15 +7666,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -7863,6 +8256,8 @@ MonoBehaviour:
   dayTotalMoney: 0
   dayTotalSpendMoney: 0
   money: 100
+  totalEarnedMoney: 0
+  totalSpentMoney: 0
   moneyText: {fileID: 1883241729}
   refreshRate: 0.1
 --- !u!1 &472273354
@@ -8883,7 +9278,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1812551546}
-  - {fileID: 948456960}
   - {fileID: 2092426398}
   m_Father: {fileID: 1986541256}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10129,154 +10523,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc67a1be5557da44d94af0cd6db43e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &948456959
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 948456960}
-  - component: {fileID: 948456964}
-  - component: {fileID: 948456963}
-  - component: {fileID: 948456962}
-  - component: {fileID: 948456961}
-  m_Layer: 5
-  m_Name: Button_restart
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &948456960
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948456959}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1375927991}
-  m_Father: {fileID: 700183297}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -661.124, y: -0.000015259}
-  m_SizeDelta: {x: 267.7521, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &948456961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948456959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ba639209babfc1418c833f671739a28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectsToShow:
-  - {fileID: 1375927990}
---- !u!114 &948456962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948456959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 948456963}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1375927990}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &948456963
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948456959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &948456964
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948456959}
-  m_CullTransparentMesh: 1
 --- !u!1001 &959581815
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11000,7 +11246,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 30, y: 0}
+  m_AnchoredPosition: {x: 30, y: -25}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1099517475
@@ -11050,15 +11296,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -12516,81 +12762,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32bf86a1244a12d45a10e6ec507c7b14, type: 3}
---- !u!1 &1375927990
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1375927991}
-  - component: {fileID: 1375927993}
-  - component: {fileID: 1375927992}
-  m_Layer: 5
-  m_Name: restartEffect
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1375927991
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1375927990}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948456960}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 298, y: 74}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1375927992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1375927990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d66c4ec67d2675c4193f86420a80762d, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1375927993
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1375927990}
-  m_CullTransparentMesh: 1
 --- !u!1001 &1380036108
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13062,7 +13233,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 55215faaa95b1d54fb968752272bbf8f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f48796bfc30c5bd4c991b8054a994aeb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14029,7 +14200,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 34, y: -62}
+  m_AnchoredPosition: {x: 34, y: -101}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1669657904
@@ -14081,15 +14252,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -15940,7 +16111,7 @@ MonoBehaviour:
   adisyonScript: {fileID: 0}
   pauseMenuCanvas: {fileID: 700183296}
   continueButton: {fileID: 1812551548}
-  restartButton: {fileID: 948456962}
+  restartButton: {fileID: 0}
   exitButton: {fileID: 2092426400}
   pauseAction: {fileID: -3871431315947648754, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   gameplayActions: []
@@ -34211,49 +34382,49 @@ MonoBehaviour:
     description: 
     itemPrefab: {fileID: 4583457363796971318, guid: 0a1c93e2f44324141b1de0aad802c2dd, type: 3}
     itemIcon: {fileID: 21300000, guid: c874dac0401e1544c834adf202e2a7c2, type: 3}
-    price: 10
-    blackMarketPrice: 5
+    price: 15
+    blackMarketPrice: 10
   - itemName: "Demlik \xC7ay"
     description: 
     itemPrefab: {fileID: 407811389289972543, guid: c9c955e852d557341b60fa4a61718a56, type: 3}
     itemIcon: {fileID: 21300000, guid: bf6af76a33e648e4fba670eac020f98e, type: 3}
-    price: 30
-    blackMarketPrice: 20
+    price: 250
+    blackMarketPrice: 150
   - itemName: Kahve
     description: 
     itemPrefab: {fileID: 3434910642726542473, guid: 033d2a79d2ddad34ea9c796ca5b4c473, type: 3}
     itemIcon: {fileID: 21300000, guid: 6525ef4296e0db545b6fe38925764e35, type: 3}
-    price: 30
-    blackMarketPrice: 20
+    price: 100
+    blackMarketPrice: 60
   - itemName: Muz Oralet
     description: 
     itemPrefab: {fileID: 4023159516476492531, guid: e8f1844b775d20945a7aad0b56ecec15, type: 3}
     itemIcon: {fileID: 21300000, guid: c1fa915de078be241911d09833f5ce83, type: 3}
-    price: 25
-    blackMarketPrice: 20
+    price: 75
+    blackMarketPrice: 40
   - itemName: Portakal\nOralet
     description: 
     itemPrefab: {fileID: 3880537470409914902, guid: 50b9913a0dbfcef47819f90229503fcf, type: 3}
     itemIcon: {fileID: 21300000, guid: 63550ba4b835a394faa826ef4735e7cb, type: 3}
-    price: 25
-    blackMarketPrice: 20
+    price: 75
+    blackMarketPrice: 40
   - itemName: "\xC7ilek\\nOralet"
     description: 
     itemPrefab: {fileID: 7758966592290445433, guid: 22be8f3465594f147bce48f478ba756a, type: 3}
     itemIcon: {fileID: 21300000, guid: c3320bb4fe9302a4eb3470342451749f, type: 3}
-    price: 25
-    blackMarketPrice: 20
+    price: 75
+    blackMarketPrice: 40
   - itemName: Kivi Oralet
     description: 
     itemPrefab: {fileID: 8360586733416779758, guid: be9ac49f13c89904aaed4a4b5e2e6896, type: 3}
     itemIcon: {fileID: 21300000, guid: 43650bdecae1b2d44ade3892fae9d600, type: 3}
-    price: 25
-    blackMarketPrice: 20
+    price: 75
+    blackMarketPrice: 40
   marketUIObject: {fileID: 1014871694740537850}
   infoItemPrefab: {fileID: 9145417154151501477, guid: 29c0cb4ec4a6b6f4a885c35c3c185d00, type: 3}
   deliveryBoxSpawnPoint: {fileID: 1405085284}
   deliveryBoxPrefab: {fileID: 5889344712347918746, guid: e3419a891a5af404fa7f9dc4ce487e9c, type: 3}
-  deliveryDelay: 5
+  deliveryDelay: 15
   escapeAction: {fileID: -3871431315947648754, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   playerInput: {fileID: 0}
   contentParent: {fileID: 2251651935328190097}
@@ -36562,6 +36733,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   saveKey: 
+  savePosition: 1
+  saveRotation: 0
+  saveScale: 0
+  saveActiveState: 1
+  saveLightSettings: 1
+  saveRendererSettings: 1
 --- !u!114 &8811623276630392469
 MonoBehaviour:
   m_ObjectHideFlags: 0
