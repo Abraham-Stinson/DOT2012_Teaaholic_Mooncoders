@@ -21,6 +21,7 @@ public class SoundManager : MonoBehaviour
     public AudioSource PhonePickup;
     public AudioSource PhoneClose;
     public AudioSource Running;
+    public AudioSource FlipPage;
 
     private void Awake()
     {
@@ -120,6 +121,7 @@ public class SoundManager : MonoBehaviour
     public void PhoneOpen() => PhonePickup?.Play();
     public void PhoneClosed() => PhoneClose?.Play();
     public void MenuMusic() => MainMenuMusic?.Play();
+    public void PageSwitch() => FlipPage?.Play();
 
     public void Walk()
     {
