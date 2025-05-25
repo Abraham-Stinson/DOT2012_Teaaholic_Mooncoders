@@ -18,6 +18,9 @@ public class SoundManager : MonoBehaviour
     public AudioSource Walking;
     public AudioSource SwitchOffOn;
     public AudioSource MainMenuMusic;
+    public AudioSource PhonePickup;
+    public AudioSource PhoneClose;
+    public AudioSource Running;
 
     private void Awake()
     {
@@ -113,6 +116,36 @@ public class SoundManager : MonoBehaviour
     public void CloseBook() => ClosingBook?.Play();
     public void Write() => Writing?.Play();
     public void Money() => Coin?.Play();
-    public void Walk() => Walking?.Play();
     public void Switch() => SwitchOffOn?.Play();
+    public void PhoneOpen() => PhonePickup?.Play();
+    public void PhoneClosed() => PhoneClose?.Play();
+    public void MenuMusic() => MainMenuMusic?.Play();
+
+    public void Walk()
+    {
+        if (Walking != null && !Walking.isPlaying)
+        {
+            Walking.Play();
+        }
+    }
+
+    public void Run()
+    {
+        if (Running != null && !Running.isPlaying)
+        {
+            Running.Play();
+        }
+    }
+
+    public void StopWalkingSounds()
+    {
+        if (Walking != null && Walking.isPlaying)
+        {
+            Walking.Stop();
+        }
+        if (Running != null && Running.isPlaying)
+        {
+            Running.Stop();
+        }
+    }
 }

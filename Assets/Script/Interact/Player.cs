@@ -182,6 +182,7 @@ public class Player : MonoBehaviour
                 {
                     bool isActive = handbookUI.activeSelf;
                     handbookUI.SetActive(!isActive);
+                    SoundManager.Instance.OpenBook();
 
                     // Cursor ve Time.timeScale kontrolü
                     if (!isActive)
@@ -216,7 +217,7 @@ public class Player : MonoBehaviour
                             if (script != null)
                                 script.enabled = true;
                         }
-
+                        SoundManager.Instance.CloseBook();
                         Debug.Log("Handbook UI kapatıldı, oyun devam ediyor, imleç gizlendi.");
                     }
                 }
