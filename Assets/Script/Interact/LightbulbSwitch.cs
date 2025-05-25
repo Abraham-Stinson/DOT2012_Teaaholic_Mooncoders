@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LightbulbSwitch : MonoBehaviour, IInteractable
 {
@@ -18,10 +18,14 @@ public class LightbulbSwitch : MonoBehaviour, IInteractable
     {
         isOpen = !isOpen;
         animator.SetBool("is_Switch_Open", isOpen);
+
         foreach (Light bulb in bulbs)
         {
             bulb.enabled = isOpen;
         }
+
+        // Her interact'ta sesi çal
+        SoundManager.Instance.Switch();
     }
 
     // Update is called once per frame

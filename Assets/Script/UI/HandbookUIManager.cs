@@ -23,6 +23,7 @@ public class HandbookUIManager : MonoBehaviour
 
     void UpdatePage()
     {
+        SoundManager.Instance.PageSwitch();
         for (int i = 0; i < pages.Count; i++)
             pages[i].SetActive(i == currentPageIndex);
 
@@ -36,6 +37,7 @@ public class HandbookUIManager : MonoBehaviour
 
     public void NextPage()
     {
+        SoundManager.Instance.PageSwitch();
         if (currentPageIndex < pages.Count - 1)
         {
             currentPageIndex++;
@@ -45,6 +47,7 @@ public class HandbookUIManager : MonoBehaviour
 
     public void PreviousPage()
     {
+        SoundManager.Instance.PageSwitch();
         if (currentPageIndex > 0)
         {
             currentPageIndex--;
@@ -54,12 +57,14 @@ public class HandbookUIManager : MonoBehaviour
 
     public void GoToFirstPage()
     {
+        SoundManager.Instance.PageSwitch();
         currentPageIndex = 0;
         UpdatePage();
     }
 
     public void GoToPage(int index)
     {
+        SoundManager.Instance.PageSwitch();
         if (index >= 0 && index < pages.Count)
         {
             currentPageIndex = index;

@@ -34,6 +34,7 @@ public class MoneyManager : MonoBehaviour, ICanSave
         dayTotalMoney += amount;
         money += amount;
         RefreshUI();
+        SoundManager.Instance.Money();
     }
 
     public void SpendMoney(float amount)
@@ -43,6 +44,7 @@ public class MoneyManager : MonoBehaviour, ICanSave
             dayTotalSpendMoney += amount;
             money -= amount;
             RefreshUI();
+            SoundManager.Instance.Money();
         }
         else
         {

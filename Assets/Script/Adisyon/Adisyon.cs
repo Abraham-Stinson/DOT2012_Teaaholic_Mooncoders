@@ -83,6 +83,7 @@ public class Adisyon : MonoBehaviour, IInteractable
                 Debug.LogWarning("PlayerMovementScript is null in Adisyon.CloseAdisyonUI");
             }
             isAdisyonOpen = false;
+            SoundManager.Instance.Write();
             OpenAdisyonUI(false);
         }
     }
