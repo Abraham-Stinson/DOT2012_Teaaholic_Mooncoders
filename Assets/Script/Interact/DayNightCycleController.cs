@@ -208,7 +208,7 @@ public class DayNightCycleController : MonoBehaviour
             Debug.Log("NPC var");
             return;
         }
-        
+
         SaveGame();
         day++;
         hour = startHour;
@@ -288,7 +288,7 @@ public class DayNightCycleController : MonoBehaviour
     {
         return hour;
     }
-    
+
     private void SaveGame()
     {
         PlayerPrefs.SetInt("SavedDay", day);

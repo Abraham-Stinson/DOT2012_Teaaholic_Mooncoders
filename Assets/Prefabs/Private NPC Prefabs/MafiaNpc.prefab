@@ -430,8 +430,8 @@ GameObject:
   - component: {fileID: 3262434057071153929}
   - component: {fileID: 6607852152772282501}
   m_Layer: 12
-  m_Name: MafiaNPC
-  m_TagString: Untagged
+  m_Name: MafiaNpc
+  m_TagString: NPC_Private
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

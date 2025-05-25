@@ -29,6 +29,7 @@ TagManager:
   - Iskambil
   - Tavla
   - NPC_Customer
+  - NPC_Private
   layers:
   - Default
   - TransparentFX
