@@ -7083,75 +7083,75 @@ MonoBehaviour:
   - {fileID: 898414211}
   npcSpawnDataList:
   - npcPrefab: {fileID: 2284876664122768610, guid: 2c61c08250e90be49850fe7e80812514, type: 3}
-    npcName: "\u0130\u015F\xE7i"
-    spawnDay: 3
+    npcName: "Yabanc\u0131"
+    spawnDay: 5
     minSpawnHour: 9
     maxSpawnHour: 10
     dialogueData:
     - npcQuote: "Selam\u0131naleyk\xFCm garda\u015F."
       playerOptions:
       - text: "Aleyk\xFCmselam. Buyurun. "
-        wearEffect: 0
+        wearEffect: -2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 1
       - text: Selam
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 1
       - text: "Merhaba. Ne vard\u0131?"
-        wearEffect: 0
+        wearEffect: 2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 1
     - npcQuote: "Ben ve bir ka\xE7 arkada\u015F\u0131m grev yap\u0131yoruz. Evden
         at\u0131ld\u0131k. Bu gecelik Burada kalabilir miyiz? "
       playerOptions:
       - text: "Nerde \xE7al\u0131\u015F\u0131yorsunuz, niye evden at\u0131ld\u0131n\u0131z?
           \u015Eu olay\u0131n asl\u0131n\u0131 astar\u0131n\u0131 bir anlat. "
-        wearEffect: 0
+        wearEffect: -2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 2
       - text: "\u015Eu olay\u0131n tamam\u0131n\u0131 anlat bakal\u0131m. "
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: -1
-      - text: 'Allah Allah  '
-        wearEffect: 0
+        nextDialogueIndex: 2
+      - text: "\xD6yle mi olmu\u015F!?"
+        wearEffect: 2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 2
     - npcQuote: "Garda\u015F biz devletin \u015Feker fabrikas\u0131nda \xE7al\u0131\u015F\u0131yoruz.
         Bizim k\xF6r olas\u0131ca bir m\xFCd\xFCr var. Bu m\xFCd\xFCr bizi sebepsiz
         yere i\u015Ften \xE7\u0131kard\u0131\u011F\u0131 yetmezmi\u015F gibi \xFCst\xFCne
         bir de bizim yerimize akrabalar\u0131n\u0131 i\u015Fe soktu."
       playerOptions:
       - text: "Garda\u015F \u015Fikayet etmediniz mi? "
-        wearEffect: 0
+        wearEffect: -2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 3
       - text: "E sizde gidip \u015Fikayet etseydiniz adam\u0131. "
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 3
       - text: "Git polise \u015Fikayet et."
-        wearEffect: 0
+        wearEffect: 2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 3
     - npcQuote: "\u015Eikayet etmez olur muyuz. Ettik \u015Fikayet ama m\xFCd\xFCr\xFCn
         \xFCst r\xFCtbelilerden tan\u0131d\u0131klar\u0131 varm\u0131\u015F. \u015Eikayet
-        etti\u011Fimizle kald\u0131k"
+        etti\u011Fimizle kald\u0131k."
       playerOptions:
       - text: "B\xF6yle sistemin \xE7ark\u0131na t\xFCk\xFCreyim. Evden niye at\u0131ld\u0131n\u0131z
           ya? "
-        wearEffect: 0
+        wearEffect: -2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 4
       - text: "Evden niye at\u0131ld\u0131n\u0131z? "
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 4
       - text: "Evden at\u0131lma hikayen ne!? "
-        wearEffect: 0
+        wearEffect: 2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 4
     - npcQuote: "Hah i\u015Fte. Evin sahibi de bizim m\xFCd\xFCr. Zaman\u0131nda
         ucuzdan verdi bize evi. Paray\u0131 da elden istiyordu. Bizi kap\u0131 d\u0131\u015F\u0131na
         att\u0131\u011F\u0131nda anlad\u0131k vergi falan \xF6demiyormu\u015F. Biz
@@ -7159,29 +7159,180 @@ MonoBehaviour:
         derdimizi dinleyen bir sen vars\u0131n."
       playerOptions:
       - text: "Ge\xE7mi\u015F olsun. Vallaha \xE7ok \xFCz\xFCld\xFCm. "
-        wearEffect: 0
+        wearEffect: -2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 5
       - text: "Ge\xE7mi\u015F olsun. "
         wearEffect: 0
         moneyEffect: 0
-        nextDialogueIndex: -1
-      - text: "Zorla anlat\u0131yon. "
-        wearEffect: 0
+        nextDialogueIndex: 5
+      - text: "Ald\u0131n kar\u015F\u0131na beni. Zorla anlat\u0131yon."
+        wearEffect: 2
         moneyEffect: 0
-        nextDialogueIndex: -1
+        nextDialogueIndex: 5
     - npcQuote: "Eyvallah garda\u015F. D\xFCkkan\u0131n m\xFCsaitse 1 2 g\xFCn burada
         kalabilir miyiz? "
       playerOptions:
-      - text: Tabi ki, kalabilirsiniz
-        wearEffect: -15
-        moneyEffect: 0
-        nextDialogueIndex: -1
+      - text: "Tabi ki, kalabilirsiniz. \u015Eu paray\u0131da al\u0131n bir \u015Feyler
+          yersiniz."
+        wearEffect: -25
+        moneyEffect: -200
+        nextDialogueIndex: 6
       - text: "Gidin benim ba\u015F\u0131m\u0131 belaya sokmay\u0131n. E\u015Fim
-          \xE7ocu\u011Fum var benim"
-        wearEffect: 15
+          \xE7ocu\u011Fum var benim."
+        wearEffect: 25
+        moneyEffect: 0
+        nextDialogueIndex: 7
+    - npcQuote: "Eyvallah garda\u015F. Gece kal\u0131r\u0131z g\xF6r\xFCnmeyiz bile
+        sana."
+      playerOptions:
+      - text: "\u0130yi geceler"
+        wearEffect: 0
         moneyEffect: 0
         nextDialogueIndex: -1
+    - npcQuote: "Eyvallah garda\u015F. Sende hakl\u0131s\u0131n."
+      playerOptions:
+      - text: "\u0130yi geceler"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+  - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+    npcName: "Topuk\xE7u Naz\u0131m"
+    spawnDay: 1
+    minSpawnHour: 9
+    maxSpawnHour: 10
+    dialogueData:
+    - npcQuote: "Ahmet abi, hi\xE7 g\xF6r\xFC\u015Femiyoruz."
+      playerOptions:
+      - text: "Senin ne i\u015Fin var burada!? Art\u0131k sizinle \xE7al\u0131\u015Fm\u0131yorum."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "\u015E\u015F\u015F\u015F\u2026 Sessiz ol. Bu i\u015Flerden ancak
+        \xF6l\xFCnce ayr\u0131l\u0131rs\u0131n."
+      playerOptions:
+      - text: Niye geldin buraya?
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Bak. Polis pe\u015Fimde sana bir dosya verece\u011Fim. Bunu saklarsan
+        cebini de doldururum."
+      playerOptions:
+      - text: "\u0130stemiyorum karde\u015Fim. Zorla m\u0131 vereceksin."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 3
+    - npcQuote: "Ahmet k\u0131z\u0131n okuldan sa\u011F salim d\xF6ns\xFCn istiyorsan
+        \xE7ok sesini \xE7\u0131karma. Al \u015Fu dosyay\u0131. Hem kar\u0131n\u0131n
+        ameliyat paras\u0131n\u0131n bir k\u0131sm\u0131n\u0131 da \xE7\u0131kar\u0131rs\u0131n
+        b\xF6ylece."
+      playerOptions:
+      - text: "Tamam. Ver \u015Fu dosyay\u0131."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 4
+    - npcQuote: "Hah \u015F\xF6yle. Bak e\u011Fer polis falan u\u011Frarsa sana dosya
+        vermedim. Hatta buraya bile gelmedim."
+      playerOptions:
+      - text: Tamam.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: -1
+  - npcPrefab: {fileID: 2964728432240494246, guid: 46b27bd0ccc515940a5d145ac4cc66cc, type: 3}
+    npcName: Polis
+    spawnDay: 1
+    minSpawnHour: 9
+    maxSpawnHour: 10
+    dialogueData:
+    - npcQuote: Merhabalar beyefendi.
+      playerOptions:
+      - text: Tabi ki memur bey.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 1
+    - npcQuote: "Son g\xFCnlerde buralarda hi\xE7 tekinsiz tipler g\xF6rd\xFCn m\xFC?"
+      playerOptions:
+      - text: "Yok hi\xE7 g\xF6rmedim."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: Buralarda herkes tekinsizdir.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "Asl\u0131nda evet birini g\xF6rd\xFCm."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: Emin misiniz?
+      playerOptions:
+      - text: "Evet. Neden bir olay m\u0131 oldu?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Bir ihbar ald\u0131k onu soru\u015Fturuyoruz. Ama sen e\u011Fer
+        buralarda siyah giyen kap\xFC\u015Fonlu birileri sana gelip dosya falan vermeye
+        \xE7al\u0131\u015F\u0131rsa bunu ihbar ederdin de\u011Fil mi?"
+      playerOptions:
+      - text: "Evet. Neden bir olay m\u0131 oldu?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Bak e\u011Fer b\xF6yle bir olay olduysa \u015E\u0130MD\u0130 konu\u015F.
+        \xC7\xFCnk\xFC biz yakalarsak bunun b\xFCy\xFCk cezas\u0131 var."
+      playerOptions:
+      - text: "B\xF6yle bir olay olmad\u0131 memur bey."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "Asl\u0131nda san\u0131r\u0131m oldu."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: Oldu memur bey ama...
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Tamam o zaman iyi ak\u015Famlar dikkatli olun."
+      playerOptions:
+      - text: "\u0130yi ak\u015Famlar."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "San\u0131r\u0131m oldu mu? Dalga m\u0131 ge\xE7iyorsun lan benle. "
+      playerOptions:
+      - text: Memur bey tehdit edildim.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Tamam o zaman iyi ak\u015Famlar dikkatli olun."
+      playerOptions:
+      - text: Memur bey tehdit edildim.
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Az \xF6nce korkuyordun \u015Fimdi korkmuyor musun? Sana en az 5
+        bin lira ceza yazaca\u011F\u0131m \u015Fimdi."
+      playerOptions:
+      - text: "Yaz\u0131n memur bey. Hak ettim."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "Memur bey \u015Furadan 1500 al\u0131n. Beni g\xF6rmeyin."
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+      - text: "Memur bey kap\u0131ya 2000 s\u0131k\u0131\u015Fm\u0131\u015F sizin
+          mi acaba?"
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
+    - npcQuote: "Ver bakal\u0131m \u015Fu dosyalar\u0131."
+      playerOptions:
+      - text: "Buyurun. \u0130yi ak\u015Famlar. "
+        wearEffect: 0
+        moneyEffect: 0
+        nextDialogueIndex: 2
   dayNightController: {fileID: 190237885}
   wearManager: {fileID: 1974237919}
   moneyManager: {fileID: 457943707}
@@ -16574,6 +16725,8 @@ MonoBehaviour:
   restartButton: {fileID: 1792876756}
   exitButton: {fileID: 1078517564}
   pauseAction: {fileID: -3871431315947648754, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
+  gameplayActions: []
+  playerControlScripts: []
   playerInput: {fileID: 0}
   isPaused: 0
 --- !u!4 &2034626287
@@ -22053,6 +22206,9 @@ MonoBehaviour:
   playerCam: {fileID: 7493123988560986384}
   rayCastRange: 10
   isPicked: 0
+  handbookUI: {fileID: 0}
+  f_interact: {fileID: 0}
+  e_interact: {fileID: 0}
   mainInfoUI: {fileID: 1764672077}
   mainInfoUIText: {fileID: 1764672079}
   interactionLayer:
@@ -22075,6 +22231,8 @@ MonoBehaviour:
   pickAndPutInput: {fileID: 3216161973931065576, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   useInput: {fileID: -1487084534325870183, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   useHoldInput: {fileID: 1883127306925870050, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
+  escapeInput: {fileID: 0}
+  playerControlScripts: []
   cleaningTime: 3
   cleaningRadius: 2
   hotWaterAnimator: {fileID: 7076160630291657746}
