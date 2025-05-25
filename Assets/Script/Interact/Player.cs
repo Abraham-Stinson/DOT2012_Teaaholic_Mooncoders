@@ -793,6 +793,12 @@ public class Player : MonoBehaviour
             ShowUIMessage("");
             f_interact.SetActive(true);
         }
+        if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.CompareTag("Handbook"))
+        {
+            lastHighlightedObject = hit.collider.gameObject;
+            ShowUIMessage("");
+            f_interact.SetActive(true);
+        }
 
         if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
         {

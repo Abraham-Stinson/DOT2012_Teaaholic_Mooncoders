@@ -61,6 +61,8 @@ public class DayNightCycleController : MonoBehaviour
 
     private void Start()
     {
+        UpdateNPCSpawnTime();
+        // Zamanı başlat
         if (PlayerPrefs.HasKey("SavedDay"))
         {
             day = PlayerPrefs.GetInt("SavedDay");

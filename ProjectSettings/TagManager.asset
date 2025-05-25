@@ -30,6 +30,7 @@ TagManager:
   - Tavla
   - NPC_Customer
   - NPC_Private
+  - Handbook
   layers:
   - Default
   - TransparentFX

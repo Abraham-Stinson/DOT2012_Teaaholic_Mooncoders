@@ -192,7 +192,7 @@ public class MagazineUI : MonoBehaviour
         if (item.TryGetComponent(out DirtyStatus dirtyStatus))
         {
             dirtyUI.SetActive(true);
-            dirtyTextUI.text = dirtyStatus.isDirty ? "Kirlilik durumu: Kirli" : "Kirlilik durumu: Temiz";
+            dirtyTextUI.text = dirtyStatus.isDirty ? "Kirli" : "Temiz";
         }
         else
         {
