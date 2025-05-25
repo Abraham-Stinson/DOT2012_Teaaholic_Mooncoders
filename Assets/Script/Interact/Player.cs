@@ -16,6 +16,9 @@ public class Player : MonoBehaviour
     [SerializeField][Min(1)] public float rayCastRange = 10f;
     [SerializeField] private bool isPicked = false; //aaa
     [Header("UI")]
+    [SerializeField] private GameObject handbookUI;
+    [SerializeField] private GameObject f_interact;
+    [SerializeField] private GameObject e_interact;
     [SerializeField] private GameObject mainInfoUI;
     [SerializeField] private TextMeshProUGUI mainInfoUIText;
 
@@ -35,6 +38,9 @@ public class Player : MonoBehaviour
     [SerializeField] private InputActionReference pickAndPutInput;
     [SerializeField] private InputActionReference useInput;
     [SerializeField] private InputActionReference useHoldInput;
+    [SerializeField] private InputActionReference escapeInput;
+    [SerializeField] private MonoBehaviour[] playerControlScripts;
+
 
     [Header("Trash Clean")]
     [SerializeField] private float cleaningTime = 3f;
@@ -166,6 +172,62 @@ public class Player : MonoBehaviour
                 table.interact();
                 return;
             }
+
+            // Handbook kontrolü (toggle + cursor + timescale)
+            if (hit.collider.CompareTag("Handbook"))
+            {
+                Debug.Log("Handbook objesiyle etkileşime girildi.");
+
+                if (handbookUI != null)
+                {
+                    bool isActive = handbookUI.activeSelf;
+                    handbookUI.SetActive(!isActive);
+
+                    // Cursor ve Time.timeScale kontrolü
+                    if (!isActive)
+                    {
+                        // Açıldı
+                        Cursor.lockState = CursorLockMode.None;
+                        Cursor.visible = true;
+                        Time.timeScale = 0f;
+
+                        escapeInput.action.Disable();
+
+                        foreach (var script in playerControlScripts)
+                        {
+                            if (script != null)
+                                script.enabled = false;
+                        }
+
+
+                        Debug.Log("Handbook UI açıldı, oyun duraklatıldı, imleç aktif.");
+                    }
+                    else
+                    {
+                        // Kapatıldı
+                        Cursor.lockState = CursorLockMode.Locked;
+                        Cursor.visible = false;
+                        Time.timeScale = 1f;
+
+                        escapeInput.action.Enable();
+
+                        foreach (var script in playerControlScripts)
+                        {
+                            if (script != null)
+                                script.enabled = true;
+                        }
+
+                        Debug.Log("Handbook UI kapatıldı, oyun devam ediyor, imleç gizlendi.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("handbookUI referansı atanmadı!");
+                }
+
+                return;
+            }
+
 
             // Normal useable layer kontrolü
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange, useableLayer) && !isPicked)
@@ -543,6 +605,9 @@ public class Player : MonoBehaviour
     #region UpdateUI
     void UpdateUIAndHighlight()
     {
+        e_interact.SetActive(false);
+        f_interact.SetActive(false);
+
         bool didHit = Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange);
 
         if (lastHighlightedObject != null && (didHit == false || hit.collider.gameObject != lastHighlightedObject))
@@ -570,6 +635,7 @@ public class Player : MonoBehaviour
                 if (npc.isPaying)
                 {
                     ShowUIMessage($"{npcType}\nÖdeme için F tuşuna basın");
+                    f_interact.SetActive(true);
                 }
                 else
                 {
@@ -663,38 +729,44 @@ public class Player : MonoBehaviour
                 var kettleScript = hit.collider.GetComponent<Kettle>();
                 if (kettleScript.currentKettleMagazine > 0)
                 {
-                    ShowUIMessage("Almak için E tuşuna basın\n" + kettleScript.currentKettleMagazine + " çay kaldı");
+                    ShowUIMessage("");
+                    e_interact.SetActive(true);
                 }
                 else
                 {
                     if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Çay");
+                        ShowUIMessage("");
+                        e_interact.SetActive(true);
                     }
                     else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Sıcak Su");
+                        ShowUIMessage("");
+                        e_interact.SetActive(true);
                     }
                     else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
                     {
                         if (kettleScript.CheckIsOnKettleBase())
                         {
-                            ShowUIMessage("Demleniyoor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı");
+                            ShowUIMessage("Demleniyor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı");
                         }
                         else
                         {
-                            ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Çay ve Sıcak Su. Demlemek için Kettle Altlığına Koy");
+                            ShowUIMessage("");
+                            e_interact.SetActive(true);
                         }
                     }
                     else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("Almak için E tuşuna basın\nİçindeki: Boş");
+                        ShowUIMessage("");
+                        e_interact.SetActive(true);
                     }
                 }
             }
             else
             {
-                ShowUIMessage("Almak için E tuşuna basın");
+                ShowUIMessage("");
+                e_interact.SetActive(true);
             }
         }
 
@@ -703,20 +775,23 @@ public class Player : MonoBehaviour
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            ShowUIMessage("Bırakmak için E tuşuna basın");
+            ShowUIMessage("");
+            e_interact.SetActive(true);
         }
         if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null &&
             (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            ShowUIMessage("Bırakmak için E tuşuna basın");
+            ShowUIMessage("");
+            e_interact.SetActive(true);
         }
         if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = hit.collider.gameObject;
-            ShowUIMessage("Kullanmak için F tuşuna basın");
+            ShowUIMessage("");
+            f_interact.SetActive(true);
         }
 
         if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
@@ -730,7 +805,8 @@ public class Player : MonoBehaviour
                     {
                         hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                         lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("Tepsiye koymak için E tuşuna basın");
+                        ShowUIMessage("");
+                        e_interact.SetActive(true);
                     }
                     else
                     {
@@ -749,7 +825,8 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Çay koymak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
             }
             
@@ -760,7 +837,8 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Kettle'a sıcak su doldurmak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
             }
         }
@@ -773,7 +851,8 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage(inHandItem.GetComponent<OraletAndCoffee>().typeOfProduct + " koymak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
             }
         }
@@ -786,7 +865,8 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Sıcak su doldurmak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
             }
 
@@ -802,7 +882,8 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Kettle'a çay koymak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
             }
         }
@@ -815,7 +896,8 @@ public class Player : MonoBehaviour
                 if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
                 {
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("Yıkamak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
             }
         }
@@ -827,7 +909,8 @@ public class Player : MonoBehaviour
             {
                 if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
                 {
-                    ShowUIMessage("Eşyayı çöpe atmak için F tuşuna basın");
+                    ShowUIMessage("");
+                    f_interact.SetActive(true);
                 }
                 else
                 {
@@ -841,7 +924,8 @@ public class Player : MonoBehaviour
         {
             if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
             {
-                ShowUIMessage("Çöp poşetini konteynere atmak için F tuşuna basın");
+                ShowUIMessage("");
+                f_interact.SetActive(true);
             }
         }
 
@@ -850,7 +934,8 @@ public class Player : MonoBehaviour
         {//THRASH UI
             if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
             {
-                ShowUIMessage("Çöpü temizlemek için F tuşunu basılı tutun");
+                ShowUIMessage("");
+                f_interact.SetActive(true);
             }
             else
             {
