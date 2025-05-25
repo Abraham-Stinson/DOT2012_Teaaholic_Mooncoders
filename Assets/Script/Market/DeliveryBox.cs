@@ -75,5 +75,36 @@ public class DeliveryBox : MonoBehaviour, IInteractable
         // Clear the box
         hasItems = false;
         orderedItems.Clear();
+        
+        // Destroy the delivery box after items are spawned
+        Destroy(gameObject);
     }
+
+    public void SetContents(Dictionary<MarketItem, int> itemQuantities)
+    {
+        orderedItems.Clear();
+        itemDatabase.Clear();
+        hasItems = false;
+
+        foreach (var kvp in itemQuantities)
+        {
+            if (kvp.Value > 0)
+            {
+                hasItems = true;
+                orderedItems[kvp.Key.itemName] = kvp.Value;
+                itemDatabase[kvp.Key.itemName] = kvp.Key;
+                Debug.Log($"Added to delivery box: {kvp.Key.itemName} x{kvp.Value}");
+            }
+        }
+        
+        if (!hasItems)
+        {
+            Debug.Log("DeliveryBox: No items added to order");
+        }
+        else 
+        {
+            Debug.Log($"DeliveryBox initialized with {orderedItems.Count} different items");
+        }
+    }
+
 }

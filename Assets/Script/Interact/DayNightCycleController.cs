@@ -9,6 +9,8 @@ public class DayNightCycleController : MonoBehaviour
 {
     [SerializeField]
     private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
+    [SerializeField] NPCManager npcManagerScript; // Reference to NPC Manager
+
     [Header("Player")]
     [SerializeField] private int howManyDaysPlayerPlay = 30;
     [SerializeField] private Player player;
@@ -33,6 +35,12 @@ public class DayNightCycleController : MonoBehaviour
     public TextMeshProUGUI timeUIText;   // Separate UI element for time
     public Light sunLight;
     public NPCManager npcManager; // Reference to NPC Manager
+
+    [Header("NPC Spawn Delay Settings")]
+    [Tooltip("Minimum spawn delay in seconds for NPCs")]
+    [SerializeField] private float npcMinSpawnDelaySeconds = 60f;
+    [Tooltip("Maximum spawn delay in seconds for NPCs")]
+    [SerializeField] private float npcMaxSpawnDelaySeconds = 180f;
 
     [SerializeField] private int day = 1;
     [SerializeField] private int hour;
@@ -132,13 +140,18 @@ public class DayNightCycleController : MonoBehaviour
         }
 
         // Gece yarısında (00:00) zamanı durdur
-        if (hour == 0 && minute == 0 && !npcSpawningDisabled && npcManager != null)
+        if (hour == 22 && minute == 0 && !npcSpawningDisabled && npcManager != null)
         {
             npcSpawningDisabled = true;
             npcManager.enabled = false; // NPCManager'ı devre dışı bırak
-            Debug.Log("Saat 00:00 oldu - Müşteri spawning durduruldu");
-            isDayFinished = true;
+            Debug.Log($"Saat {hour} : {minute} oldu - Müşteri spawning durduruldu");
+
             Debug.Log("Gün sonu - Zaman durduruldu");
+        }
+        if (hour == 0 && minute == 0)
+        {
+            isDayFinished = true; // Gün bitişi
+            Debug.Log($"Gün {day} bitti - Saat {hour}:{minute}");
         }
 
         UpdateTimeUI();
@@ -216,6 +229,7 @@ public class DayNightCycleController : MonoBehaviour
             return;
         }
 
+        UpdateNPCSpawnTime();
         //SaveGame();
         day++;
         hour = startHour;
@@ -315,4 +329,30 @@ public class DayNightCycleController : MonoBehaviour
             minute = PlayerPrefs.GetInt("SavedMinute");
         }
     }
+
+    void UpdateNPCSpawnTime()
+    {
+        if (day < 7)
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[0];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[0];
+        }
+        else if (day < 16)
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[1];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[1];
+        }
+        else if (day < 25)
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[2];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[2];
+        }
+        else
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[3];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[3];
+        }
+    }
+
+
 }

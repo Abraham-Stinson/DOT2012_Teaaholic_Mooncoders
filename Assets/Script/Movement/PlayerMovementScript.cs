@@ -162,16 +162,20 @@ public class PlayerMovementScript : MonoBehaviour
     {
         HandleGravity();
         
-        // Check if pauseMenuController is null and try to find it
         if (pauseMenuController == null)
         {
             pauseMenuController = FindObjectOfType<PauseMenuController>();
         }
         
-        // Check if game is paused, dialogue is active, or market is open
-        if ((pauseMenuController != null && pauseMenuController.isPaused) || SpecialNPC.isInAnyDialogue || MarketSystem.isMarketOpen) return;
+        // Add market selection check
+        if ((pauseMenuController != null && pauseMenuController.isPaused) || 
+            SpecialNPC.isInAnyDialogue || 
+            MarketSystem.isMarketOpen || 
+            MarketSystem.isMarketSelectionOpen) 
+        {
+            return;
+        }
         
-        // If adisyon is open, prevent movement    
         if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
 
         HandleRotation();
