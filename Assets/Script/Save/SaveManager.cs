@@ -29,7 +29,7 @@ public static class SaveManager
             saveables[i].Save();
         }
         PlayerPrefs.Save();
-        Debug.Log("Tüm objeler kaydedildi.");
+        Debug.Log("Tï¿½m objeler kaydedildi.");
     }
 
     public static void LoadAll()
@@ -43,6 +43,6 @@ public static class SaveManager
             }
             saveables[i].Load();
         }
-        Debug.Log("Tüm objeler yüklendi.");
+        Debug.Log("Tï¿½m objeler yï¿½klendi.");
     }
 }

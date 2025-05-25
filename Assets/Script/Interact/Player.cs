@@ -97,6 +97,13 @@ public class Player : MonoBehaviour
             return;
         }
 
+        if (hit.collider.GetComponent<DeliveryBox>()!= null)
+        {
+            Debug.Log("Delivery Box ile etkileşime geçildi");
+            hit.collider.GetComponent<DeliveryBox>().interact();
+            return; 
+        }
+
         GameObject target = hit.collider.gameObject;
         Debug.Log($"F key pressed, hit object: {target.name}, layer: {LayerMask.LayerToName(target.layer)}");
 

@@ -357,6 +357,7 @@ GameObject:
   - component: {fileID: 5296814382451836400}
   - component: {fileID: 7572316007393653383}
   - component: {fileID: 3092867473507505532}
+  - component: {fileID: -7186486129693960753}
   m_Layer: 6
   m_Name: CoffeeProductContainer
   m_TagString: Other_Products
@@ -422,7 +423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a4ebfd0d90824488483fe12ea2d390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fullMagazine: 10
+  maxMagazine: 10
   currentMagazine: 10
   typeOfProduct: Coffee
   productParts:
@@ -448,6 +449,33 @@ MonoBehaviour:
   renderers:
   - {fileID: 1351116604825867828}
   - {fileID: 586699799244297502}
+--- !u!54 &-7186486129693960753
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3434910642726542473}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3562371067287102617
 GameObject:
   m_ObjectHideFlags: 0

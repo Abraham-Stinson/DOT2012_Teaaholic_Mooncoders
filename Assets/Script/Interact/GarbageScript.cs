@@ -45,15 +45,15 @@ public class GarbageScript : MonoBehaviour
         {
             garbageObjs[i].SetActive(false);
         }
-        if (currentGarbage > 8)
+        if (currentGarbage > 30)
         {
             garbageObjs[0].SetActive(true);
         }
-        else if (currentGarbage > 6)
+        else if (currentGarbage > 20)
         {
             garbageObjs[1].SetActive(true);
         }
-        else if (currentGarbage > 3)
+        else if (currentGarbage > 10)
         {
             garbageObjs[2].SetActive(true);
         }

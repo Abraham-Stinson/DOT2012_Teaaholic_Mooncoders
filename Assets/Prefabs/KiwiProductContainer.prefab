@@ -615,6 +615,7 @@ GameObject:
   - component: {fileID: 2172709568746726914}
   - component: {fileID: 5546053707053135916}
   - component: {fileID: 8952154424730567991}
+  - component: {fileID: 1694700941460052696}
   m_Layer: 6
   m_Name: KiwiProductContainer
   m_TagString: Other_Products
@@ -680,7 +681,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5a4ebfd0d90824488483fe12ea2d390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fullMagazine: 10
+  maxMagazine: 10
   currentMagazine: 10
   typeOfProduct: Kiwi
   productParts:
@@ -706,6 +707,33 @@ MonoBehaviour:
   renderers:
   - {fileID: 988574721965793441}
   - {fileID: 1355801752525992671}
+--- !u!54 &1694700941460052696
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8360586733416779758}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &8481828522860716969
 GameObject:
   m_ObjectHideFlags: 0

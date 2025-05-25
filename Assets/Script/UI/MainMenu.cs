@@ -18,6 +18,7 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.Save();
 
         SceneManager.LoadScene(MainScene);
+        Debug.Log("YENİ OYUN BAŞLATILIYOR...");
     }
 
     public void LoadSceneContinue()
@@ -26,6 +27,7 @@ public class MainMenu : MonoBehaviour
         if (PlayerPrefs.HasKey("SavedDay"))
         {
             SceneManager.LoadScene(MainScene);
+            Debug.Log("DEVAM EDİLİYOR...");
         }
         else
         {
