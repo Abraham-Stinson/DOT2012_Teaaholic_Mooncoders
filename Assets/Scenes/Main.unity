@@ -6330,7 +6330,7 @@ MonoBehaviour:
   - {fileID: 1672744781}
   - {fileID: 490150073}
   - {fileID: 937279664}
-  dayNightController: {fileID: 0}
+  dayNightController: {fileID: 190237885}
   npcSpawnCutoffHour: 22
 --- !u!1 &233986029
 GameObject:
