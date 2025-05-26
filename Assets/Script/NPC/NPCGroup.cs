@@ -43,13 +43,14 @@ public class NPCGroup : MonoBehaviour
     private int finishedDrinkingCount = 0;
     private int npcLeftCount = 0;
     
+    // Hesap takibi
+    private float totalBill = 0f;
+    
     // Patience tracking
     private float currentGroupPatienceTime;
     private Coroutine patienceCoroutine;
     
-    /// <summary>
-    /// Initialize the group with manager reference and whether it's a 4-person group
-    /// </summary>
+    // Initialize the group with manager reference and whether it's a 4-person group
     public void Initialize(NPCManager manager, bool isOkey)
     {
         npcManager = manager;
@@ -70,25 +71,19 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Set the NPCs in this group
-    /// </summary>
+    // Set the NPCs in this group
     public void SetNPCs(List<NPC> groupNpcs)
     {
         npcs = groupNpcs;
     }
     
-    /// <summary>
-    /// Get the number of NPCs in the group
-    /// </summary>
+    // Get the number of NPCs in the group
     public int GetNPCCount()
     {
         return npcs.Count;
     }
     
-    /// <summary>
-    /// Check if all NPCs in the group are seated
-    /// </summary>
+    // Check if all NPCs in the group are seated
     public bool IsFullySeated()
     {
         // Hiç NPC yoksa grup tam oturmuş sayılamaz
@@ -99,17 +94,13 @@ public class NPCGroup : MonoBehaviour
         return allSeated;
     }
     
-    /// <summary>
-    /// Called to make the group enter the shop
-    /// </summary>
+    // Called to make the group enter the shop
     public void EnterShop(Transform entryArea, GameObject door)
     {
         StartCoroutine(EnterShopRoutine(entryArea, door));
     }
     
-    /// <summary>
-    /// Coroutine to handle the shop entry process
-    /// </summary>
+    // Coroutine to handle the shop entry process
     private IEnumerator EnterShopRoutine(Transform entryArea, GameObject door)
     {
         // First, select a random position in the entry area for the group
@@ -143,9 +134,7 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Find an available table and make the group go to it
-    /// </summary>
+    // Find an available table and make the group go to it
     private IEnumerator FindAndGoToTable()
     {
         // Try to find an available table
@@ -182,10 +171,7 @@ public class NPCGroup : MonoBehaviour
             npcs[i].AssignChair(chairs[i]);
         }
     }
-    
-    /// <summary>
-    /// Called when an NPC in the group sits down
-    /// </summary>
+    // Called when an NPC in the group sits down
     public void OnNPCSatDown(NPC npc)
     {
         seatedCount++;
@@ -199,26 +185,21 @@ public class NPCGroup : MonoBehaviour
             RequestGame();
         }
     }
-    
-    /// <summary>
-    /// Called when an NPC in the group gets up
-    /// </summary>
+    // Called when an NPC in the group gets up
     public void OnNPCGotUp(NPC npc)
     {
         seatedCount--;
     }
     
-    /// <summary>
-    /// Request a game box for the table
-    /// </summary>
+    // Request a game box for the table
     private void RequestGame()
     {
         Debug.Log($"[GROUP] Grup oyun istiyor: {requestedGame}");
-        
-        // Update UI or send a message to the player about the requested game
-        
-        // Start the group patience timer
-        StartGroupPatienceTimer();
+       
+            // Update UI or send a message to the player about the requested game
+
+            // Start the group patience timer
+            StartGroupPatienceTimer();
         
         // Force update the table to make sure the UI shows the request
         if (assignedTable != null)
@@ -235,15 +216,25 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Called when a game box is given to the group
-    /// </summary>
+    // Called when a game box is given to the group
     public void ReceiveGameBox(string gameType)
     {
         Debug.Log($"Group received game box: {gameType}, Requested: {requestedGame}");
         
         if (gameType == requestedGame)
         {
+            if (requestedGame == OKEY_GAME)
+            {
+                SoundManager.Instance.PlayOkey();
+            }
+            else if (requestedGame == TAVLA_GAME)
+            {
+                SoundManager.Instance.PlayTavla();
+            }
+            else if (requestedGame == ISKAMBIL_GAME)
+            {
+                SoundManager.Instance.PlayIskambil();
+            }
             // Correct game provided
             Debug.Log($"Correct game provided: {gameType}");
             hasGameBox = true;
@@ -269,9 +260,7 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Order drinks after a short delay
-    /// </summary>
+    // Order drinks after a short delay
     private IEnumerator OrderDrinksAfterDelay()
     {
         yield return new WaitForSeconds(3f); // Wait a bit before ordering
@@ -283,10 +272,8 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Called when an NPC is served a drink
-    /// </summary>
-    public void OnNPCServedDrink(NPC npc, string servedDrink)
+    // Called when an NPC is served a drink
+    public void OnNPCServedDrink(NPC npc, string drinkName)
     {
         servedCount++;
         
@@ -296,7 +283,7 @@ public class NPCGroup : MonoBehaviour
         // Add patience bonus for receiving a drink
         AddGroupPatience(patienceBonusPerDrink);
         
-        Debug.Log($"NPC was served a drink: {servedDrink}. Group patience extended. Current patience: {currentGroupPatienceTime}");
+        Debug.Log($"NPC was served a drink: {drinkName}. Group patience extended. Current patience: {currentGroupPatienceTime}");
         
         // Check if all NPCs have been served
         if (servedCount == npcs.Count)
@@ -306,11 +293,10 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Called when an NPC finishes drinking
-    /// </summary>
+    // Called when an NPC finishes drinking
     public void OnNPCFinishedDrinking(NPC npc)
     {
+        
         Debug.Log($"[NPCGroup] {npc.name} içecek içmeyi bitirdi, sayaçlar güncelleniyor");
         finishedDrinkingCount++;
         
@@ -338,9 +324,7 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Order a second round of drinks
-    /// </summary>
+    // Order a second round of drinks
     private IEnumerator OrderSecondRound()
     {
         Debug.Log("[NPCGroup] İkinci tur içecek siparişi için bekleniyor...");
@@ -363,11 +347,10 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Prepare the group to leave the shop
-    /// </summary>
+    // Prepare the group to leave the shop
     private IEnumerator PrepareToLeave()
     {
+        
         Debug.Log("[NPCGroup] Grup çıkış için hazırlanıyor - 5 saniye bekleniyor");
         yield return new WaitForSeconds(5f); // Finish playing
         
@@ -379,16 +362,18 @@ public class NPCGroup : MonoBehaviour
             {
                 npc.StopPlaying();
             }
+            if (npc.IsGroupLeader())
+            {
+                Debug.Log("[Adisyon] Grup lideri adisyonu güncelliyor");
+                npc.UpdateAdisyon();
+            }
         }
         
         Debug.Log("[NPCGroup] Grup çıkışa yönlendiriliyor");
         // Make all NPCs get up and exit
         ExitShop();
     }
-    
-    /// <summary>
-    /// Make the group exit the shop
-    /// </summary>
+    // Make the group exit the shop
     public void ExitShop()
     {
         if (isLeaving) return;
@@ -446,10 +431,7 @@ public class NPCGroup : MonoBehaviour
             }
         }
     }
-    
-    /// <summary>
-    /// Called when a NPC leaves the scene
-    /// </summary>
+    // Called when a NPC leaves the scene
     public void OnNPCLeft(NPC npc)
     {
         if (npc == null)
@@ -468,10 +450,7 @@ public class NPCGroup : MonoBehaviour
             npcManager.OnGroupExit(this);
         }
     }
-    
-    /// <summary>
-    /// Start the patience timer for the group
-    /// </summary>
+    // Start the patience timer for the group
     private void StartGroupPatienceTimer()
     {
         // Stop any existing patience timer
@@ -486,11 +465,7 @@ public class NPCGroup : MonoBehaviour
         // Start a new patience timer
         patienceCoroutine = StartCoroutine(GroupPatienceCountdown());
     }
-    
-    /// <summary>
-    /// Add time to the group's patience timer
-    /// </summary>
-    /// <param name="bonusTime">Amount of time to add in seconds</param>
+    // Add time to the group's patience timer
     private void AddGroupPatience(float bonusTime)
     {
         // Add the bonus time to the current patience time
@@ -506,9 +481,7 @@ public class NPCGroup : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Coroutine to handle group patience countdown
-    /// </summary>
+    // Coroutine to handle group patience countdown
     private IEnumerator GroupPatienceCountdown()
     {
         Debug.Log($"Group patience timer started: {currentGroupPatienceTime} seconds");
@@ -530,9 +503,7 @@ public class NPCGroup : MonoBehaviour
         ExitShop();
     }
     
-    /// <summary>
-    /// Called when group patience timer expires
-    /// </summary>
+    // Called when group patience timer expires
     public void OnGroupPatienceExpired()
     {
         // Set flag that patience expired
@@ -545,10 +516,7 @@ public class NPCGroup : MonoBehaviour
             ExitShop();
         }
     }
-    
-    /// <summary>
-    /// Get the requested game for this group
-    /// </summary>
+    // Get the requested game for this group
     public string GetRequestedGame()
     {
         Debug.Log($"[GROUP] GetRequestedGame çağrıldı: {requestedGame}");
@@ -563,10 +531,7 @@ public class NPCGroup : MonoBehaviour
         
         return requestedGame;
     }
-    
-    /// <summary>
-    /// Get the group leader NPC
-    /// </summary>
+    // Get the group leader NPC
     private NPC GetGroupLeader()
     {
         foreach (NPC npc in npcs)
@@ -580,10 +545,7 @@ public class NPCGroup : MonoBehaviour
         // Fallback to first NPC if no leader is found
         return npcs.Count > 0 ? npcs[0] : null;
     }
-    
-    /// <summary>
-    /// Shuffle a list using Fisher-Yates algorithm
-    /// </summary>
+    // Shuffle a list using Fisher-Yates algorithm
     private List<T> ShuffleList<T>(List<T> list)
     {
         List<T> shuffledList = new List<T>(list);
@@ -598,10 +560,7 @@ public class NPCGroup : MonoBehaviour
         
         return shuffledList;
     }
-    
-    /// <summary>
-    /// Determines if the group leader should pay at the cashier based on scenario
-    /// </summary>
+    // Determines if the group leader should pay at the cashier based on scenario
     private bool ShouldPayAtCashier()
     {
         // SENARYO 1 & 2: Oyun alınmadı veya hiç içecek gelmedi ve sabrı tükendiyse
@@ -627,10 +586,7 @@ public class NPCGroup : MonoBehaviour
         Debug.LogWarning("Hiçbir çıkış senaryosu eşleşmedi - varsayılan olarak doğrudan çıkış");
         return false;
     }
-    
-    /// <summary>
-    /// Makes cups on the table interactable when the group leaves
-    /// </summary>
+    // Makes cups on the table interactable when the group leaves
     private void MakeCupsInteractable()
     {
         if (assignedTable != null)
@@ -668,5 +624,24 @@ public class NPCGroup : MonoBehaviour
                 }
             }
         }
+    }
+    // Toplam hesaba içecek ücreti ekle
+    public void AddToBill(float amount)
+    {
+        totalBill += amount;
+        Debug.Log($"Grup hesabına {amount} TL eklendi. Toplam: {totalBill} TL");
+    }
+    
+    // Toplam hesabı döndür
+    public float GetTotalBill()
+    {
+        return totalBill;
+    }
+    
+    // Hesabı sıfırla
+    public void ResetBill()
+    {
+        totalBill = 0f;
+        Debug.Log("Grup hesabı sıfırlandı");
     }
 } 

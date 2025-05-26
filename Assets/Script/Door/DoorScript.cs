@@ -1,7 +1,8 @@
 using UnityEngine;
 
-public class DoorTrigger : MonoBehaviour
+public class DoorTrigger : MonoBehaviour, IInteractable
 {
+    [SerializeField] private DayNightCycleController dayNightCycleControllerScript;
     [SerializeField] private Animator animator;
     [SerializeField] private LayerMask npcLayer;
 
@@ -21,5 +22,10 @@ public class DoorTrigger : MonoBehaviour
             Debug.Log("NPC çıktı - Kapı kapanıyor");
             animator.SetBool("isOpen", false);
         }
+    }
+
+    public void interact()
+    {
+        dayNightCycleControllerScript.OnDoorInteraction();
     }
 }

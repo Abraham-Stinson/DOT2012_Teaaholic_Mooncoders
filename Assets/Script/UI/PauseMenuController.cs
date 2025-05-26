@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
+    [SerializeField] private DayNightCycleController dayNightCycleControllerScript;
+    public Adisyon adisyonScript;
     [Header("Menü Elemanları")]
     [SerializeField] private GameObject pauseMenuCanvas;
     [SerializeField] private Button continueButton;
@@ -13,12 +15,14 @@ public class PauseMenuController : MonoBehaviour
     
     [Header("Input Ayarları")]
     [SerializeField] private InputActionReference pauseAction;
+    [SerializeField] private InputActionReference[] gameplayActions; // Player hareket, bakış, etkileşim vs
+    [SerializeField] private MonoBehaviour[] playerControlScripts;
     [SerializeField] private PlayerInput playerInput; // Oyuncunun input sistemi
     
     // Kamera kontrolü için referans
     private Player playerController;
     
-    private bool isPaused = false;
+    public bool isPaused = false;
     
     private void Awake()
     {
@@ -74,6 +78,40 @@ public class PauseMenuController : MonoBehaviour
     
     public void TogglePauseMenu(InputAction.CallbackContext context)
     {
+        // Market selection UI kontrolü ekle
+        if (MarketSystem.isMarketSelectionOpen)
+        {
+            Debug.Log("Market selection UI açık, pause menu açılmayacak");
+            return;
+        }
+
+        if (adisyonScript == null)
+        {
+            Debug.Log("Adisyon scripti bulunamadı, yeni bir referans alınıyor.");
+            adisyonScript = FindObjectOfType<Adisyon>();
+        }
+
+        // Adisyon açıksa menüyü açma
+        if (adisyonScript != null && adisyonScript.isAdisyonOpen)
+        {
+            Debug.Log("Adisyon açık, menüyü açma");
+            return;
+        }
+
+        // SpecialNPC diyaloğu açıksa menüyü açma
+        if (SpecialNPC.isInAnyDialogue)
+        {
+            Debug.Log("NPC diyaloğu açık, menüyü açma");
+            return;
+        }
+
+        // Market UI açıksa menüyü açma
+        if (MarketSystem.isMarketOpen)
+        {
+            Debug.Log("Market UI açık, menüyü açma");
+            return;
+        }
+
         if (isPaused)
         {
             ContinueGame();
@@ -86,6 +124,7 @@ public class PauseMenuController : MonoBehaviour
     
     public void PauseGame()
     {
+        
         // Oyunu duraklat
         Time.timeScale = 0f;
         isPaused = true;
@@ -167,4 +206,4 @@ public class PauseMenuController : MonoBehaviour
         
         SceneManager.LoadScene("MainMenu");
     }
-} 
+}
