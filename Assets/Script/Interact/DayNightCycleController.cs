@@ -671,19 +671,19 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     }
     private void WomenDies(int endWays)
     {
-        if (endWays == 3)
+        if (endWays == 3)//Para var ama kadın öldü
         {
             SceneManager.LoadScene("FinalScene_3(sad)");
         }
-        else if (endWays == 4)
+        else if (endWays == 4)//Para var ama çalındı ve kadın öldü
         {
             SceneManager.LoadScene("FinalScene_4(sad)");
         }
-        else if (endWays == 5)
+        else if (endWays == 5)//para yok ve kadın öldü
         {
             SceneManager.LoadScene("FinalScene_5(sad)");
         }
-        else if (endWays == 6)
+        else if (endWays == 6)//para yok yardım edildi ama kadın öldü
         {
             SceneManager.LoadScene("FinalScene_6(sad)");
         }
