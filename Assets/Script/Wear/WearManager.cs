@@ -58,16 +58,16 @@ public class WearManager : MonoBehaviour, ICanSave
     {
         wearText.text = "%" + wear.ToString();
     }
-    
+
     public void AddWear(float amount)
     {
         float oldWear = wear;
         wear += amount;
-        if(wear > 100f)
+        if (wear > 100f)
         {
             wear = 100f;
         }
-        else if(wear < 0f)
+        else if (wear < 0f)
         {
             wear = 0f;
         }
@@ -85,7 +85,7 @@ public class WearManager : MonoBehaviour, ICanSave
     {
         PlayerPrefs.SetFloat("CurrentWear", wear);
     }
-    
+
     public void LoadData()
     {
         if (PlayerPrefs.HasKey("CurrentWear"))
@@ -93,5 +93,10 @@ public class WearManager : MonoBehaviour, ICanSave
             wear = PlayerPrefs.GetFloat("CurrentWear");
             RefreshUI();
         }
+    }
+    
+    public float GetWear()
+    {
+        return wear;
     }
 }

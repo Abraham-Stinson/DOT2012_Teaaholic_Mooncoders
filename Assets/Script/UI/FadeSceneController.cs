@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using UnityEditor.ShaderGraph;
+
 
 public class FadeSceneController : MonoBehaviour
 {
@@ -65,7 +65,7 @@ public class FadeSceneController : MonoBehaviour
 
         fadeCanvasGroup.alpha = 1f;
 
-        // Sahne geçiþi
+        // Sahne geï¿½iï¿½i
         SceneManager.LoadScene(nextSceneName);
     }
 }
