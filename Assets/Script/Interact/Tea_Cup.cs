@@ -32,6 +32,7 @@ public class Tea_Cup : MonoBehaviour
     [SerializeField] GameObject[] strawberryOraletObjects;
     [SerializeField] GameObject[] bananaOraletObjects;
 
+    private Coroutine dirtyCheckCoroutine;
 
     void Start()
     {
@@ -45,35 +46,32 @@ public class Tea_Cup : MonoBehaviour
             dirtyOverlay.SetActive(false);
         }
         
-        // Subscribe to dirty status change
+        // Dirty status için coroutine yerine event kullan
         DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
-        if (dirtyStatus != null)
+        if (dirtyStatus != null && dirtyOverlay != null)
         {
-            // Check every frame
-            StartCoroutine(CheckDirtyStatus());
+            // İlk durumu ayarla
+            dirtyOverlay.SetActive(dirtyStatus.isDirty);
         }
     }
 
-    // Check if cup is dirty and update visuals
-    private IEnumerator CheckDirtyStatus()
+    private void OnDestroy()
     {
-        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
-        if (dirtyStatus == null) yield break;
-        
-        while (true)
+        if (dirtyCheckCoroutine != null)
         {
-            if (dirtyOverlay != null)
-            {
-                dirtyOverlay.SetActive(dirtyStatus.isDirty);
-            }
-            yield return new WaitForSeconds(0.5f);
+            StopCoroutine(dirtyCheckCoroutine);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        // Check and update dirty status visualization
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyOverlay != null)
+        {
+            dirtyOverlay.SetActive(dirtyStatus.isDirty);
+        }
     }
 
     public void AddTea()
@@ -308,5 +306,24 @@ public class Tea_Cup : MonoBehaviour
         inCup="Empty";
         ChangeMeshTea();
         ChangeMeshOraletorCoffee("Clear", 0, false);
+        
+        // Update dirty visual status after emptying
+        ChangeMeshOfDirtyTea();
+    }
+
+    public void ChangeMeshOfDirtyTea()
+    {
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus == null && dirtyOverlay == null)
+        {
+            Debug.Log("Kirlilik durumu yok ya da kirlilik görünümü yok");
+            return;
+        }
+        
+        if (dirtyStatus != null && dirtyOverlay != null)
+        {
+            Debug.Log("Kirli seviyesi düzenlendi");
+            dirtyOverlay.SetActive(dirtyStatus.isDirty);
+        }
     }
 }

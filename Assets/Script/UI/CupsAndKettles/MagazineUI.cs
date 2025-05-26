@@ -1,4 +1,3 @@
-
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -39,22 +38,35 @@ public class MagazineUI : MonoBehaviour
     [Header("Performance Settings")]
     [SerializeField] private float refreshRate = 0.1f;
     private float nextRefreshTime;
+    
+    // Cached references to avoid repeated FindObjectOfType calls
+    private Player cachedPlayer;
+    private bool playerCacheValid = false;
 
     private void Start()
     {
-        // Initialize UI states
+        CachePlayerReference();
         DisableAllUI();
+    }
 
-        // Validate required components
+    private void CachePlayerReference()
+    {
         if (player == null)
         {
-            player = FindObjectOfType<Player>();
-            if (player == null)
+            cachedPlayer = FindObjectOfType<Player>();
+            playerCacheValid = cachedPlayer != null;
+            
+            if (!playerCacheValid)
             {
                 Debug.LogError("MagazineUI: Player reference is missing!");
                 enabled = false;
                 return;
             }
+        }
+        else
+        {
+            cachedPlayer = player;
+            playerCacheValid = true;
         }
     }
 
@@ -87,6 +99,13 @@ public class MagazineUI : MonoBehaviour
     /// </summary>
     private void RefreshUI()
     {
+        // Player referansını kontrol et
+        if (!playerCacheValid || cachedPlayer == null)
+        {
+            CachePlayerReference();
+            if (!playerCacheValid) return;
+        }
+
         RefreshHeldItemUI();
         RefreshLookingAtUI();
     }
@@ -96,15 +115,16 @@ public class MagazineUI : MonoBehaviour
     /// </summary>
     private void RefreshHeldItemUI()
     {
-        if (player == null || player.inHandItem == null)
+        if (!playerCacheValid || cachedPlayer.inHandItem == null)
         {
+            // UI'ı kapat
             if (onHandUI) onHandUI.SetActive(false);
             if (insideHeldUI) insideHeldUI.SetActive(false);
             if (dirtyHeldUI) dirtyHeldUI.SetActive(false);
             return;
         }
 
-        GameObject heldItem = player.inHandItem;
+        GameObject heldItem = cachedPlayer.inHandItem;
 
         // Check for dirty status
         UpdateDirtyStatus(heldItem, dirtyHeldUI, dirtyHeldTextUI);
@@ -143,9 +163,9 @@ public class MagazineUI : MonoBehaviour
     /// </summary>
     private void RefreshLookingAtUI()
     {
-        if (player == null) return;
+        if (!playerCacheValid) return;
 
-        if (!Physics.Raycast(player.playerCam.position, player.playerCam.forward, out player.hit, player.rayCastRange))
+        if (!Physics.Raycast(cachedPlayer.playerCam.position, cachedPlayer.playerCam.forward, out cachedPlayer.hit, cachedPlayer.rayCastRange))
         {
             if (hitUI) hitUI.SetActive(false);
             if (insideLookUI) insideLookUI.SetActive(false);
@@ -153,7 +173,7 @@ public class MagazineUI : MonoBehaviour
             return;
         }
 
-        GameObject lookingAt = player.hit.collider.gameObject;
+        GameObject lookingAt = cachedPlayer.hit.collider.gameObject;
 
         // Check for dirty status
         UpdateDirtyStatus(lookingAt, dirtyLookUI, dirtyLookTextUI);

@@ -7,6 +7,11 @@ using UnityEngine;
 /// </summary>
 public class NPCManager : MonoBehaviour
 {
+    // private Coroutine enterShopCoroutine; // Bu değişkenler NPCGroup sınıfına ait
+    // private Coroutine orderDrinksCoroutine;
+    // private Coroutine secondRoundCoroutine;
+    // private Coroutine prepareToLeaveCoroutine;
+
     [Header("NPC Prefabs")]
     [SerializeField] private List<GameObject> npcPrefabs = new List<GameObject>();
     
@@ -224,5 +229,26 @@ public class NPCManager : MonoBehaviour
             }
             Destroy(npc.gameObject);
         }
+    }
+    // Bu metotlar NPCGroup sınıfına ait, NPCManager'da gerekli değil
+    // ve derleyici hatasına neden oluyordu, bu yüzden kaldırıldı.
+
+    private void OnDestroy()
+    {
+        // Spawning coroutine'ini durdur
+        if (spawnRoutine != null)
+        {
+            StopCoroutine(spawnRoutine);
+        }
+
+        // Aktif grupları temizle
+        foreach (var group in activeGroups)
+        {
+            if (group != null)
+            {
+                Destroy(group.gameObject);
+            }
+        }
+        activeGroups.Clear();
     }
 } 

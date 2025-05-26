@@ -1153,6 +1153,8 @@ MonoBehaviour:
   saveRotation: 1
   saveScale: 0
   saveActiveState: 1
+  saveLightSettings: 1
+  saveRendererSettings: 1
 --- !u!1 &4913923278085300774
 GameObject:
   m_ObjectHideFlags: 0

@@ -38,26 +38,34 @@ public static class SaveManager
 
     public static void SaveAll()
     {
+        // Null referansları temizle
+        saveables.RemoveAll(item => item == null);
+        customSaveables.RemoveAll(item => item == null);
+
         // Normal Saveable objeler
-        for (int i = saveables.Count - 1; i >= 0; i--)
+        foreach (var saveable in saveables)
         {
-            if (saveables[i] == null)
+            try
             {
-                saveables.RemoveAt(i);
-                continue;
+                saveable.Save();
             }
-            saveables[i].Save();
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Save error for {saveable.name}: {e.Message}");
+            }
         }
         
         // Custom save sistemini kullanan objeler
-        for (int i = customSaveables.Count - 1; i >= 0; i--)
+        foreach (var saveable in customSaveables)
         {
-            if (customSaveables[i] == null)
+            try
             {
-                customSaveables.RemoveAt(i);
-                continue;
+                saveable.SaveData();
             }
-            customSaveables[i].SaveData();
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Save error: {e.Message}");
+            }
         }
         
         PlayerPrefs.Save();
@@ -66,26 +74,34 @@ public static class SaveManager
 
     public static void LoadAll()
     {
+        // Null referansları temizle
+        saveables.RemoveAll(item => item == null);
+        customSaveables.RemoveAll(item => item == null);
+        
         // Normal Saveable objeler
-        for (int i = saveables.Count - 1; i >= 0; i--)
+        foreach (var saveable in saveables)
         {
-            if (saveables[i] == null)
+            try
             {
-                saveables.RemoveAt(i);
-                continue;
+                saveable.Load();
             }
-            saveables[i].Load();
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Load error for {saveable.name}: {e.Message}");
+            }
         }
         
         // Custom save sistemini kullanan objeler
-        for (int i = customSaveables.Count - 1; i >= 0; i--)
+        foreach (var saveable in customSaveables)
         {
-            if (customSaveables[i] == null)
+            try
             {
-                customSaveables.RemoveAt(i);
-                continue;
+                saveable.LoadData();
             }
-            customSaveables[i].LoadData();
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Load error: {e.Message}");
+            }
         }
         
         Debug.Log("Tüm objeler yüklendi.");
