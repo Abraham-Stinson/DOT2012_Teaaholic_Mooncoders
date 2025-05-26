@@ -76,6 +76,13 @@ public class Tea_Cup : MonoBehaviour
 
     public void AddTea()
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
         
         if (!isFillOraletorCoffee && !isFillTea)
         {
@@ -98,6 +105,14 @@ public class Tea_Cup : MonoBehaviour
 
     public void AddOraletOrCoffee(string product)
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
+        
         Debug.Log(product + " tozu eklendi eklendi");
         productType = product;
         ChangeMeshOraletorCoffee(product, 0, false);
@@ -107,6 +122,14 @@ public class Tea_Cup : MonoBehaviour
 
     public void FillHotWaterToTea()
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
+        
         currentTeaCupMagazine = currentTeaCupMagazine + (maxTeaCupMagazine - currentTeaCupMagazine);
         isFullTea = true;
         ChangeMeshTea();
@@ -114,6 +137,14 @@ public class Tea_Cup : MonoBehaviour
 
     public void FillHotWaterToCoffeeOrOralet()
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
+        
         ChangeMeshOraletorCoffee(productType, 1, true);
         isFullOraletorCoffee = true;
     }

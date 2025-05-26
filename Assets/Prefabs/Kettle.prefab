@@ -4849,7 +4849,7 @@ GameObject:
   - component: {fileID: 277393422888379673}
   - component: {fileID: 7317419884427981789}
   - component: {fileID: 6582628528546592218}
-  - component: {fileID: -893211590518625529}
+  - component: {fileID: -1548221213101244670}
   m_Layer: 6
   m_Name: Kettle
   m_TagString: Kettle
@@ -5027,7 +5027,7 @@ MonoBehaviour:
   dirtyMaterial: {fileID: 0}
   cleanMaterial: {fileID: 0}
   cupRenderer: {fileID: 0}
---- !u!114 &-893211590518625529
+--- !u!114 &-1548221213101244670
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5042,5 +5042,7 @@ MonoBehaviour:
   saveKey: 
   savePosition: 1
   saveRotation: 1
-  saveScale: 0
+  saveScale: 1
   saveActiveState: 1
+  saveLightSettings: 0
+  saveRendererSettings: 1

@@ -5496,6 +5496,7 @@ MonoBehaviour:
   SettingsPanel: {fileID: 1623508773}
   continueButton: {fileID: 1191797317}
   MainScene: EntryScene_1
+  MainGame: Main
 --- !u!4 &1905147217
 Transform:
   m_ObjectHideFlags: 0

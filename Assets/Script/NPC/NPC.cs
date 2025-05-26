@@ -649,7 +649,7 @@ public class NPC : MonoBehaviour, IInteractable
          Debug.Log($"[NPC] Adisyon: {adisyonFee} TL, Final Bill: {finalBill} TL, Fark: %{percentageDifference}");
         if (adisyonFee <= finalBill)
         {
-            moneyManager.AddMoney(adisyonFee);
+            moneyManager.AddMoney(finalBill);
             wearManager.AddWear(0);
         }
         if (adisyonFee > finalBill)
@@ -800,8 +800,9 @@ public class NPC : MonoBehaviour, IInteractable
             {
                 Transform child = player.inHandItem.transform.GetChild(i);
                 Tea_Cup childTeaCup = child.GetComponent<Tea_Cup>();
+                bool isDirty = child.GetComponent<DirtyStatus>().isDirty;
 
-                if (childTeaCup != null && childTeaCup.inCup == actualRequestedDrink)
+                if (childTeaCup != null && childTeaCup.inCup == actualRequestedDrink && !isDirty)
                 {
                     Debug.Log($"[NPC] Tepsideki {childTeaCup.inCup} içecek bulundu!");
                     teaCup = childTeaCup;

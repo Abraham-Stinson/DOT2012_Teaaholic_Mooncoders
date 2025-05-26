@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
     
     [Header("---------- Scene Names ----------")]
     public string MainScene;
+    public string MainGame;
 
     private void Start()
     {
@@ -68,7 +69,7 @@ public class MainMenu : MonoBehaviour
         // Eğer kayıt varsa, devam et
         if (PlayerPrefs.HasKey("SavedDay"))
         {
-            SceneManager.LoadScene(MainScene);
+            SceneManager.LoadScene(MainGame);
         }
         else
         {

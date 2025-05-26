@@ -382,8 +382,18 @@ public class Player : MonoBehaviour
         if (teaCupScript == null)
             return;
 
+        // Check if cup is dirty before handling hot water interaction
+        DirtyStatus dirtyStatus = inHandItem.GetComponent<DirtyStatus>();
+        bool isDirty = dirtyStatus != null && dirtyStatus.isDirty;
+        
         if (target.CompareTag("Hot_Water"))
         {
+            if (isDirty)
+            {
+                ShowUIMessage("Bardak kirli, önce yıkamalısın!", false);
+                return;
+            }
+            
             if (teaCupScript.isFillTea)
             {
                 StartCoroutine(PlayHotWaterTapAnimation());
@@ -409,7 +419,6 @@ public class Player : MonoBehaviour
             }
         }
 
-        DirtyStatus dirtyStatus = inHandItem.GetComponent<DirtyStatus>();
         if (dirtyStatus != null && isPicked)
         {
             if (target.CompareTag("Water"))
@@ -435,6 +444,14 @@ public class Player : MonoBehaviour
             Tea_Cup teaCupScript = target.GetComponent<Tea_Cup>();
             if (teaCupScript == null)
                 return;
+
+            // Check if cup is dirty
+            DirtyStatus dirtyStatus = target.GetComponent<DirtyStatus>();
+            if (dirtyStatus != null && dirtyStatus.isDirty)
+            {
+                ShowUIMessage("Bardak kirli, önce yıkamalısın!", false);
+                return;
+            }
 
             if (!teaCupScript.isFillOraletorCoffee && !teaCupScript.isFillTea &&
                 !teaCupScript.isFullTea && productScript.currentMagazine > 0)
@@ -463,12 +480,30 @@ public class Player : MonoBehaviour
             Kettle kettleScript = target.GetComponent<Kettle>();
             if (kettleScript == null)
                 return;
+                
+            // Check if kettle is dirty
+            DirtyStatus dirtyStatus = target.GetComponent<DirtyStatus>();
+            if (dirtyStatus != null && dirtyStatus.isDirty)
+            {
+                ShowUIMessage("Çaydanlık kirli, önce yıkamalısın!", false);
+                return;
+            }
 
             if (!kettleScript.isHaveTea && teaCanScript.currentTeaCanMagazine > 0)
             {
+                kettleScript.AddTea();
                 teaCanScript.ReduceTeaOnCan();
-                kettleScript.isHaveTea = true;
-                Debug.Log("Çaya dem verildi");
+            }
+            else
+            {
+                if (teaCanScript.currentTeaCanMagazine <= 0)
+                {
+                    Debug.Log("Çay Kutusu Boş");
+                }
+                else
+                {
+                    Debug.Log("Çaydanlıkta Zaten Çay Var");
+                }
             }
         }
     }

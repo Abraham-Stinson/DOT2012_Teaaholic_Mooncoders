@@ -8,8 +8,7 @@ using UnityEngine.UI;
 
 public class DayNightCycleController : MonoBehaviour, ICanSave
 {
-    [SerializeField]
-    private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
+    [SerializeField] private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
     [SerializeField] NPCManager npcManagerScript; // Reference to NPC Manager
     [SerializeField] WearManager wearManager; // Reference to NPC Manager
     [SerializeField] float surgeryMoney = 20000; // Reference to NPC Manager
@@ -59,7 +58,8 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     private float finalMoney;
     private float finalWear;
-
+    
+    
     private void Start()
     {
         // Zaman akışını başlat
@@ -227,14 +227,6 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
             return;
         }
 
-        UpdateNPCSpawnTime();
-        SaveGame();
-        day++;
-        hour = startHour;
-        minute = 0;
-        timer = 0f;
-
-
         Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
         Cursor.visible = true; // Fare imlecini görünür yap
         Time.timeScale = 0f; // Zamanı durdur
@@ -253,6 +245,11 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     }
     public void OnNextDayInteraction()
     {
+        UpdateNPCSpawnTime();
+        day++;
+        hour = startHour;
+        minute = 0;
+        timer = 0f;
         if (day > howManyDaysPlayerPlay)
         {
             //Oyun burada bitiyor 

@@ -443,8 +443,9 @@ GameObject:
   - component: {fileID: 1682375947512578817}
   - component: {fileID: 5066533940001367511}
   - component: {fileID: 438399192434694806}
-  - component: {fileID: 124428061164969821}
   - component: {fileID: 84816884600416852}
+  - component: {fileID: -4917005652649739495}
+  - component: {fileID: -658328072762412148}
   m_Layer: 6
   m_Name: BananaProductContainer
   m_TagString: Other_Products
@@ -540,25 +541,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &124428061164969821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4023159516476492531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fbcdcb87629f104bb4edaca55fbeb30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  saveKey: 
-  savePosition: 1
-  saveRotation: 1
-  saveScale: 0
-  saveActiveState: 1
-  saveLightSettings: 1
-  saveRendererSettings: 1
 --- !u!65 &84816884600416852
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580,6 +562,41 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.62995654, y: 0.8856329, z: 0.6347575}
   m_Center: {x: 0, y: 0.42781645, z: 0}
+--- !u!114 &-4917005652649739495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023159516476492531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1644e53dd5862944dabf5f367681b73c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  furnitureTags:
+  - Furniture
+  - Item
+  - Equipment
+--- !u!114 &-658328072762412148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023159516476492531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fbcdcb87629f104bb4edaca55fbeb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveKey: 
+  savePosition: 1
+  saveRotation: 1
+  saveScale: 1
+  saveActiveState: 1
+  saveLightSettings: 0
+  saveRendererSettings: 1
 --- !u!1 &8162493517702462910
 GameObject:
   m_ObjectHideFlags: 0
