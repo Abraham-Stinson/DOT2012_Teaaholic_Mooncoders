@@ -402,6 +402,7 @@ public class NPCGroup : MonoBehaviour
         // Make all NPCs get up and exit
         ExitShop();
     }
+
     // Make the group exit the shop
     public void ExitShop()
     {

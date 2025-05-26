@@ -39,6 +39,10 @@ public class NPCManager : MonoBehaviour
     [Header("Tables")]
     [SerializeField] private List<TableController> availableTables = new List<TableController>();
     
+    [Header("Time Settings")]
+    [SerializeField] private DayNightCycleController dayNightController; // Reference to day-night cycle controller
+    [SerializeField] private int npcSpawnCutoffHour = 22; // No NPCs spawn after 10 PM (22:00)
+    
     // Internal state tracking
     private List<NPCGroup> activeGroups = new List<NPCGroup>();
     private Coroutine spawnRoutine;
@@ -46,6 +50,16 @@ public class NPCManager : MonoBehaviour
     
     private void Start()
     {
+        // Find DayNightCycleController if not assigned
+        if (dayNightController == null)
+        {
+            dayNightController = FindObjectOfType<DayNightCycleController>();
+            if (dayNightController == null)
+            {
+                Debug.LogWarning("DayNightCycleController not found! NPCs will spawn regardless of time.");
+            }
+        }
+        
         // Start spawning NPCs
         spawnRoutine = StartCoroutine(SpawnGroupsRoutine());
 
@@ -53,6 +67,24 @@ public class NPCManager : MonoBehaviour
         if (exitTriggerZone == null)
         {
             CreateExitTriggerZone();
+        }
+    }
+    
+    private void Update()
+    {
+        // Check if shop should be closed based on time or DayNightCycleController's flag
+        if (isShopOpen && dayNightController != null && 
+            (dayNightController.GetCurrentHour() >= npcSpawnCutoffHour || dayNightController.IsNPCSpawningDisabled()))
+        {
+            // It's past closing time or NPC spawning was disabled by DayNightCycleController
+            Debug.Log($"Shop is now closed for new customers (Hour: {dayNightController.GetCurrentHour()}, NPC spawning disabled: {dayNightController.IsNPCSpawningDisabled()})");
+            isShopOpen = false;
+            
+            if (spawnRoutine != null)
+            {
+                StopCoroutine(spawnRoutine);
+                spawnRoutine = null;
+            }
         }
     }
     
@@ -91,7 +123,7 @@ public class NPCManager : MonoBehaviour
             yield return new WaitForSeconds(spawnDelay);
             
             // Check if we can spawn more groups
-            if (activeGroups.Count < maxGroupsInShop)
+            if (activeGroups.Count < maxGroupsInShop && IsShopOpenForNewCustomers())
             {
                 SpawnNPCGroup();
             }
@@ -99,10 +131,36 @@ public class NPCManager : MonoBehaviour
     }
     
     /// <summary>
+    /// Checks if the shop is still open for new customers based on the time
+    /// </summary>
+    private bool IsShopOpenForNewCustomers()
+    {
+        // If we don't have a day-night controller, assume the shop is always open
+        if (dayNightController == null)
+            return true;
+            
+        // Get the current hour from the day-night controller
+        int currentHour = dayNightController.GetCurrentHour();
+        
+        // Check if DayNightCycleController has disabled NPC spawning
+        bool npcSpawningDisabled = dayNightController.IsNPCSpawningDisabled();
+        
+        // No new customers after the cutoff hour (10 PM / 22:00) or if spawning is disabled
+        return currentHour < npcSpawnCutoffHour && !npcSpawningDisabled;
+    }
+    
+    /// <summary>
     /// Spawns a new group of NPCs
     /// </summary>
     private void SpawnNPCGroup()
     {
+        // Double-check time before spawning (in case time changed during delay)
+        if (!IsShopOpenForNewCustomers())
+        {
+            Debug.Log("Shop is closed for new customers (after 10 PM). No new NPCs will spawn.");
+            return;
+        }
+        
         // Determine group size
         int groupSize = (Random.value < 0.5f) ? 2 : 4; // 50% chance for either 2 or 4 NPCs
         

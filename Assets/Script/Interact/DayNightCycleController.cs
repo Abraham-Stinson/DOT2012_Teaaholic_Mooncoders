@@ -109,11 +109,6 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     private void Update()
     {
-        // Debug kontrolü
-        if (Time.frameCount % 300 == 0) // 300 frame'de bir log yaz
-        {
-            Debug.Log($"Update çalışıyor - TimeScale: {Time.timeScale}, isDayFinished: {isDayFinished}, isPaused: {pauseMenuControllerScript?.isPaused}");
-        }
 
         if (isDayFinished || (pauseMenuControllerScript != null && pauseMenuControllerScript.isPaused))
         {
@@ -143,20 +138,13 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
             }
         }
 
-        // Saat 12'den sonra müşteri spawning'i durdur
-        if (hour >= 12)
-        {
-
-        }
 
         // Gece yarısında (00:00) zamanı durdur
         if (hour == 22 && minute == 0 && !npcSpawningDisabled && npcManager != null)
         {
             npcSpawningDisabled = true;
             npcManager.enabled = false; // NPCManager'ı devre dışı bırak
-            Debug.Log($"Saat {hour} : {minute} oldu - Müşteri spawning durduruldu");
-
-            Debug.Log("Gün sonu - Zaman durduruldu");
+            Debug.Log($"[NPC SPAWNING]Saat {hour} : {minute} oldu - Müşteri spawning durduruldu");
         }
         if (hour == 0 && minute == 0)
         {
@@ -676,6 +664,12 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         {
             SceneManager.LoadScene("FinalScene_6(sad)");
         }
+    }
+
+    // Added public getter for npcSpawningDisabled flag
+    public bool IsNPCSpawningDisabled()
+    {
+        return npcSpawningDisabled;
     }
 
 }

@@ -6150,7 +6150,7 @@ MonoBehaviour:
   playerObject: {fileID: 4805225187014577647}
   playerDayStartPosition: {fileID: 812498408}
   moneyManager: {fileID: 457943707}
-  minuteDurationSeconds: 0.6667
+  minuteDurationSeconds: 0.2
   startHour: 9
   endHour: 24
   dayUIText: {fileID: 1505088213}
@@ -6303,12 +6303,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 120
+  - 10
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 121
+  - 20
   - 101
   - 81
   - 61
@@ -6330,6 +6330,8 @@ MonoBehaviour:
   - {fileID: 1672744781}
   - {fileID: 490150073}
   - {fileID: 937279664}
+  dayNightController: {fileID: 0}
+  npcSpawnCutoffHour: 22
 --- !u!1 &233986029
 GameObject:
   m_ObjectHideFlags: 0
@@ -16155,7 +16157,6 @@ MonoBehaviour:
   adisyonScript: {fileID: 0}
   pauseMenuCanvas: {fileID: 700183296}
   continueButton: {fileID: 1812551548}
-  restartButton: {fileID: 0}
   exitButton: {fileID: 2092426400}
   pauseAction: {fileID: -3871431315947648754, guid: 0f0bf435ac80db94a84ba2aad25d3104, type: 3}
   gameplayActions: []
