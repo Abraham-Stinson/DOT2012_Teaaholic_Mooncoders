@@ -4,7 +4,7 @@ using System.Collections;
 
 public class SoundManager : MonoBehaviour
 {
-    public static SoundManager Instance;
+    public static SoundManager Instance { get; private set; }
 
     [Header("Ses Efektleri")]
     public AudioSource cayDoldurmaSesi;
@@ -33,7 +33,21 @@ public class SoundManager : MonoBehaviour
         }
         else
         {
+            // Duplicate instance'ı yok et
             Destroy(gameObject);
+            return;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Event'i temizle
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        
+        // Instance'ı temizle
+        if (Instance == this)
+        {
+            Instance = null;
         }
     }
 
@@ -101,11 +115,6 @@ public class SoundManager : MonoBehaviour
         {
             Debug.LogError("MainMenuMusic NULL!");
         }
-    }
-
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     // Ses efektleri metodları

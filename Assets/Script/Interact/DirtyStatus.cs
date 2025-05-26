@@ -7,6 +7,9 @@ public class DirtyStatus : MonoBehaviour
     [SerializeField] private Material cleanMaterial;
     [SerializeField] private Renderer cupRenderer;
     
+    private bool lastDirtyState;
+    private Material currentMaterial;
+
     private void Start()
     {
         // Find renderer if not assigned
@@ -25,21 +28,28 @@ public class DirtyStatus : MonoBehaviour
         {
             cleanMaterial = cupRenderer?.material;
         }
+        
+        lastDirtyState = isDirty;
+        currentMaterial = cupRenderer?.material;
     }
     
     private void Update()
     {
-        // Update visual appearance based on dirty status
-        if (cupRenderer != null)
+        // Sadece durum değiştiğinde material'i güncelle
+        if (isDirty != lastDirtyState && cupRenderer != null)
         {
-            if (isDirty && cupRenderer.material != dirtyMaterial && dirtyMaterial != null)
+            if (isDirty && dirtyMaterial != null && currentMaterial != dirtyMaterial)
             {
                 cupRenderer.material = dirtyMaterial;
+                currentMaterial = dirtyMaterial;
             }
-            else if (!isDirty && cupRenderer.material != cleanMaterial && cleanMaterial != null)
+            else if (!isDirty && cleanMaterial != null && currentMaterial != cleanMaterial)
             {
                 cupRenderer.material = cleanMaterial;
+                currentMaterial = cleanMaterial;
             }
+            
+            lastDirtyState = isDirty;
         }
     }
     

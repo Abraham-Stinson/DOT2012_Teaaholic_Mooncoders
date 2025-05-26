@@ -1110,8 +1110,8 @@ MonoBehaviour:
   walkSpeed: 10
   sitOffset: -0.4
   animator: {fileID: 6994841605647538328}
-  minDrinkDuration: 60
-  maxDrinkDuration: 120
+  minDrinkDuration: 20
+  maxDrinkDuration: 21
   drinkOptions:
   - Light_Tea
   - Rabbit_Blood_Tea

@@ -53,6 +53,14 @@ public class Player : MonoBehaviour
     [SerializeField] private ParticleSystem tapSteamParticle;
     [SerializeField] private GameObject tapSteamParticleGO;
 
+    // Raycast cache
+    private RaycastHit cachedHit;
+    private bool hitCacheValid = false;
+    private float lastRaycastTime = 0f;
+    private const float RAYCAST_INTERVAL = 0.1f; // 10 kez/saniye yeterli
+
+    private Coroutine currentMessageCoroutine;
+    private bool isContextualMessage = false; // Flag to track if current message is contextual (based on what player is looking at)
 
     void Start()
     {
@@ -330,12 +338,12 @@ public class Player : MonoBehaviour
             }
             else if (!kettleScript.isBrewed)
             {
-                ShowUIMessage("Çay henüz demlenmemiş");
+                ShowUIMessage("Çay henüz demlenmemiş", false);
                 Debug.Log("Çay henüz demlenmemiş");
             }
             else
             {
-                ShowUIMessage("Bardak doldurulamıyor");
+                ShowUIMessage("Bardak doldurulamıyor", false);
                 Debug.Log("Dolduramazsın");
             }
         }
@@ -346,11 +354,11 @@ public class Player : MonoBehaviour
             {
                 kettleScript.AddHotWater();
                 StartCoroutine(PlayHotWaterTapAnimation());
-                ShowUIMessage("Kettle'a sıcak su eklendi");
+                ShowUIMessage("Kettle'a sıcak su eklendi", false);
             }
             else
             {
-                ShowUIMessage("Kettle zaten sıcak su içeriyor");
+                ShowUIMessage("Kettle zaten sıcak su içeriyor", false);
             }
         }
 
@@ -589,7 +597,7 @@ public class Player : MonoBehaviour
                 DirtyStatus dirtyStatus = target.GetComponent<DirtyStatus>();
                 if (teaCup != null && dirtyStatus != null && dirtyStatus.isDirty)
                 {
-                    ShowUIMessage("This cup is dirty! Take it to the sink to clean");
+                    ShowUIMessage("This cup is dirty! Take it to the sink to clean", true);
                 }
 
                 // Normal eşya alma mekaniği
@@ -618,202 +626,222 @@ public class Player : MonoBehaviour
     #region UpdateUI
     void UpdateUIAndHighlight()
     {
+        // Default state - hide interaction UI elements if not needed
         e_interact.SetActive(false);
         f_interact.SetActive(false);
-
-        bool didHit = Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange);
-
-        if (lastHighlightedObject != null && (didHit == false || hit.collider.gameObject != lastHighlightedObject))
+        
+        // Reset contextual message flag at the start of each frame
+        // This will allow non-contextual messages to stay on screen until their timer expires
+        if (isContextualMessage)
         {
-            lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = null;
+            isContextualMessage = false;
+            mainInfoUI.SetActive(false);
+        }
+        
+        // Raycast'i her frame yapmak yerine interval'da yap
+        float currentTime = Time.time;
+        if (currentTime - lastRaycastTime >= RAYCAST_INTERVAL)
+        {
+            hitCacheValid = Physics.Raycast(playerCam.position, playerCam.forward, out cachedHit, rayCastRange);
+            lastRaycastTime = currentTime;
+            
+            // If no hit, clear any previous highlight
+            if (!hitCacheValid && lastHighlightedObject != null)
+            {
+                lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
+                lastHighlightedObject = null;
+            }
         }
 
-        mainInfoUI.SetActive(false);
-
-        // Check for NPC first
-        if (didHit)
+        // Cached hit sonucunu kullan
+        if (hitCacheValid)
         {
-            // Check for NPC
-            NPC npc = hit.collider.GetComponent<NPC>();
-            if (npc != null)
+            hit = cachedHit;
+            
+            if (lastHighlightedObject != null && (hitCacheValid == false || cachedHit.collider.gameObject != lastHighlightedObject))
             {
-                string npcType = npc.IsGroupLeader() ? "Grup Lideri" : "Müşteri";
-                string status = npc.HasDrink() ? "İçiyor" : "Bekliyor";
-                string request = string.IsNullOrEmpty(npc.GetRequestedDrink()) ? "Yok" : npc.GetRequestedDrink();
-                string patience = "Sabır: " + npc.GetPatienceLevel();
-
-                Debug.Log($"[UI] NPC bilgisi: Tip={npcType}, Durum={status}, İstek={request}, Sabır={patience}");
-
-                if (npc.isPaying)
-                {
-                    ShowUIMessage($"{npcType}\nÖdeme için F tuşuna basın");
-                    f_interact.SetActive(true);
-                }
-                else
-                {
-                    ShowUIMessage($"{npcType}\nDurum: {status}\nİstek: {request}\n{patience}");
-                }
-
-                return;
+                lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
+                lastHighlightedObject = null;
             }
 
-            // Check for Table - DÜZELTME: TableController bulamazsak, transform.parent'tan kontrol edeceğiz
-            TableController table = hit.collider.GetComponent<TableController>();
-
-            // Eğer doğrudan objede TableController yoksa, parent'ını kontrol et
-            if (table == null)
+            // Check for NPC first
+            if (hitCacheValid)
             {
-                if (hit.collider.transform.parent != null)
+                // Check for NPC
+                NPC npc = cachedHit.collider.GetComponent<NPC>();
+                if (npc != null)
                 {
-                    table = hit.collider.transform.parent.GetComponent<TableController>();
-                    //Debug.Log($"[UI] Table için parent objesine bakıldı: {(table != null ? "Bulundu" : "Bulunamadı")}");
-                }
-            }
+                    string npcType = npc.IsGroupLeader() ? "Grup Lideri" : "Müşteri";
+                    string status = npc.HasDrink() ? "İçiyor" : "Bekliyor";
+                    string request = string.IsNullOrEmpty(npc.GetRequestedDrink()) ? "Yok" : npc.GetRequestedDrink();
+                    string patience = "Sabır: " + npc.GetPatienceLevel();
 
-            if (table != null)
-            {
-                // Eğer masada grup var ve grup oturmuşsa
-                if (table.HasGroup() && table.IsGroupSeated())
-                {
-                    Debug.Log($"[UI] Masa bulundu ve grubu oturmuş durumda: {table.name}");
-                    string gameRequest = table.GetRequestedGameType();
+                    Debug.Log($"[UI] NPC bilgisi: Tip={npcType}, Durum={status}, İstek={request}, Sabır={patience}");
 
-                    // Eğer oyun isteği yoksa, tekrar deneyeceğiz
-                    if (string.IsNullOrEmpty(gameRequest) && table.HasGroup())
+                    if (npc.isPaying)
                     {
-                        Debug.LogWarning($"[UI] Masa {table.name} için oyun isteği bulunamadı ama grubu var!");
-                        NPCGroup group = FindObjectOfType<NPCGroup>();
-                        if (group != null)
+                        ShowUIMessage($"{npcType}\nÖdeme için F tuşuna basın", true);
+                        f_interact.SetActive(true);
+                    }
+                    else
+                    {
+                        ShowUIMessage($"{npcType}\nDurum: {status}\nİstek: {request}\n{patience}", true);
+                    }
+
+                    return;
+                }
+
+                // Check for Table - DÜZELTME: TableController bulamazsak, transform.parent'tan kontrol edeceğiz
+                TableController table = cachedHit.collider.GetComponent<TableController>();
+
+                // Eğer doğrudan objede TableController yoksa, parent'ını kontrol et
+                if (table == null)
+                {
+                    if (cachedHit.collider.transform.parent != null)
+                    {
+                        table = cachedHit.collider.transform.parent.GetComponent<TableController>();
+                    }
+                }
+
+                if (table != null)
+                {
+                    // Eğer masada grup var ve grup oturmuşsa
+                    if (table.HasGroup() && table.IsGroupSeated())
+                    {
+                        Debug.Log($"[UI] Masa bulundu ve grubu oturmuş durumda: {table.name}");
+                        string gameRequest = table.GetRequestedGameType();
+
+                        // Eğer oyun isteği yoksa, tekrar deneyeceğiz
+                        if (string.IsNullOrEmpty(gameRequest) && table.HasGroup())
                         {
-                            gameRequest = group.GetRequestedGame();
-                            Debug.Log($"[UI] NPCGroup'tan doğrudan alınan oyun isteği: {gameRequest}");
+                            NPCGroup group = FindObjectOfType<NPCGroup>();
+                            if (group != null)
+                            {
+                                gameRequest = group.GetRequestedGame();
+                            }
                         }
-                    }
 
-                    if (string.IsNullOrEmpty(gameRequest))
+                        if (string.IsNullOrEmpty(gameRequest))
+                        {
+                            gameRequest = "Yok";
+                        }
+
+                        ShowUIMessage($"Masa\nDurum: Dolu\nOyun İsteği: {gameRequest}", true);
+                    }
+                    else if (table.HasGroup() && !table.IsGroupSeated())
                     {
-                        gameRequest = "Yok";
-                        Debug.LogWarning("[UI] Table has group but no game request!");
+                        // Masa dolu ama henüz tüm grup oturmamış
+                        ShowUIMessage($"Masa\nDurum: Dolu\nMüşteriler oturuyor...", true);
                     }
-
-                    Debug.Log($"[UI] Masa bilgileri: Oyun İsteği={gameRequest}");
-                    ShowUIMessage($"Masa\nDurum: Dolu\nOyun İsteği: {gameRequest}");
+                    else
+                    {
+                        // Masa boş
+                        ShowUIMessage($"Masa\nDurum: Boş", true);
+                    }
+                    return;
                 }
-                else if (table.HasGroup() && !table.IsGroupSeated())
+
+                // Special NPC kontrolünü NPC kontrolünden sonra ekleyelim
+                specialNPC = cachedHit.collider.GetComponent<SpecialNPC>();
+                if (specialNPC == null && cachedHit.collider.transform.parent != null)
                 {
-                    // Masa dolu ama henüz tüm grup oturmamış
-                    //Debug.Log($"[UI] Masa dolu ama grup henüz tam oturmamış: {table.name}");
-                    ShowUIMessage($"Masa\nDurum: Dolu\nMüşteriler oturuyor...");
+                    specialNPC = cachedHit.collider.transform.parent.GetComponent<SpecialNPC>();
                 }
-                else
+
+                // Sadece hasReachedWaitingPosition true ise ve daha önce etkileşime girilmediyse UI mesajını göster
+                if (specialNPC != null && !specialNPC.hasInteracted && specialNPC.hasReachedWaitingPosition)
                 {
-                    // Masa boş
-                    //Debug.Log($"[UI] Masa boş: {table.name}");
-                    ShowUIMessage($"Masa\nDurum: Boş");
+                    ShowUIMessage($"{specialNPC.GetNPCName()}\nKonuşmak için F tuşuna basın", true);
+                    cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = cachedHit.collider.gameObject;
+                    f_interact.SetActive(true);
+                    return;
                 }
-                return;
-            }
-
-            // Special NPC kontrolünü NPC kontrolünden sonra ekleyelim
-            specialNPC = hit.collider.GetComponent<SpecialNPC>();
-            if (specialNPC == null && hit.collider.transform.parent != null)
-            {
-                specialNPC = hit.collider.transform.parent.GetComponent<SpecialNPC>();
-            }
-
-            // Sadece hasReachedWaitingPosition true ise ve daha önce etkileşime girilmediyse UI mesajını göster
-            if (specialNPC != null && !specialNPC.hasInteracted && specialNPC.hasReachedWaitingPosition)
-            {
-                ShowUIMessage($"{specialNPC.GetNPCName()}\nKonuşmak için F tuşuna basın");
-                hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-                lastHighlightedObject = hit.collider.gameObject;
-                return;
             }
         }
 
         // Original UI logic continues from here
-        if (didHit && ((1 << hit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
+        if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & interactionLayer.value) != 0 && !isPicked)
         {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-            lastHighlightedObject = hit.collider.gameObject;
-            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/hit.collider.CompareTag("Kettle"))
+            cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+            lastHighlightedObject = cachedHit.collider.gameObject;
+            if (/*Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange)&&*/cachedHit.collider.CompareTag("Kettle"))
             {
-                var kettleScript = hit.collider.GetComponent<Kettle>();
+                var kettleScript = cachedHit.collider.GetComponent<Kettle>();
                 if (kettleScript.currentKettleMagazine > 0)
                 {
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     e_interact.SetActive(true);
                 }
                 else
                 {
                     if (kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("");
+                        ShowUIMessage("", true);
                         e_interact.SetActive(true);
                     }
                     else if (!kettleScript.isHaveTea && kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("");
+                        ShowUIMessage("", true);
                         e_interact.SetActive(true);
                     }
                     else if (kettleScript.isHaveTea && kettleScript.isHaveHotWater)
                     {
                         if (kettleScript.CheckIsOnKettleBase())
                         {
-                            ShowUIMessage("Demleniyor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı");
+                            ShowUIMessage("Demleniyor\n" + (int)kettleScript.currentBrewTimeOfTea + " saniye kaldı", true);
                         }
                         else
                         {
-                            ShowUIMessage("");
+                            ShowUIMessage("", true);
                             e_interact.SetActive(true);
                         }
                     }
                     else if (!kettleScript.isHaveTea && !kettleScript.isHaveHotWater)
                     {
-                        ShowUIMessage("");
+                        ShowUIMessage("", true);
                         e_interact.SetActive(true);
                     }
                 }
             }
             else
             {
-                ShowUIMessage("");
+                ShowUIMessage("", true);
                 e_interact.SetActive(true);
             }
         }
 
-        if (didHit && ((1 << hit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && inHandItem != null &&
+        if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & placementLayer.value) != 0 && isPicked && inHandItem != null &&
             !(inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            ShowUIMessage("");
+            ShowUIMessage("", true);
             e_interact.SetActive(true);
         }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null &&
+        if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & groundLayer.value) != 0 && isPicked && inHandItem != null &&
             (inHandItem.tag == "Mop" || inHandItem.tag == "Garbage_Bag"))
         {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
             lastHighlightedObject = null;
-            ShowUIMessage("");
+            ShowUIMessage("", true);
             e_interact.SetActive(true);
         }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
+        if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && cachedHit.collider.GetComponent<IInteractable>() != null)
         {
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = hit.collider.gameObject;
-            ShowUIMessage("");
+            cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            lastHighlightedObject = cachedHit.collider.gameObject;
+            ShowUIMessage("", true);
             f_interact.SetActive(true);
         }
-        if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.CompareTag("Handbook"))
+        if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && cachedHit.collider.CompareTag("Handbook"))
         {
-            lastHighlightedObject = hit.collider.gameObject;
-            ShowUIMessage("");
+            lastHighlightedObject = cachedHit.collider.gameObject;
+            ShowUIMessage("", true);
             f_interact.SetActive(true);
         }
 
-        if (didHit/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
+        if (hitCacheValid/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
         {
             if (inHandItem != null)
             {
@@ -824,7 +852,7 @@ public class Player : MonoBehaviour
                     {
                         hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                         lastHighlightedObject = hit.collider.gameObject;
-                        ShowUIMessage("");
+                        ShowUIMessage("", true);
                         e_interact.SetActive(true);
                     }
                     else
@@ -836,7 +864,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (didHit && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
         {//KETTLE DAN ÇAY KOYMA UI
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
@@ -844,7 +872,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
             }
@@ -856,13 +884,13 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
             }
         }
 
-        if (didHit && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Other_Products"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
         {//bardağa Kahve veya oralet koyma
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
@@ -870,13 +898,13 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
             }
         }
 
-        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Tea_Cup"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
         {//KETTLE DAN ÇAY KOYMA UI
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
@@ -884,7 +912,7 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
             }
@@ -893,7 +921,7 @@ public class Player : MonoBehaviour
         }
 
         // Tea Can kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Tea_Can" && isPicked)
         {
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
@@ -901,78 +929,98 @@ public class Player : MonoBehaviour
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
             }
         }
 
         // DirtyStatus kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
+        if (hitCacheValid && inHandItem != null && inHandItem.GetComponent<DirtyStatus>() != null && isPicked)//WASH UI
         {
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
                 if (hit.collider.CompareTag("Water") && inHandItem.GetComponent<DirtyStatus>())
                 {
                     lastHighlightedObject = hit.collider.gameObject;
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
             }
         }
 
         // Garbage Bin kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
+        if (hitCacheValid && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Bin") && isPicked)
         {
             if (inHandItem != null && (inHandItem.layer == 6))//ATILMAYACAK ESYALAR TAG TAG EKLENDI
             {
                 if (!(inHandItem.tag == "Mop" || inHandItem.tag == "Tray" || inHandItem.tag == "Kettle" || inHandItem.tag == "Garbage_Bin" || inHandItem.tag == "Garbage_Bag"))
                 {
-                    ShowUIMessage("");
+                    ShowUIMessage("", true);
                     f_interact.SetActive(true);
                 }
                 else
                 {
-                    ShowUIMessage("Bu eşya çöpe atılamaz");
+                    ShowUIMessage("Bu eşya çöpe atılamaz", true);
                 }
             }
         }
 
         // Garbage Container kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
+        if (hitCacheValid && Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange) && hit.collider.CompareTag("Garbage_Container") && isPicked)
         {
             if (inHandItem != null && inHandItem.tag == "Garbage_Bag")
             {
-                ShowUIMessage("");
+                ShowUIMessage("", true);
                 f_interact.SetActive(true);
             }
-        }
-
-        // Trash kontrolünü ayrı bir blok olarak yazalım
-        if (didHit && hit.collider.gameObject.tag == "Trash")
-        {//THRASH UI
-            if (inHandItem != null && inHandItem.gameObject.tag == "Mop")
-            {
-                ShowUIMessage("");
-                f_interact.SetActive(true);
-            }
-            else
-            {
-                ShowUIMessage("Çöpü temizlemek için paspasa ihtiyacınız var");
-            }
-
-            hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
-            lastHighlightedObject = hit.collider.gameObject;
         }
     }
 
 
     #endregion
 
-    public void ShowUIMessage(string message)
+    public void ShowUIMessage(string message, bool isContextual = false)
     {
+        // Set the contextual flag
+        isContextualMessage = isContextual;
+        
+        // If a previous non-contextual message coroutine is running and this is not a contextual message, stop it
+        if (currentMessageCoroutine != null && !isContextualMessage)
+        {
+            StopCoroutine(currentMessageCoroutine);
+            currentMessageCoroutine = null;
+        }
+        
+        // If message is empty, just hide the UI
+        if (string.IsNullOrEmpty(message))
+        {
+            mainInfoUI.SetActive(false);
+            return;
+        }
+        
+        // Show message
         mainInfoUI.SetActive(true);
         mainInfoUIText.text = message;
+        
+        // Only start the hide coroutine for non-contextual messages
+        if (!isContextual && currentMessageCoroutine == null)
+        {
+            currentMessageCoroutine = StartCoroutine(HideMessageAfterDelay(3.0f));
+        }
+    }
+    
+    private IEnumerator HideMessageAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // Only hide if it's still not a contextual message
+        if (!isContextualMessage && mainInfoUI != null)
+        {
+            mainInfoUI.SetActive(false);
+        }
+        
+        currentMessageCoroutine = null;
     }
 
     private void SetItemPositionOnSurface(GameObject item, Vector3 hitPoint)
@@ -1048,5 +1096,37 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1f);
         hotWaterAnimator.SetBool("isUseHotWater", false);
         tapSteamParticle.Stop(true); // false parametresi ile mevcut parçacıklar tamamlanana kadar görünür kalır
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up coroutines to prevent memory leaks
+        if (currentMessageCoroutine != null)
+        {
+            StopCoroutine(currentMessageCoroutine);
+            currentMessageCoroutine = null;
+        }
+        
+        if (cleaningCoroutine != null)
+        {
+            StopCoroutine(cleaningCoroutine);
+            cleaningCoroutine = null;
+        }
+        
+        // Unsubscribe from input events to prevent memory leaks
+        if (pickAndPutInput != null && pickAndPutInput.action != null)
+        {
+            pickAndPutInput.action.performed -= PickAndPut;
+        }
+        
+        if (useInput != null && useInput.action != null)
+        {
+            useInput.action.performed -= Use;
+        }
+        
+        if (useHoldInput != null && useHoldInput.action != null)
+        {
+            useHoldInput.action.performed -= UseHold;
+        }
     }
 }

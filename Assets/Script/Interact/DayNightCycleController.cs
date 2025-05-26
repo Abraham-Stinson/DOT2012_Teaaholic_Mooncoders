@@ -131,7 +131,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         {
             timer -= minuteDurationSeconds;
             IncrementTimeByOneMinute();
-            Debug.Log($"Zaman arttırıldı - Saat: {hour}:{minute}");
+            //Debug.Log($"Zaman arttırıldı - Saat: {hour}:{minute}");
         }
     }
 
@@ -648,12 +648,6 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
 
         Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
-    }
-
-    private void OnApplicationQuit()
-    {
-        SaveGame();
-        Debug.Log("Oyundan çıkış yapıldı - Oyun kaydedildi");
     }
 
     private void WomenSurvives(bool isMoneyGivenByChairTable)

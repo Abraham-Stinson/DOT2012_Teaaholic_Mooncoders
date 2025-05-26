@@ -64,6 +64,8 @@ public class MarketSystem : MonoBehaviour, IInteractable
     private bool isBlackMarket = false;
     [SerializeField] private WearManager wearManager;
 
+    private List<Button> dynamicButtons = new List<Button>(); // Dinamik olarak oluşturulan butonları takip et
+
     private void Start()
     {
         moneyManager = FindObjectOfType<MoneyManager>();
@@ -93,6 +95,8 @@ public class MarketSystem : MonoBehaviour, IInteractable
 
     private void OnDestroy()
     {
+        ClearDynamicButtons();
+        
         if (escapeAction != null)
         {
             escapeAction.action.performed -= HandleEscapeInput;
@@ -261,6 +265,9 @@ public class MarketSystem : MonoBehaviour, IInteractable
 
     private void SetupUI()
     {
+        // Önceki buton listener'larını temizle
+        ClearDynamicButtons();
+
         if (contentParent == null)
         {
             Debug.LogError("Content parent null!");
@@ -361,9 +368,25 @@ public class MarketSystem : MonoBehaviour, IInteractable
                     }
                 }
             });
+
+            // Butonları listeye ekle
+            if (incBtn != null) dynamicButtons.Add(incBtn);
+            if (decBtn != null) dynamicButtons.Add(decBtn);
         }
 
         UpdateTotalPrice(); // İlk açılışta total price'ı göster
+    }
+
+    private void ClearDynamicButtons()
+    {
+        foreach (var button in dynamicButtons)
+        {
+            if (button != null)
+            {
+                button.onClick.RemoveAllListeners();
+            }
+        }
+        dynamicButtons.Clear();
     }
 
     private void UpdateTotalPrice()
