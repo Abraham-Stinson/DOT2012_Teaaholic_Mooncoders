@@ -6150,7 +6150,7 @@ MonoBehaviour:
   playerObject: {fileID: 4805225187014577647}
   playerDayStartPosition: {fileID: 812498408}
   moneyManager: {fileID: 457943707}
-  minuteDurationSeconds: 0.2
+  minuteDurationSeconds: 0.6667
   startHour: 9
   endHour: 24
   dayUIText: {fileID: 1505088213}
@@ -6303,12 +6303,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 10
+  - 120
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 20
+  - 121
   - 101
   - 81
   - 61
