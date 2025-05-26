@@ -22,9 +22,9 @@ public class GameRequestUI : MonoBehaviour
     {
         switch (gameRequest.ToLower())
         {
-            case "tavla": return tavlaBubble;
-            case "okey": return okeyBubble;
-            case "iskambil": return iskambilBubble;
+            case "Tavla": return tavlaBubble;
+            case "Okey": return okeyBubble;
+            case "Iskambil": return iskambilBubble;
             default: return defaultBubble;
         }
     }
