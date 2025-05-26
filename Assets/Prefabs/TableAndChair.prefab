@@ -339,6 +339,7 @@ GameObject:
   - component: {fileID: 2081336060185064490}
   - component: {fileID: 6320542562910599038}
   - component: {fileID: 2686578272837009363}
+  - component: {fileID: 7320681009315296966}
   m_Layer: 9
   m_Name: Chair_4
   m_TagString: Chair
@@ -447,6 +448,27 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: -0.76}
   m_TimeToStationary: 0
+--- !u!65 &7320681009315296966
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 668982947862882834}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.1853082, y: 4.4901204, z: 2.7494018}
+  m_Center: {x: 0, y: 2.1978343, z: -0.13704875}
 --- !u!1 &910534325237370493
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,6 +968,7 @@ GameObject:
   - component: {fileID: 6958989145380362544}
   - component: {fileID: 7060193892792285192}
   - component: {fileID: 2014158665149242229}
+  - component: {fileID: 7862765368096412208}
   m_Layer: 9
   m_Name: Chair_2
   m_TagString: Chair
@@ -1054,6 +1077,27 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: -0.76}
   m_TimeToStationary: 0
+--- !u!65 &7862765368096412208
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433434737131632906}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.1853082, y: 4.4901204, z: 2.7494018}
+  m_Center: {x: 0, y: 2.1978343, z: -0.13704875}
 --- !u!1 &1566181854104754422
 GameObject:
   m_ObjectHideFlags: 0
@@ -2789,7 +2833,7 @@ MonoBehaviour:
     itemNameTextUI: {fileID: 5375220514594945119}
     quantity: 0
     quantityTextUI: {fileID: 666196652448691589}
-    price: 15
+    price: 10
     plusButtonGO: {fileID: 2787880519240719280}
     plusButton: {fileID: 4892059731308150838}
     minusButtonGO: {fileID: 8065094227481213406}
@@ -2799,7 +2843,7 @@ MonoBehaviour:
     itemNameTextUI: {fileID: 4387761186741515496}
     quantity: 0
     quantityTextUI: {fileID: 4502606053677253602}
-    price: 20
+    price: 15
     plusButtonGO: {fileID: 615518638153570834}
     plusButton: {fileID: 1580997709798241254}
     minusButtonGO: {fileID: 9071207093628543817}
@@ -2809,7 +2853,7 @@ MonoBehaviour:
     itemNameTextUI: {fileID: 429622611560334901}
     quantity: 0
     quantityTextUI: {fileID: 9107161539561627724}
-    price: 25
+    price: 20
     plusButtonGO: {fileID: 2647287225926961188}
     plusButton: {fileID: 6373128083428193808}
     minusButtonGO: {fileID: 7136870803681103265}
@@ -3541,6 +3585,7 @@ GameObject:
   - component: {fileID: 8700464247684234205}
   - component: {fileID: 8820005830533025654}
   - component: {fileID: 535475080994949660}
+  - component: {fileID: 8867242052306455917}
   m_Layer: 9
   m_Name: Chair_3
   m_TagString: Chair
@@ -3649,6 +3694,27 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: -0.76}
   m_TimeToStationary: 0
+--- !u!65 &8867242052306455917
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6554060662525416540}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.1853077, y: 4.4901204, z: 2.749401}
+  m_Center: {x: 0, y: 2.1978343, z: -0.13704872}
 --- !u!1 &6559568690887039885
 GameObject:
   m_ObjectHideFlags: 0
@@ -3798,6 +3864,7 @@ GameObject:
   - component: {fileID: 4352865606444427761}
   - component: {fileID: 4260768342606374247}
   - component: {fileID: 6106359815106556833}
+  - component: {fileID: 6945350457443047964}
   m_Layer: 9
   m_Name: Chair_1
   m_TagString: Chair
@@ -3906,6 +3973,27 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: -0.76}
   m_TimeToStationary: 0
+--- !u!65 &6945350457443047964
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6619279681259388687}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.1853077, y: 4.4901204, z: 2.749401}
+  m_Center: {x: 0, y: 2.1978343, z: -0.13704872}
 --- !u!1 &6669516899920439220
 GameObject:
   m_ObjectHideFlags: 0
@@ -4390,6 +4478,7 @@ GameObject:
   - component: {fileID: 1720564201175092108}
   - component: {fileID: 3952484098767515073}
   - component: {fileID: 3704562847830124058}
+  - component: {fileID: 5189153834192636571}
   m_Layer: 9
   m_Name: TableAndChair
   m_TagString: Table
@@ -4485,6 +4574,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 692f187ec9c714540ac438b27cc3abfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5189153834192636571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7905361117443920573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 429cb46131d41d44480ec6eee0b27caa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8065094227481213406

@@ -91,10 +91,23 @@ public class Player : MonoBehaviour
     #region USE INPUT
     private void Use(InputAction.CallbackContext context) // F
     {
+        if (playerCam == null)
+        {
+            Debug.LogError("Player camera is null! Cannot perform raycast.");
+            return;
+        }
+        
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
             Debug.Log("F key pressed but no object hit by raycast");
             return;
+        }
+
+        if (hit.collider.GetComponent<DeliveryBox>()!= null)
+        {
+            Debug.Log("Delivery Box ile etkileşime geçildi");
+            hit.collider.GetComponent<DeliveryBox>().interact();
+            return; 
         }
 
         GameObject target = hit.collider.gameObject;
@@ -175,6 +188,7 @@ public class Player : MonoBehaviour
                 {
                     bool isActive = handbookUI.activeSelf;
                     handbookUI.SetActive(!isActive);
+                    SoundManager.Instance.OpenBook();
 
                     // Cursor ve Time.timeScale kontrolü
                     if (!isActive)
@@ -209,7 +223,7 @@ public class Player : MonoBehaviour
                             if (script != null)
                                 script.enabled = true;
                         }
-
+                        SoundManager.Instance.CloseBook();
                         Debug.Log("Handbook UI kapatıldı, oyun devam ediyor, imleç gizlendi.");
                     }
                 }
@@ -467,6 +481,12 @@ public class Player : MonoBehaviour
     #region Pick and put and tray
     private void PickAndPut(InputAction.CallbackContext context)//E
     {
+        if (playerCam == null)
+        {
+            Debug.LogError("Player camera is null! Cannot perform raycast.");
+            return;
+        }
+        
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
             return;
@@ -782,6 +802,12 @@ public class Player : MonoBehaviour
         if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.GetComponent<IInteractable>() != null)
         {
             hit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+            lastHighlightedObject = hit.collider.gameObject;
+            ShowUIMessage("");
+            f_interact.SetActive(true);
+        }
+        if (didHit && ((1 << hit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && hit.collider.CompareTag("Handbook"))
+        {
             lastHighlightedObject = hit.collider.gameObject;
             ShowUIMessage("");
             f_interact.SetActive(true);

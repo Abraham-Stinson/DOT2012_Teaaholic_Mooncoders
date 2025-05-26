@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     public GameObject NewGamePanel;
     public GameObject SettingsPanel;
+    [SerializeField] private Button continueButton; // Devam Et butonu
     private PlayerMovementAndInteractionSystem inputActions;
     
     [Header("---------- Scene Names ----------")]
@@ -15,7 +17,14 @@ public class MainMenu : MonoBehaviour
     {
         NewGamePanel.SetActive(false);
         SettingsPanel.SetActive(false);
+        
+        // Eğer kayıtlı oyun yoksa Devam Et butonunu devre dışı bırak
+        if (continueButton != null)
+        {
+            continueButton.interactable = PlayerPrefs.HasKey("SavedDay");
+        }
     }
+
     void Awake()
     {
         inputActions = new PlayerMovementAndInteractionSystem();
@@ -47,15 +56,10 @@ public class MainMenu : MonoBehaviour
 
     public void LoadSceneNewGame()
     {
-        // Yeni oyun başlatıldığında tüm kayıtları temizle
-        PlayerPrefs.DeleteKey("SavedDay");
-        PlayerPrefs.DeleteKey("SavedHour");
-        PlayerPrefs.DeleteKey("SavedMinute");
-
-        // Pozisyon kayıtları da silinsin (önceden kaydedilmiş objeler varsa)
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
-
+        // Tüm kayıtları temizle
+        SaveManager.DeleteAllSaveData();
+        
+        // Sahneyi yükle
         SceneManager.LoadScene(MainScene);
     }
 
@@ -74,7 +78,11 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        Application.Quit();
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
         Debug.Log("Oyun kapatılıyor...");
     }
 }

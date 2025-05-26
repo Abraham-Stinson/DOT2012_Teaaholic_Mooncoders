@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,8 +7,8 @@ public class PlayerMovementScript : MonoBehaviour
     PlayerMovementAndInteractionSystem playerInput;
     CharacterController characterController;
     public PauseMenuController pauseMenuController;
-    Player player;
     public Adisyon adisyonScript;
+
     [Header("Movement")]
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -17,7 +17,7 @@ public class PlayerMovementScript : MonoBehaviour
     bool isRunPressed;
 
     [SerializeField] private float walkSpeed = 5f;
-    [SerializeField] private float runMultiply = 3f;
+    [SerializeField] private float runMultiply = 2f;
 
     [Header("Camera")]
     [SerializeField] private Transform cameraTransform;
@@ -28,7 +28,6 @@ public class PlayerMovementScript : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
-    // Animation parameters
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
     private static readonly int IsRunning = Animator.StringToHash("IsRunning");
 
@@ -36,9 +35,8 @@ public class PlayerMovementScript : MonoBehaviour
     {
         playerInput = new PlayerMovementAndInteractionSystem();
         characterController = GetComponent<CharacterController>();
-        pauseMenuController=GetComponent<PauseMenuController>();
+        pauseMenuController = GetComponent<PauseMenuController>();
 
-        // If no camera transform assigned, try to find camera in children
         if (cameraTransform == null)
         {
             Camera mainCamera = GetComponentInChildren<Camera>();
@@ -46,24 +44,19 @@ public class PlayerMovementScript : MonoBehaviour
                 cameraTransform = mainCamera.transform;
         }
 
-        // If no animator assigned, try to find animator component
         if (animator == null)
         {
             animator = GetComponent<Animator>();
         }
 
-        // Lock and hide cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Movement input callbacks
         playerInput.ChrachterController.Move.started += OnMovementInput;
         playerInput.ChrachterController.Move.canceled += OnMovementInput;
         playerInput.ChrachterController.Move.performed += OnMovementInput;
         playerInput.ChrachterController.Run.started += OnRun;
         playerInput.ChrachterController.Run.canceled += OnRun;
-
-        // Mouse input callback
         playerInput.ChrachterController.Look.performed += OnLookInput;
     }
 
@@ -72,23 +65,18 @@ public class PlayerMovementScript : MonoBehaviour
         currentMovementInput = context.ReadValue<Vector2>();
         currentMovement.x = currentMovementInput.x;
         currentMovement.z = currentMovementInput.y;
-
-        // Update run movement
         currentRunMovement.x = currentMovement.x * runMultiply;
         currentRunMovement.z = currentMovement.z * runMultiply;
-
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
-
-        // Update animation parameters based on movement
         UpdateAnimationState();
+        UpdateWalkingSound(); // SES GÜNCELLEME EKLENDİ
     }
 
     void OnRun(InputAction.CallbackContext context)
     {
         isRunPressed = context.ReadValueAsButton();
-
-        // Update animation parameters when run state changes
         UpdateAnimationState();
+        UpdateWalkingSound(); // SES GÜNCELLEME EKLENDİ
     }
 
     void OnLookInput(InputAction.CallbackContext context)
@@ -114,20 +102,17 @@ public class PlayerMovementScript : MonoBehaviour
 
     void HandleRotation()
     {
-        // Horizontal rotation (character rotation)
         float mouseX = mouseDelta.x * mouseSensitivity;
         transform.Rotate(Vector3.up, mouseX);
 
-        // Vertical rotation (camera pitch)
         if (cameraTransform != null)
         {
             float mouseY = mouseDelta.y * mouseSensitivity;
-            cameraPitch -= mouseY; // Invert Y axis for more natural feel
+            cameraPitch -= mouseY;
             cameraPitch = Mathf.Clamp(cameraPitch, -upDownRange, upDownRange);
             cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
 
-        // Reset mouse delta after applying rotation
         mouseDelta = Vector2.zero;
     }
 
@@ -139,52 +124,60 @@ public class PlayerMovementScript : MonoBehaviour
         {
             if (isRunPressed)
             {
-                // Running state
                 animator.SetBool(IsWalking, false);
                 animator.SetBool(IsRunning, true);
             }
             else
             {
-                // Walking state
                 animator.SetBool(IsWalking, true);
                 animator.SetBool(IsRunning, false);
             }
         }
         else
         {
-            // Idle state
             animator.SetBool(IsWalking, false);
             animator.SetBool(IsRunning, false);
+        }
+    }
+
+    void UpdateWalkingSound()
+    {
+        if (SoundManager.Instance == null) return;
+        
+        if (!isMovementPressed)
+        {
+            SoundManager.Instance.StopWalkingSounds();
+            return;
+        }
+
+        if (isRunPressed)
+        {
+            SoundManager.Instance.StopWalkingSounds();
+            SoundManager.Instance.Run();
+        }
+        else
+        {
+            SoundManager.Instance.StopWalkingSounds();
+            SoundManager.Instance.Walk();
         }
     }
 
     void Update()
     {
         HandleGravity();
-        
-        // Check if pauseMenuController is null and try to find it
+
         if (pauseMenuController == null)
-        {
             pauseMenuController = FindObjectOfType<PauseMenuController>();
-        }
-        
-        // Check if game is paused or dialogue is active
-        if ((pauseMenuController != null && pauseMenuController.isPaused) || SpecialNPC.isInAnyDialogue) return;
-        
-        // If adisyon is open, prevent movement    
+        if (pauseMenuController != null && pauseMenuController.isPaused) return;
         if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
 
         HandleRotation();
 
-        // Calculate movement direction based on character's forward direction
         Vector3 moveDirection = transform.forward * currentMovement.z + transform.right * currentMovement.x;
-        moveDirection.y = currentMovement.y; // Apply gravity
+        moveDirection.y = currentMovement.y;
 
         float speed = isRunPressed ? walkSpeed * runMultiply : walkSpeed;
         characterController.Move(moveDirection * speed * Time.deltaTime);
-
-        // Ensure animation state is updated each frame
-        UpdateAnimationState();
     }
 
     void OnEnable()

@@ -195,11 +195,11 @@ public class NPCGroup : MonoBehaviour
     private void RequestGame()
     {
         Debug.Log($"[GROUP] Grup oyun istiyor: {requestedGame}");
-        
-        // Update UI or send a message to the player about the requested game
-        
-        // Start the group patience timer
-        StartGroupPatienceTimer();
+       
+            // Update UI or send a message to the player about the requested game
+
+            // Start the group patience timer
+            StartGroupPatienceTimer();
         
         // Force update the table to make sure the UI shows the request
         if (assignedTable != null)
@@ -223,6 +223,18 @@ public class NPCGroup : MonoBehaviour
         
         if (gameType == requestedGame)
         {
+            if (requestedGame == OKEY_GAME)
+            {
+                SoundManager.Instance.PlayOkey();
+            }
+            else if (requestedGame == TAVLA_GAME)
+            {
+                SoundManager.Instance.PlayTavla();
+            }
+            else if (requestedGame == ISKAMBIL_GAME)
+            {
+                SoundManager.Instance.PlayIskambil();
+            }
             // Correct game provided
             Debug.Log($"Correct game provided: {gameType}");
             hasGameBox = true;

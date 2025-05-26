@@ -12,8 +12,10 @@ public class NPCManager : MonoBehaviour
     
     [Header("Spawn Settings")]
     [SerializeField] private Transform spawnPoint;
-    [SerializeField] private float minSpawnDelay = 60f;
-    [SerializeField] private float maxSpawnDelay = 180f;
+    [SerializeField] public float[] minSpawnArray;
+    [SerializeField] public float[] maxSpawnArray;
+    [SerializeField] public float minSpawnDelay;
+    [SerializeField] public float maxSpawnDelay;
     [SerializeField] private int minGroupSize = 2;
     [SerializeField] private int maxGroupSize = 4;
     [SerializeField] private float spawnAreaRadius = 2f;

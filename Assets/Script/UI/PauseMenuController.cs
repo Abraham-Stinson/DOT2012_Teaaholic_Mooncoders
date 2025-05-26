@@ -78,6 +78,13 @@ public class PauseMenuController : MonoBehaviour
     
     public void TogglePauseMenu(InputAction.CallbackContext context)
     {
+        // Market selection UI kontrolü ekle
+        if (MarketSystem.isMarketSelectionOpen)
+        {
+            Debug.Log("Market selection UI açık, pause menu açılmayacak");
+            return;
+        }
+
         if (adisyonScript == null)
         {
             Debug.Log("Adisyon scripti bulunamadı, yeni bir referans alınıyor.");
@@ -95,6 +102,13 @@ public class PauseMenuController : MonoBehaviour
         if (SpecialNPC.isInAnyDialogue)
         {
             Debug.Log("NPC diyaloğu açık, menüyü açma");
+            return;
+        }
+
+        // Market UI açıksa menüyü açma
+        if (MarketSystem.isMarketOpen)
+        {
+            Debug.Log("Market UI açık, menüyü açma");
             return;
         }
 
@@ -192,4 +206,4 @@ public class PauseMenuController : MonoBehaviour
         
         SceneManager.LoadScene("MainMenu");
     }
-} 
+}

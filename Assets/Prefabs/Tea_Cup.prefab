@@ -961,6 +961,7 @@ GameObject:
   - component: {fileID: 5260086454622867352}
   - component: {fileID: 2058097271620688908}
   - component: {fileID: 4668842817109215040}
+  - component: {fileID: -5844100704421607613}
   m_Layer: 6
   m_Name: Tea_Cup
   m_TagString: Tea_Cup
@@ -1135,6 +1136,23 @@ MonoBehaviour:
   dirtyMaterial: {fileID: 2100000, guid: 04112c48bef28ee408361a67d523e3a7, type: 2}
   cleanMaterial: {fileID: 2100000, guid: 9d2126d0d8d484781bf9fe54b03fe18b, type: 2}
   cupRenderer: {fileID: 5679336104027026938}
+--- !u!114 &-5844100704421607613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4583457363796971318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fbcdcb87629f104bb4edaca55fbeb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveKey: 
+  savePosition: 1
+  saveRotation: 1
+  saveScale: 0
+  saveActiveState: 1
 --- !u!1 &4913923278085300774
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,7 +24,7 @@ public class GameRequestUI : MonoBehaviour
         {
             case "tavla": return tavlaBubble;
             case "okey": return okeyBubble;
-            case "ýskambil": return iskambilBubble;
+            case "iskambil": return iskambilBubble;
             default: return defaultBubble;
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class WearManager : MonoBehaviour
+public class WearManager : MonoBehaviour, ICanSave
 {
     [SerializeField, Min(1f)][Range(1f, 100f)] private float wear = 0;
     [Header("UI Settings")]
@@ -58,16 +58,16 @@ public class WearManager : MonoBehaviour
     {
         wearText.text = "%" + wear.ToString();
     }
-    
+
     public void AddWear(float amount)
     {
         float oldWear = wear;
         wear += amount;
-        if(wear > 100f)
+        if (wear > 100f)
         {
             wear = 100f;
         }
-        else if(wear < 0f)
+        else if (wear < 0f)
         {
             wear = 0f;
         }
@@ -79,5 +79,24 @@ public class WearManager : MonoBehaviour
         }
 
         RefreshUI();
+    }
+
+    public void SaveData()
+    {
+        PlayerPrefs.SetFloat("CurrentWear", wear);
+    }
+
+    public void LoadData()
+    {
+        if (PlayerPrefs.HasKey("CurrentWear"))
+        {
+            wear = PlayerPrefs.GetFloat("CurrentWear");
+            RefreshUI();
+        }
+    }
+    
+    public float GetWear()
+    {
+        return wear;
     }
 }

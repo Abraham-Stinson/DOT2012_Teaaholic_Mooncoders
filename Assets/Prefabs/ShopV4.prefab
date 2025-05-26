@@ -2900,7 +2900,7 @@ MonoBehaviour:
   animator: {fileID: 382445101059082296}
   npcLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 5120
 --- !u!1 &5003878056621171003
 GameObject:
   m_ObjectHideFlags: 0
