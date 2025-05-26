@@ -6157,8 +6157,6 @@ MonoBehaviour:
   timeUIText: {fileID: 591272209}
   sunLight: {fileID: 410087040}
   npcManager: {fileID: 231622896}
-  npcMinSpawnDelaySeconds: 60
-  npcMaxSpawnDelaySeconds: 180
   day: 1
   hour: 0
   minute: 0
@@ -6305,12 +6303,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 10
+  - 120
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 20
+  - 121
   - 101
   - 81
   - 61
