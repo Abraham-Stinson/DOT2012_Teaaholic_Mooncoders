@@ -38,12 +38,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     public TextMeshProUGUI timeUIText;   // Separate UI element for time
     public Light sunLight;
     public NPCManager npcManager; // Reference to NPC Manager
-
-    [Header("NPC Spawn Delay Settings")]
-    [Tooltip("Minimum spawn delay in seconds for NPCs")]
-    [SerializeField] private float npcMinSpawnDelaySeconds = 60f;
-    [Tooltip("Maximum spawn delay in seconds for NPCs")]
-    [SerializeField] private float npcMaxSpawnDelaySeconds = 180f;
+    
 
     [SerializeField] private int day = 1;
     [SerializeField] private int hour;
