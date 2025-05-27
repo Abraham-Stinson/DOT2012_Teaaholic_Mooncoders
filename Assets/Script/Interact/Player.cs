@@ -329,7 +329,10 @@ public class Player : MonoBehaviour
         if (target.CompareTag("Tea_Cup"))
         {
             var teaCupScript = target.GetComponent<Tea_Cup>();
+            var dirtyStatusScript= target.GetComponent<DirtyStatus>();
             if (teaCupScript == null)
+                return;
+            if (dirtyStatusScript.isDirty)
                 return;
 
             if (!teaCupScript.isFullTea && kettleScript.currentKettleMagazine > 0 && !teaCupScript.isFillOraletorCoffee && kettleScript.isBrewed)
@@ -373,6 +376,8 @@ public class Player : MonoBehaviour
         }
     }
 
+    // HandleTeaCupInteraction metodunda değişiklik:
+
     private void HandleTeaCupInteraction(GameObject target)
     {
         if (inHandItem == null || !inHandItem.CompareTag("Tea_Cup"))
@@ -394,28 +399,37 @@ public class Player : MonoBehaviour
                 return;
             }
             
-            if (teaCupScript.isFillTea)
+            bool canFillTea = teaCupScript.isFillTea && !teaCupScript.isFullTea;
+            bool canFillOraletCoffee = teaCupScript.isFillOraletorCoffee && !teaCupScript.isFullOraletorCoffee;
+            bool canFillKettle = false;
+            
+            Kettle kettleScript = inHandItem.GetComponent<Kettle>();
+            if (kettleScript != null && !kettleScript.isHaveHotWater)
             {
-                StartCoroutine(PlayHotWaterTapAnimation());
-                teaCupScript.FillHotWaterToTea();
+                canFillKettle = true;
             }
-            else if (teaCupScript.isFillOraletorCoffee)
+            
+            // Sadece bir işlem yapılabilecekse animasyonu çal
+            if (canFillTea || canFillOraletCoffee || canFillKettle)
             {
                 StartCoroutine(PlayHotWaterTapAnimation());
-                teaCupScript.FillHotWaterToCoffeeOrOralet();
+                
+                if (canFillTea)
+                {
+                    teaCupScript.FillHotWaterToTea();
+                }
+                else if (canFillOraletCoffee)
+                {
+                    teaCupScript.FillHotWaterToCoffeeOrOralet();
+                }
+                else if (canFillKettle)
+                {
+                    kettleScript.isHaveHotWater = true;
+                }
             }
             else
             {
-                Kettle kettleScript = inHandItem.GetComponent<Kettle>();
-                if (kettleScript != null && !kettleScript.isHaveHotWater)
-                {
-                    StartCoroutine(PlayHotWaterTapAnimation());
-                    kettleScript.isHaveHotWater = true;
-                }
-                else
-                {
-                    Debug.Log("Sıcak su dolduramazsın");
-                }
+                Debug.Log("Sıcak su dolduramazsın");
             }
         }
 
@@ -1129,8 +1143,8 @@ public class Player : MonoBehaviour
         tapSteamParticle.Play(true);
         hotWaterAnimator.SetBool("isUseHotWater", true);
         yield return new WaitForSeconds(1f);
+        tapSteamParticle.Stop(true);
         hotWaterAnimator.SetBool("isUseHotWater", false);
-        tapSteamParticle.Stop(true); // false parametresi ile mevcut parçacıklar tamamlanana kadar görünür kalır
     }
 
     private void OnDestroy()

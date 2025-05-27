@@ -56,6 +56,7 @@ public class Kettle : MonoBehaviour
             return;
         }
         
+        
         // Check if we have brewed tea to pour
         if (currentKettleMagazine > 0 && isBrewed)
         {
