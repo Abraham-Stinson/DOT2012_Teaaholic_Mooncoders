@@ -14,16 +14,6 @@ public class MoneyManager : MonoBehaviour, ICanSave
     [SerializeField] private float refreshRate = 0.1f;
     private float nextRefreshTime;
 
-    private void OnEnable()
-    {
-        SaveManager.RegisterCustom(this);
-    }
-
-    private void OnDisable()
-    {
-        SaveManager.UnregisterCustom(this);
-    }
-
     // Update is called once per frame
     void Update()
     {

@@ -170,6 +170,9 @@ public class PlayerMovementScript : MonoBehaviour
             pauseMenuController = FindObjectOfType<PauseMenuController>();
         if (pauseMenuController != null && pauseMenuController.isPaused) return;
         if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
+        if (SpecialNPC.isInAnyDialogue) return;
+        if (MarketSystem.isMarketOpen) return;
+        if (MarketSystem.isMarketSelectionOpen) return;
 
         HandleRotation();
 

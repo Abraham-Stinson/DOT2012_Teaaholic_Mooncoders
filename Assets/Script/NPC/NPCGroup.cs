@@ -8,7 +8,7 @@ using UnityEngine;
 public class NPCGroup : MonoBehaviour
 {
     [Header("Group Settings")]
-    [SerializeField] private float secondDrinkChance = 0.0f; // 30% chance for second round
+    [SerializeField] private float secondDrinkChance = 0.3f; // 30% chance for second round
 
     [Header("Patience Settings")]
     [SerializeField] private float groupPatienceTime = 120f; // Base patience time for the group

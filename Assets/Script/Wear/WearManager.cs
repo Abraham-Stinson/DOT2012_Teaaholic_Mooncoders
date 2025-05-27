@@ -20,16 +20,6 @@ public class WearManager : MonoBehaviour, ICanSave
     private float vignetteTimer;
     private float previousWear;
 
-    private void OnEnable()
-    {
-        SaveManager.RegisterCustom(this);
-    }
-
-    private void OnDisable()
-    {
-        SaveManager.UnregisterCustom(this);
-    }
-
     void Start()
     {
         if (postProcessVolume != null)

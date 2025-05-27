@@ -9636,7 +9636,7 @@ MonoBehaviour:
   saveKey: 
   savePosition: 1
   saveRotation: 1
-  saveScale: 0
+  saveScale: 1
   saveActiveState: 1
   saveLightSettings: 1
   saveRendererSettings: 1
