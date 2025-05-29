@@ -12,10 +12,6 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     [SerializeField] private NPCManager npcManagerScript; // Reference to NPC Manager
     [SerializeField] private WearManager wearManager; // Reference to NPC Manager
     [SerializeField] float surgeryMoney = 20000; // Reference to NPC Manager
-
-    [SerializeField] private Collider shopCollider;
-    [SerializeField] private LayerMask npcLayers;
-
     [Header("Player")]
     [SerializeField] private int howManyDaysPlayerPlay = 30;
     [SerializeField] private Player player;

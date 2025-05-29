@@ -30,13 +30,13 @@ public class TableBubbleSpawner : MonoBehaviour
         }
         else
         {
-            RemoveBubble(); // oyun verildiyse bubble'ý kaldýr
+            RemoveBubble(); // oyun verildiyse bubble'ï¿½ kaldï¿½r
         }
     }
 
     void SpawnBubble(string request)
     {
-        RemoveBubble(); // varsa öncekini sil
+        RemoveBubble(); // varsa ï¿½ncekini sil
 
         Vector3 pos = transform.position + Vector3.up * 6f;
         bubble = Instantiate(GameRequestUI.Instance.bubblePrefab, pos, Quaternion.identity, transform);

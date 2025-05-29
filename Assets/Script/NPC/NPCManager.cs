@@ -256,7 +256,7 @@ public class NPCManager : MonoBehaviour
         if (activeGroups.Contains(group))
         {
             activeGroups.Remove(group);
-            Destroy(group.gameObject, 0.5f); // Destroy the group after a short delay
+            Destroy(group.gameObject); // Destroy the group 
         }
     }
     

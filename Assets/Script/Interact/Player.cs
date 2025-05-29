@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Animator hotWaterAnimator;
     [SerializeField] private ParticleSystem tapSteamParticle;
     [SerializeField] private GameObject tapSteamParticleGO;
-    
+
 
     // Raycast cache
     private RaycastHit cachedHit;
@@ -106,18 +106,18 @@ public class Player : MonoBehaviour
             Debug.LogError("Player camera is null! Cannot perform raycast.");
             return;
         }
-        
+
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
             Debug.Log("F key pressed but no object hit by raycast");
             return;
         }
 
-        if (hit.collider.GetComponent<DeliveryBox>()!= null)
+        if (hit.collider.GetComponent<DeliveryBox>() != null)
         {
             Debug.Log("Delivery Box ile etkileşime geçildi");
             hit.collider.GetComponent<DeliveryBox>().interact();
-            return; 
+            return;
         }
 
         GameObject target = hit.collider.gameObject;
@@ -170,6 +170,8 @@ public class Player : MonoBehaviour
                 hit.collider.GetComponent<DoorTrigger>().interact();
                 return;
             }
+
+
 
             // Masa kontrolü
             TableController table = hit.collider.GetComponent<TableController>();
@@ -331,7 +333,7 @@ public class Player : MonoBehaviour
         if (target.CompareTag("Tea_Cup"))
         {
             var teaCupScript = target.GetComponent<Tea_Cup>();
-            var dirtyStatusScript= target.GetComponent<DirtyStatus>();
+            var dirtyStatusScript = target.GetComponent<DirtyStatus>();
             if (teaCupScript == null)
                 return;
             if (dirtyStatusScript.isDirty)
@@ -392,7 +394,7 @@ public class Player : MonoBehaviour
         // Check if cup is dirty before handling hot water interaction
         DirtyStatus dirtyStatus = inHandItem.GetComponent<DirtyStatus>();
         bool isDirty = dirtyStatus != null && dirtyStatus.isDirty;
-        
+
         if (target.CompareTag("Hot_Water"))
         {
             if (isDirty)
@@ -400,22 +402,22 @@ public class Player : MonoBehaviour
                 ShowUIMessage("Bardak kirli, önce yıkamalısın!", false);
                 return;
             }
-            
+
             bool canFillTea = teaCupScript.isFillTea && !teaCupScript.isFullTea;
             bool canFillOraletCoffee = teaCupScript.isFillOraletorCoffee && !teaCupScript.isFullOraletorCoffee;
             bool canFillKettle = false;
-            
+
             Kettle kettleScript = inHandItem.GetComponent<Kettle>();
             if (kettleScript != null && !kettleScript.isHaveHotWater)
             {
                 canFillKettle = true;
             }
-            
+
             // Sadece bir işlem yapılabilecekse animasyonu çal
             if (canFillTea || canFillOraletCoffee || canFillKettle)
             {
                 StartCoroutine(PlayHotWaterTapAnimation());
-                
+
                 if (canFillTea)
                 {
                     teaCupScript.FillHotWaterToTea();
@@ -496,7 +498,7 @@ public class Player : MonoBehaviour
             Kettle kettleScript = target.GetComponent<Kettle>();
             if (kettleScript == null)
                 return;
-                
+
             // Check if kettle is dirty
             DirtyStatus dirtyStatus = target.GetComponent<DirtyStatus>();
             if (dirtyStatus != null && dirtyStatus.isDirty)
@@ -545,7 +547,7 @@ public class Player : MonoBehaviour
             Debug.LogError("Player camera is null! Cannot perform raycast.");
             return;
         }
-        
+
         if (!Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
         {
             return;
@@ -680,7 +682,7 @@ public class Player : MonoBehaviour
         // Default state - hide interaction UI elements if not needed
         e_interact.SetActive(false);
         f_interact.SetActive(false);
-        
+
         // Reset contextual message flag at the start of each frame
         // This will allow non-contextual messages to stay on screen until their timer expires
         if (isContextualMessage)
@@ -688,14 +690,14 @@ public class Player : MonoBehaviour
             isContextualMessage = false;
             mainInfoUI.SetActive(false);
         }
-        
+
         // Raycast'i her frame yapmak yerine interval'da yap
         float currentTime = Time.time;
         if (currentTime - lastRaycastTime >= RAYCAST_INTERVAL)
         {
             hitCacheValid = Physics.Raycast(playerCam.position, playerCam.forward, out cachedHit, rayCastRange);
             lastRaycastTime = currentTime;
-            
+
             // If no hit, clear any previous highlight
             if (!hitCacheValid && lastHighlightedObject != null)
             {
@@ -708,7 +710,7 @@ public class Player : MonoBehaviour
         if (hitCacheValid)
         {
             hit = cachedHit;
-            
+
             if (lastHighlightedObject != null && (hitCacheValid == false || cachedHit.collider.gameObject != lastHighlightedObject))
             {
                 lastHighlightedObject.GetComponent<HighLight>()?.ToggleHighLight(false);
@@ -878,15 +880,35 @@ public class Player : MonoBehaviour
             ShowUIMessage("", true);
             e_interact.SetActive(true);
         }
+
+
+
+
         if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && cachedHit.collider.GetComponent<IInteractable>() != null)
         {
             if (cachedHit.collider.GetComponent<DoorTrigger>())
             {
                 if (dayNightCycleControllerScript.isDayFinished && !dayNightCycleControllerScript.IsThereAnyNPC())
                 {
-                    f_interact.SetActive(true); 
-                    return;
+                    f_interact.SetActive(true);
                 }
+                return;
+            }
+
+            else if (cachedHit.collider.CompareTag("Lamb_Switch"))
+            {
+                lastHighlightedObject = cachedHit.collider.gameObject;
+                ShowUIMessage("", true);
+                f_interact.SetActive(true);
+                return;
+            }
+
+            else if (cachedHit.collider.CompareTag("Handbook"))
+            {
+                lastHighlightedObject = cachedHit.collider.gameObject;
+                ShowUIMessage("", true);
+                f_interact.SetActive(true);
+                return;
             }
             else
             {
@@ -894,16 +916,10 @@ public class Player : MonoBehaviour
                 lastHighlightedObject = cachedHit.collider.gameObject;
                 ShowUIMessage("", true);
                 f_interact.SetActive(true);
+                return;
             }
-            
         }
-        if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && cachedHit.collider.CompareTag("Handbook"))
-        {
-            lastHighlightedObject = cachedHit.collider.gameObject;
-            ShowUIMessage("", true);
-            f_interact.SetActive(true);
-        }
-        
+
         if (hitCacheValid/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
         {
             if (inHandItem != null)
@@ -927,23 +943,26 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
-        {//KETTLE DAN ÇAY KOYMA UI
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Tea_Cup" && isPicked)
+        {//TEA CUP KONTROLÜ
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (hit.collider.CompareTag("Tea_Cup"))
+                if (hit.collider.CompareTag("Hot_Water") && (inHandItem.GetComponent<Tea_Cup>().isFillOraletorCoffee || inHandItem.GetComponent<Tea_Cup>().isFillTea))
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
                     ShowUIMessage("", true);
                     f_interact.SetActive(true);
+                    return;
                 }
             }
-            
+        }
 
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        {//KETTLE DAN ÇAY KOYMA UI
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
-                if (hit.collider.CompareTag("Hot_Water") /*&& inHandItem.GetComponent<Kettle>().isHaveTea*/)
+                if (hit.collider.CompareTag("Tea_Cup"))
                 {
                     hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
                     lastHighlightedObject = hit.collider.gameObject;
@@ -1047,42 +1066,42 @@ public class Player : MonoBehaviour
     {
         // Set the contextual flag
         isContextualMessage = isContextual;
-        
+
         // If a previous non-contextual message coroutine is running and this is not a contextual message, stop it
         if (currentMessageCoroutine != null && !isContextualMessage)
         {
             StopCoroutine(currentMessageCoroutine);
             currentMessageCoroutine = null;
         }
-        
+
         // If message is empty, just hide the UI
         if (string.IsNullOrEmpty(message))
         {
             mainInfoUI.SetActive(false);
             return;
         }
-        
+
         // Show message
         mainInfoUI.SetActive(true);
         mainInfoUIText.text = message;
-        
+
         // Only start the hide coroutine for non-contextual messages
         if (!isContextual && currentMessageCoroutine == null)
         {
             currentMessageCoroutine = StartCoroutine(HideMessageAfterDelay(3.0f));
         }
     }
-    
+
     private IEnumerator HideMessageAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         // Only hide if it's still not a contextual message
         if (!isContextualMessage && mainInfoUI != null)
         {
             mainInfoUI.SetActive(false);
         }
-        
+
         currentMessageCoroutine = null;
     }
 
@@ -1154,11 +1173,19 @@ public class Player : MonoBehaviour
 
     IEnumerator PlayHotWaterTapAnimation()
     {
-        tapSteamParticle.Play(true);
-        hotWaterAnimator.SetBool("isUseHotWater", true);
-        yield return new WaitForSeconds(1f);
-        tapSteamParticle.Stop(true);
-        hotWaterAnimator.SetBool("isUseHotWater", false);
+        if (tapSteamParticle != null)
+        {
+            tapSteamParticle.Clear();
+            tapSteamParticle.Play();
+            hotWaterAnimator.SetBool("isUseHotWater", true);
+            yield return new WaitForSeconds(1f);
+            tapSteamParticle.Stop();
+            hotWaterAnimator.SetBool("isUseHotWater", false);
+        }
+        else
+        {
+            Debug.LogError("Tap Steam Particle System is not assigned!");
+        }
     }
 
     private void OnDestroy()
@@ -1169,24 +1196,24 @@ public class Player : MonoBehaviour
             StopCoroutine(currentMessageCoroutine);
             currentMessageCoroutine = null;
         }
-        
+
         if (cleaningCoroutine != null)
         {
             StopCoroutine(cleaningCoroutine);
             cleaningCoroutine = null;
         }
-        
+
         // Unsubscribe from input events to prevent memory leaks
         if (pickAndPutInput != null && pickAndPutInput.action != null)
         {
             pickAndPutInput.action.performed -= PickAndPut;
         }
-        
+
         if (useInput != null && useInput.action != null)
         {
             useInput.action.performed -= Use;
         }
-        
+
         if (useHoldInput != null && useHoldInput.action != null)
         {
             useHoldInput.action.performed -= UseHold;
