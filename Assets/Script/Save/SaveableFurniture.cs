@@ -26,8 +26,8 @@ public class SaveableFurniture : MonoBehaviour
         {
             if (string.IsNullOrEmpty(tag)) continue;
             
-            GameObject[] furniture = GameObject.FindGameObjectsWithTag(tag);
-            foreach (GameObject obj in furniture)
+            GameObject[] tags = GameObject.FindGameObjectsWithTag(tag);
+            foreach (GameObject obj in tags)
             {
                 // Eğer obje zaten Saveable component'ine sahip değilse ekle
                 if (obj.GetComponent<Saveable>() == null)

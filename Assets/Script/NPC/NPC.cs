@@ -11,6 +11,7 @@ public class NPC : MonoBehaviour, IInteractable
     private Coroutine currentSittingCoroutine;
     private Coroutine currentGetUpCoroutine;
     private Coroutine currentPatienceCoroutine;
+    private Coroutine exitTimeoutCoroutine; // Yeni coroutine referansı
 
     [Header("NPC Settings")]
     [SerializeField] private float walkSpeed = 3f;
@@ -356,13 +357,13 @@ public class NPC : MonoBehaviour, IInteractable
                 if (isGroupLeader && cashierPosition != null && !_isPaying)
                 {
                     Debug.Log($"[NPC] {gameObject.name} (lider) kasaya gidiyor");
-                    ShowMessageAboveNPC("Kasaya gidiyor");
+                    //ShowMessageAboveNPC("Kasaya gidiyor");
                     MoveTo(cashierPosition, OnArrivedAtCashier);
                 }
                 else if (exitPosition != null)
                 {
                     Debug.Log($"[NPC] {gameObject.name} çıkışa gidiyor");
-                    ShowMessageAboveNPC("Dükkandan çıkıyor");
+                    //ShowMessageAboveNPC("Dükkandan çıkıyor");
                     MoveTo(exitPosition, OnArrivedAtExit);
                 }
                 else
@@ -381,13 +382,13 @@ public class NPC : MonoBehaviour, IInteractable
             if (isGroupLeader && cashierPosition != null && !_isPaying)
             {
                 Debug.Log($"[NPC] {gameObject.name} (lider) kasaya gidiyor");
-                ShowMessageAboveNPC("Kasaya gidiyor");
+                //ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
             }
             else if (exitPosition != null)
             {
                 Debug.Log($"[NPC] {gameObject.name} çıkışa gidiyor");
-                ShowMessageAboveNPC("Dükkandan çıkıyor");
+                //ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
             }
             else
@@ -428,7 +429,7 @@ public class NPC : MonoBehaviour, IInteractable
             StartCoroutine(GetUpProcess(() =>
             {
                 Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi kasaya gidiyor");
-                ShowMessageAboveNPC("Kasaya gidiyor");
+                //ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
             }));
         }
@@ -436,7 +437,7 @@ public class NPC : MonoBehaviour, IInteractable
         {
             // Already standing
             Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan kasaya gidebilir");
-            ShowMessageAboveNPC("Kasaya gidiyor");
+            //ShowMessageAboveNPC("Kasaya gidiyor");
             MoveTo(cashierPosition, OnArrivedAtCashier);
         }
     }
@@ -464,16 +465,28 @@ public class NPC : MonoBehaviour, IInteractable
             StartCoroutine(GetUpProcess(() =>
             {
                 Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi çıkışa gidiyor");
-                ShowMessageAboveNPC("Dükkandan çıkıyor");
+                //ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
+                // Çıkış timeout'unu başlat
+                if (exitTimeoutCoroutine != null)
+                {
+                    StopCoroutine(exitTimeoutCoroutine);
+                }
+                exitTimeoutCoroutine = StartCoroutine(ExitTimeout());
             }));
         }
         else
         {
             // Already standing
             Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan çıkışa gidebilir");
-            ShowMessageAboveNPC("Dükkandan çıkıyor");
+            //ShowMessageAboveNPC("Dükkandan çıkıyor");
             MoveTo(exitPosition, OnArrivedAtExit);
+            // Çıkış timeout'unu başlat
+            if (exitTimeoutCoroutine != null)
+            {
+                StopCoroutine(exitTimeoutCoroutine);
+            }
+            exitTimeoutCoroutine = StartCoroutine(ExitTimeout());
         }
     }
     
@@ -513,7 +526,7 @@ public class NPC : MonoBehaviour, IInteractable
 
         // Toplam hesabı göster
         float finalBill = group != null ? group.GetTotalBill() : totalBill;
-        ShowMessageAboveNPC($"{finalBill} TL ödeme yapıyor");
+        //ShowMessageAboveNPC($"{finalBill} TL ödeme yapıyor");
 
         // Start patience timer for payment - give a longer timeout for payment
         StartCoroutine(PatienceCountdown(() =>
@@ -522,7 +535,7 @@ public class NPC : MonoBehaviour, IInteractable
             Debug.Log($"[NPC] {gameObject.name} için ödeme süresi doldu, ödemeden çıkıyor");
             _isPaying = false;
             animator?.SetBool(IsIdle, false);
-            ShowMessageAboveNPC("Ödemeden vazgeçti");
+            //ShowMessageAboveNPC("Ödemeden vazgeçti");
             MoveTo(exitPosition, OnArrivedAtExit);
         }, 40f)); // 40 saniye - ödemede daha uzun sabır süresi
     }
@@ -530,7 +543,7 @@ public class NPC : MonoBehaviour, IInteractable
     private void OnArrivedAtExit()
     {
         Debug.Log($"[NPC] {gameObject.name} çıkış noktasına vardı");
-        ShowMessageAboveNPC("Dükkandan çıktı");
+        //ShowMessageAboveNPC("Dükkandan çıktı");
 
         // Çıkış noktasında görsel bir efekt (fade-out) uygula
         StartCoroutine(FadeOutAndDestroy());
@@ -638,7 +651,7 @@ public class NPC : MonoBehaviour, IInteractable
 
         float finalBill = group != null ? group.GetTotalBill() : totalBill;
         Debug.Log($"[NPC] {gameObject.name}: {finalBill} TL ödeme işlemi tamamlandı!");
-        ShowMessageAboveNPC($"{finalBill} TL ödeme tamamlandı");
+        //ShowMessageAboveNPC($"{finalBill} TL ödeme tamamlandı");
         _isPaying = false;
         // Reset idle animation
         animator?.SetBool(IsIdle, false);
@@ -744,7 +757,7 @@ public class NPC : MonoBehaviour, IInteractable
         // Go to exit
         if (exitPosition != null)
         {
-            ShowMessageAboveNPC("Dükkandan çıkıyor");
+            //ShowMessageAboveNPC("Dükkandan çıkıyor");
             MoveTo(exitPosition, OnArrivedAtExit);
         }
         else
@@ -834,7 +847,7 @@ public class NPC : MonoBehaviour, IInteractable
             // Correct drink served
             Debug.Log("[NPC] DOĞRU İÇECEK SERVISI BAŞARILI!");
             hasDrink = true;
-            ShowMessageAboveNPC("İçecek başarıyla servis edildi!");
+            //ShowMessageAboveNPC("İçecek başarıyla servis edildi!");
 
 
             // İçecek ücretini ekle
@@ -886,7 +899,7 @@ public class NPC : MonoBehaviour, IInteractable
         {
             // Wrong drink
             Debug.Log($"[NPC] YANLIŞ İÇECEK! İstenilen: {requestedDrink}, Verilen: {teaCup.inCup}");
-            ShowMessageAboveNPC($"Yanlış içecek - müşteri {requestedDrink} istiyor");
+            //ShowMessageAboveNPC($"Yanlış içecek - müşteri {requestedDrink} istiyor");
         }
     }
     // Place the cup on the table in front of the NPC
@@ -1116,7 +1129,7 @@ public class NPC : MonoBehaviour, IInteractable
             StopCoroutine(currentGetUpCoroutine);
         }
 
-        ShowMessageAboveNPC("Kalkıyor");
+        //ShowMessageAboveNPC("Kalkıyor");
         // Play getting up animation
         animator?.SetBool(IsSitting, false);
 
@@ -1216,6 +1229,7 @@ public class NPC : MonoBehaviour, IInteractable
         if (currentSittingCoroutine != null) StopCoroutine(currentSittingCoroutine);
         if (currentGetUpCoroutine != null) StopCoroutine(currentGetUpCoroutine);
         if (currentPatienceCoroutine != null) StopCoroutine(currentPatienceCoroutine);
+        if (exitTimeoutCoroutine != null) StopCoroutine(exitTimeoutCoroutine);
 
         // NavMeshAgent'ı temizle
         if (navAgent != null)
@@ -1224,4 +1238,21 @@ public class NPC : MonoBehaviour, IInteractable
         }
     }
 
+    // Yeni timeout coroutine'i
+    private IEnumerator ExitTimeout()
+    {
+        Debug.Log($"[NPC] {gameObject.name} için 30 saniyelik çıkış timeout'u başlatıldı");
+        yield return new WaitForSeconds(30f);
+
+        // Eğer NPC hala sahnede ise ve çıkış noktasına ulaşmamışsa
+        if (gameObject != null && isExiting)
+        {
+            Debug.Log($"[NPC] {gameObject.name} için çıkış timeout'u doldu, NPC yok ediliyor");
+            if (group != null)
+            {
+                group.OnNPCLeft(this);
+            }
+            Destroy(gameObject);
+        }
+    }
 }

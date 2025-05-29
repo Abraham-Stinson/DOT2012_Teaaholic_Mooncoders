@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 {
     SpecialNPC specialNPC;
     PlayerMovementScript playerMovementScript;
+    public DayNightCycleController dayNightCycleControllerScript;
     public GarbageScript garbageScript;
     [Header("Player")]
     [SerializeField] public Transform playerCam;
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Animator hotWaterAnimator;
     [SerializeField] private ParticleSystem tapSteamParticle;
     [SerializeField] private GameObject tapSteamParticleGO;
+    
 
     // Raycast cache
     private RaycastHit cachedHit;
@@ -878,10 +880,22 @@ public class Player : MonoBehaviour
         }
         if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && cachedHit.collider.GetComponent<IInteractable>() != null)
         {
-            cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
-            lastHighlightedObject = cachedHit.collider.gameObject;
-            ShowUIMessage("", true);
-            f_interact.SetActive(true);
+            if (cachedHit.collider.GetComponent<DoorTrigger>())
+            {
+                if (dayNightCycleControllerScript.isDayFinished && !dayNightCycleControllerScript.IsThereAnyNPC())
+                {
+                    f_interact.SetActive(true); 
+                    return;
+                }
+            }
+            else
+            {
+                cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
+                lastHighlightedObject = cachedHit.collider.gameObject;
+                ShowUIMessage("", true);
+                f_interact.SetActive(true);
+            }
+            
         }
         if (hitCacheValid && ((1 << cachedHit.collider.gameObject.layer) & useableLayer.value) != 0 && !isPicked && cachedHit.collider.CompareTag("Handbook"))
         {
@@ -889,7 +903,7 @@ public class Player : MonoBehaviour
             ShowUIMessage("", true);
             f_interact.SetActive(true);
         }
-
+        
         if (hitCacheValid/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
         {
             if (inHandItem != null)

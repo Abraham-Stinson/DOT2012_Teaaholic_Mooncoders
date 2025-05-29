@@ -9,9 +9,12 @@ using UnityEngine.UI;
 public class DayNightCycleController : MonoBehaviour, ICanSave
 {
     [SerializeField] private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
-    [SerializeField] NPCManager npcManagerScript; // Reference to NPC Manager
-    [SerializeField] WearManager wearManager; // Reference to NPC Manager
+    [SerializeField] private NPCManager npcManagerScript; // Reference to NPC Manager
+    [SerializeField] private WearManager wearManager; // Reference to NPC Manager
     [SerializeField] float surgeryMoney = 20000; // Reference to NPC Manager
+
+    [SerializeField] private Collider shopCollider;
+    [SerializeField] private LayerMask npcLayers;
 
     [Header("Player")]
     [SerializeField] private int howManyDaysPlayerPlay = 30;
@@ -43,7 +46,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     [SerializeField] private int hour;
     [SerializeField] private int minute;
     private float timer = 0f;
-    private bool isDayFinished = false;
+    public bool isDayFinished = false;
     private bool npcSpawningDisabled = false; // Track if NPC spawning is disabled
 
     private const float sunrise = 6f;
@@ -58,6 +61,8 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     private float finalMoney;
     private float finalWear;
+    
+    public bool endOfDayScreen = false;
     
     
     private void Start()
@@ -216,20 +221,21 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     // Kapı ile etkileşim olduğunda çağrılacak
     public void OnDoorInteraction()
     {
-        if (!isDayFinished)
-        {
-            Debug.Log("Gün bitmedi");
-            return;
-        }
         if (IsThereAnyNPC())
         {
             Debug.Log("NPC var");
+            return;
+        }
+        if (!isDayFinished)
+        {
+            Debug.Log("Gün bitmedi");
             return;
         }
 
         Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
         Cursor.visible = true; // Fare imlecini görünür yap
         Time.timeScale = 0f; // Zamanı durdur
+        endOfDayScreen = true;//disable control
         endOfDayScreenUI.SetActive(true);
         totalMoneyEarnedText.color = Color.green;
         totalMoneySpentText.color = Color.red;
@@ -240,7 +246,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
         //Gün sonu ekranı gelsin ve toplam kazanılan para ve toplam harcanan para gösterilsin ve farkı alınsın
 
-
+        return;
 
     }
     public void OnNextDayInteraction()
@@ -250,6 +256,264 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         hour = startHour;
         minute = 0;
         timer = 0f;
+
+        IsEndGame();
+        
+        SaveGame();
+        //Oyuncuyu gün başlatma pozisyonuna koy
+        playerObject.transform.position = playerDayStartPosition.position;
+        playerObject.transform.rotation = playerDayStartPosition.rotation;
+
+        isDayFinished = false;
+        Time.timeScale = 1f; // Zamanı başlat
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        Mouse.current.WarpCursorPosition(Vector2.zero);
+        endOfDayScreenUI.SetActive(false);
+        endOfDayScreen = false;//disable control
+        // Yeni gün başladığında müşteri spawning'i tekrar aktif et
+        if (npcSpawningDisabled && npcManager != null)
+        {
+            npcSpawningDisabled = false;
+            npcManager.enabled = true;
+            Debug.Log("Yeni gün başladı - Müşteri spawning tekrar aktif");
+        }
+
+        UpdateTimeUI();
+        UpdateSunLight();
+    }
+
+    
+
+    public int GetCurrentDay()
+    {
+        return day;
+    }
+
+    public int GetCurrentHour()
+    {
+        return hour;
+    }
+
+    private void SaveGame()
+    {
+        // Zaman bilgileri
+        PlayerPrefs.SetInt("SavedDay", day);
+        PlayerPrefs.SetInt("SavedHour", hour);
+        PlayerPrefs.SetInt("SavedMinute", minute);
+        PlayerPrefs.SetFloat("SavedMoney", moneyManager.GetMoney());
+        PlayerPrefs.SetFloat("SavedWear", wearManager.GetWear());
+
+        // Oyuncu pozisyonu
+        if (playerObject != null)
+        {
+            Vector3 playerPos = playerObject.transform.position;
+            PlayerPrefs.SetFloat("PlayerPosX", playerPos.x);
+            PlayerPrefs.SetFloat("PlayerPosY", playerPos.y);
+            PlayerPrefs.SetFloat("PlayerPosZ", playerPos.z);
+
+            Vector3 playerRot = playerObject.transform.eulerAngles;
+            PlayerPrefs.SetFloat("PlayerRotX", playerRot.x);
+            PlayerPrefs.SetFloat("PlayerRotY", playerRot.y);
+            PlayerPrefs.SetFloat("PlayerRotZ", playerRot.z);
+        }
+
+        // Oyun durumu
+        PlayerPrefs.SetInt("IsDayFinished", isDayFinished ? 1 : 0);
+        PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
+
+        // Money ve Wear değerlerini kaydet
+        if (moneyManager != null)
+        {
+            moneyManager.SaveData();
+        }
+
+        // Tüm Saveable objeleri kaydet
+        SaveManager.SaveAll();
+
+        // Kayıtları diske yaz
+        PlayerPrefs.Save();
+
+        Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
+    }
+
+    public void LoadData()
+    {
+        if (PlayerPrefs.HasKey("SavedDay"))
+        {
+            day = PlayerPrefs.GetInt("SavedDay");
+            hour = PlayerPrefs.GetInt("SavedHour");
+            minute = PlayerPrefs.GetInt("SavedMinute");
+            moneyManager.money= PlayerPrefs.GetFloat("SavedMoney");
+            wearManager.wear= PlayerPrefs.GetFloat("SavedWear");
+            isDayFinished = PlayerPrefs.GetInt("IsDayFinished", 0) == 1;
+            npcSpawningDisabled = PlayerPrefs.GetInt("NPCSpawningDisabled", 0) == 1;
+
+            // Eğer gece yarısı ise yeni güne geç
+            if (hour == 0 && minute == 0)
+            {
+                day++;
+                hour = startHour;
+                minute = 0;
+                isDayFinished = false;
+            }
+
+            // Zamanın akması için
+            isDayFinished = false; // Değeri zorla false yapıyoruz
+            Time.timeScale = 1f;
+
+            Debug.Log($"Oyun yüklendi - Gün: {day}, Saat: {hour}:{minute}, Gün Bitti: {isDayFinished}, TimeScale: {Time.timeScale}");
+        }
+        else
+        {
+            // İlk kez oynanıyor
+            day = 1;
+            hour = startHour;
+            minute = 0;
+            isDayFinished = false;
+            Time.timeScale = 1f;
+            Debug.Log("Yeni oyun başlatıldı");
+        }
+
+        LoadPlayerPosition();
+        UpdateTimeUI();
+        UpdateSunLight();
+    }
+
+    private void LoadPlayerPosition()
+    {
+        if (PlayerPrefs.HasKey("PlayerPosX") && playerObject != null)
+        {
+            Vector3 position = new Vector3(
+                PlayerPrefs.GetFloat("PlayerPosX"),
+                PlayerPrefs.GetFloat("PlayerPosY"),
+                PlayerPrefs.GetFloat("PlayerPosZ")
+            );
+
+            Vector3 rotation = new Vector3(
+                PlayerPrefs.GetFloat("PlayerRotX"),
+                PlayerPrefs.GetFloat("PlayerRotY"),
+                PlayerPrefs.GetFloat("PlayerRotZ")
+            );
+
+            playerObject.transform.position = position;
+            playerObject.transform.eulerAngles = rotation;
+
+            Debug.Log("Oyuncu pozisyonu yüklendi");
+        }
+    }
+
+    void UpdateNPCSpawnTime()
+    {
+        if (day < 7)
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[0];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[0];
+        }
+        else if (day < 16)
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[1];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[1];
+        }
+        else if (day < 25)
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[2];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[2];
+        }
+        else
+        {
+            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[3];
+            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[3];
+        }
+    }
+
+    public void SaveData()
+    {
+        // Zaman bilgileri
+        PlayerPrefs.SetInt("SavedDay", day);
+        PlayerPrefs.SetInt("SavedHour", hour);
+        PlayerPrefs.SetInt("SavedMinute", minute);
+
+        // Oyuncu pozisyonu
+        if (playerObject != null)
+        {
+            Vector3 playerPos = playerObject.transform.position;
+            PlayerPrefs.SetFloat("PlayerPosX", playerPos.x);
+            PlayerPrefs.SetFloat("PlayerPosY", playerPos.y);
+            PlayerPrefs.SetFloat("PlayerPosZ", playerPos.z);
+
+            Vector3 playerRot = playerObject.transform.eulerAngles;
+            PlayerPrefs.SetFloat("PlayerRotX", playerRot.x);
+            PlayerPrefs.SetFloat("PlayerRotY", playerRot.y);
+            PlayerPrefs.SetFloat("PlayerRotZ", playerRot.z);
+        }
+
+        // Oyun durumu
+        PlayerPrefs.SetInt("IsDayFinished", isDayFinished ? 1 : 0);
+        PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
+
+        Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
+    }
+    
+    public bool IsThereAnyNPC()
+    {
+        bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
+        bool hasPrivateNPCs = GameObject.FindGameObjectsWithTag("NPC_Private").Length > 0;
+
+        if (hasCustomers || hasPrivateNPCs)
+        {
+            Debug.Log("NPC var");
+            return true;
+        }
+
+        Debug.Log("NPC yok");
+        return false;
+    }
+
+    private void WomenSurvives(bool isMoneyGivenByChairTable)
+    {
+        if (isMoneyGivenByChairTable)
+        {
+            SceneManager.LoadScene("FinalScene_2(happy)");
+        }
+        else
+        {
+            SceneManager.LoadScene("FinalScene_1(happy)");
+        }
+
+
+    }
+    private void WomenDies(int endWays)
+    {
+        if (endWays == 3)//Para var ama kadın öldü
+        {
+            SceneManager.LoadScene("FinalScene_3(sad)");
+        }
+        else if (endWays == 4)//Para var ama çalındı ve kadın öldü
+        {
+            SceneManager.LoadScene("FinalScene_4(sad)");
+        }
+        else if (endWays == 5)//para yok ve kadın öldü
+        {
+            SceneManager.LoadScene("FinalScene_5(sad)");
+        }
+        else if (endWays == 6)//para yok yardım edildi ama kadın öldü
+        {
+            SceneManager.LoadScene("FinalScene_6(sad)");
+        }
+    }
+
+    // Added public getter for npcSpawningDisabled flag
+    public bool IsNPCSpawningDisabled()
+    {
+        return npcSpawningDisabled;
+    }
+
+    void IsEndGame()
+    {
+        if(day<=howManyDaysPlayerPlay) return;
+        
         if (day > howManyDaysPlayerPlay)
         {
             //Oyun burada bitiyor 
@@ -423,250 +687,5 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
             return;
         }
-
-        SaveGame();
-        //Oyuncuyu gün başlatma pozisyonuna koy
-        playerObject.transform.position = playerDayStartPosition.position;
-        playerObject.transform.rotation = playerDayStartPosition.rotation;
-
-        isDayFinished = false;
-        Time.timeScale = 1f; // Zamanı başlat
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        Mouse.current.WarpCursorPosition(Vector2.zero);
-        endOfDayScreenUI.SetActive(false);
-
-        // Yeni gün başladığında müşteri spawning'i tekrar aktif et
-        if (npcSpawningDisabled && npcManager != null)
-        {
-            npcSpawningDisabled = false;
-            npcManager.enabled = true;
-            Debug.Log("Yeni gün başladı - Müşteri spawning tekrar aktif");
-        }
-
-        UpdateTimeUI();
-        UpdateSunLight();
     }
-
-    bool IsThereAnyNPC()
-    {
-        bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
-        bool hasPrivateNPCs = GameObject.FindGameObjectsWithTag("NPC_Private").Length > 0;
-
-        if (hasCustomers || hasPrivateNPCs)
-        {
-            Debug.Log("NPC var");
-            return true;
-        }
-
-        Debug.Log("NPC yok");
-        return false;
-    }
-
-    public int GetCurrentDay()
-    {
-        return day;
-    }
-
-    public int GetCurrentHour()
-    {
-        return hour;
-    }
-
-    private void SaveGame()
-    {
-        // Zaman bilgileri
-        PlayerPrefs.SetInt("SavedDay", day);
-        PlayerPrefs.SetInt("SavedHour", hour);
-        PlayerPrefs.SetInt("SavedMinute", minute);
-
-        // Oyuncu pozisyonu
-        if (playerObject != null)
-        {
-            Vector3 playerPos = playerObject.transform.position;
-            PlayerPrefs.SetFloat("PlayerPosX", playerPos.x);
-            PlayerPrefs.SetFloat("PlayerPosY", playerPos.y);
-            PlayerPrefs.SetFloat("PlayerPosZ", playerPos.z);
-
-            Vector3 playerRot = playerObject.transform.eulerAngles;
-            PlayerPrefs.SetFloat("PlayerRotX", playerRot.x);
-            PlayerPrefs.SetFloat("PlayerRotY", playerRot.y);
-            PlayerPrefs.SetFloat("PlayerRotZ", playerRot.z);
-        }
-
-        // Oyun durumu
-        PlayerPrefs.SetInt("IsDayFinished", isDayFinished ? 1 : 0);
-        PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
-
-        // Money ve Wear değerlerini kaydet
-        if (moneyManager != null)
-        {
-            moneyManager.SaveData();
-        }
-
-        // Tüm Saveable objeleri kaydet
-        SaveManager.SaveAll();
-
-        // Kayıtları diske yaz
-        PlayerPrefs.Save();
-
-        Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
-    }
-
-    public void LoadData()
-    {
-        if (PlayerPrefs.HasKey("SavedDay"))
-        {
-            day = PlayerPrefs.GetInt("SavedDay");
-            hour = PlayerPrefs.GetInt("SavedHour");
-            minute = PlayerPrefs.GetInt("SavedMinute");
-            isDayFinished = PlayerPrefs.GetInt("IsDayFinished", 0) == 1;
-            npcSpawningDisabled = PlayerPrefs.GetInt("NPCSpawningDisabled", 0) == 1;
-
-            // Eğer gece yarısı ise yeni güne geç
-            if (hour == 0 && minute == 0)
-            {
-                day++;
-                hour = startHour;
-                minute = 0;
-                isDayFinished = false;
-            }
-
-            // Zamanın akması için
-            isDayFinished = false; // Değeri zorla false yapıyoruz
-            Time.timeScale = 1f;
-
-            Debug.Log($"Oyun yüklendi - Gün: {day}, Saat: {hour}:{minute}, Gün Bitti: {isDayFinished}, TimeScale: {Time.timeScale}");
-        }
-        else
-        {
-            // İlk kez oynanıyor
-            day = 1;
-            hour = startHour;
-            minute = 0;
-            isDayFinished = false;
-            Time.timeScale = 1f;
-            Debug.Log("Yeni oyun başlatıldı");
-        }
-
-        LoadPlayerPosition();
-        UpdateTimeUI();
-        UpdateSunLight();
-    }
-
-    private void LoadPlayerPosition()
-    {
-        if (PlayerPrefs.HasKey("PlayerPosX") && playerObject != null)
-        {
-            Vector3 position = new Vector3(
-                PlayerPrefs.GetFloat("PlayerPosX"),
-                PlayerPrefs.GetFloat("PlayerPosY"),
-                PlayerPrefs.GetFloat("PlayerPosZ")
-            );
-
-            Vector3 rotation = new Vector3(
-                PlayerPrefs.GetFloat("PlayerRotX"),
-                PlayerPrefs.GetFloat("PlayerRotY"),
-                PlayerPrefs.GetFloat("PlayerRotZ")
-            );
-
-            playerObject.transform.position = position;
-            playerObject.transform.eulerAngles = rotation;
-
-            Debug.Log("Oyuncu pozisyonu yüklendi");
-        }
-    }
-
-    void UpdateNPCSpawnTime()
-    {
-        if (day < 7)
-        {
-            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[0];
-            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[0];
-        }
-        else if (day < 16)
-        {
-            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[1];
-            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[1];
-        }
-        else if (day < 25)
-        {
-            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[2];
-            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[2];
-        }
-        else
-        {
-            npcManagerScript.minSpawnDelay = npcManagerScript.minSpawnArray[3];
-            npcManagerScript.maxSpawnDelay = npcManagerScript.maxSpawnArray[3];
-        }
-    }
-
-    public void SaveData()
-    {
-        // Zaman bilgileri
-        PlayerPrefs.SetInt("SavedDay", day);
-        PlayerPrefs.SetInt("SavedHour", hour);
-        PlayerPrefs.SetInt("SavedMinute", minute);
-
-        // Oyuncu pozisyonu
-        if (playerObject != null)
-        {
-            Vector3 playerPos = playerObject.transform.position;
-            PlayerPrefs.SetFloat("PlayerPosX", playerPos.x);
-            PlayerPrefs.SetFloat("PlayerPosY", playerPos.y);
-            PlayerPrefs.SetFloat("PlayerPosZ", playerPos.z);
-
-            Vector3 playerRot = playerObject.transform.eulerAngles;
-            PlayerPrefs.SetFloat("PlayerRotX", playerRot.x);
-            PlayerPrefs.SetFloat("PlayerRotY", playerRot.y);
-            PlayerPrefs.SetFloat("PlayerRotZ", playerRot.z);
-        }
-
-        // Oyun durumu
-        PlayerPrefs.SetInt("IsDayFinished", isDayFinished ? 1 : 0);
-        PlayerPrefs.SetInt("NPCSpawningDisabled", npcSpawningDisabled ? 1 : 0);
-
-        Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
-    }
-
-    private void WomenSurvives(bool isMoneyGivenByChairTable)
-    {
-        if (isMoneyGivenByChairTable)
-        {
-            SceneManager.LoadScene("FinalScene_2(happy)");
-        }
-        else
-        {
-            SceneManager.LoadScene("FinalScene_1(happy)");
-        }
-
-
-    }
-    private void WomenDies(int endWays)
-    {
-        if (endWays == 3)//Para var ama kadın öldü
-        {
-            SceneManager.LoadScene("FinalScene_3(sad)");
-        }
-        else if (endWays == 4)//Para var ama çalındı ve kadın öldü
-        {
-            SceneManager.LoadScene("FinalScene_4(sad)");
-        }
-        else if (endWays == 5)//para yok ve kadın öldü
-        {
-            SceneManager.LoadScene("FinalScene_5(sad)");
-        }
-        else if (endWays == 6)//para yok yardım edildi ama kadın öldü
-        {
-            SceneManager.LoadScene("FinalScene_6(sad)");
-        }
-    }
-
-    // Added public getter for npcSpawningDisabled flag
-    public bool IsNPCSpawningDisabled()
-    {
-        return npcSpawningDisabled;
-    }
-
 }

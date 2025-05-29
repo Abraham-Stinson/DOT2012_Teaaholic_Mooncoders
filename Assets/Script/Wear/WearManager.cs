@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class WearManager : MonoBehaviour, ICanSave
 {
-    [SerializeField, Min(1f)][Range(1f, 100f)] private float wear = 0;
+    [SerializeField, Min(1f)][Range(1f, 100f)] public float wear = 0;
     [Header("UI Settings")]
     [SerializeField] private TextMeshProUGUI wearText;
     [SerializeField] private float refreshRate = 0.1f;

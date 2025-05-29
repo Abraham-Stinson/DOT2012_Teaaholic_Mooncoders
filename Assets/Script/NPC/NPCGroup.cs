@@ -11,7 +11,7 @@ public class NPCGroup : MonoBehaviour
     [SerializeField] private float secondDrinkChance = 0.3f; // 30% chance for second round
 
     [Header("Patience Settings")]
-    [SerializeField] private float groupPatienceTime = 120f; // Base patience time for the group
+    [SerializeField] private float groupPatienceTime = 10f; // Base patience time for the group
     [SerializeField] private float patienceBonusPerDrink = 15f; // Patience bonus when a drink is served
     [SerializeField] private float patienceBonusPerGame = 20f; // Patience bonus when a game is served
 

@@ -8,7 +8,7 @@ public class PlayerMovementScript : MonoBehaviour
     CharacterController characterController;
     public PauseMenuController pauseMenuController;
     public Adisyon adisyonScript;
-
+    public DayNightCycleController dayNightScript;
     [Header("Movement")]
     Vector2 currentMovementInput;
     Vector3 currentMovement;
@@ -168,11 +168,12 @@ public class PlayerMovementScript : MonoBehaviour
 
         if (pauseMenuController == null)
             pauseMenuController = FindObjectOfType<PauseMenuController>();
-        if (pauseMenuController != null && pauseMenuController.isPaused) return;
-        if (adisyonScript != null && adisyonScript.isAdisyonOpen) return;
-        if (SpecialNPC.isInAnyDialogue) return;
-        if (MarketSystem.isMarketOpen) return;
-        if (MarketSystem.isMarketSelectionOpen) return;
+        if ((pauseMenuController != null && pauseMenuController.isPaused)||
+            (adisyonScript != null && adisyonScript.isAdisyonOpen)||
+            SpecialNPC.isInAnyDialogue||
+            MarketSystem.isMarketOpen||
+            MarketSystem.isMarketSelectionOpen||
+            dayNightScript.endOfDayScreen) return;
 
         HandleRotation();
 

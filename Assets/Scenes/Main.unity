@@ -6145,13 +6145,18 @@ MonoBehaviour:
   pauseMenuControllerScript: {fileID: 2034626286}
   npcManagerScript: {fileID: 231622896}
   wearManager: {fileID: 1974237919}
+  npcInShopScript: {fileID: 1016955608}
   surgeryMoney: 20000
+  shopCollider: {fileID: 1016955606}
+  npcLayers:
+    serializedVersion: 2
+    m_Bits: 5120
   howManyDaysPlayerPlay: 30
   player: {fileID: 3469287838036912811}
   playerObject: {fileID: 4805225187014577647}
   playerDayStartPosition: {fileID: 812498408}
   moneyManager: {fileID: 457943707}
-  minuteDurationSeconds: 0.6667
+  minuteDurationSeconds: 0.1
   startHour: 9
   endHour: 24
   dayUIText: {fileID: 1505088213}
@@ -6161,10 +6166,12 @@ MonoBehaviour:
   day: 1
   hour: 0
   minute: 0
+  isDayFinished: 0
   endOfDayScreenUI: {fileID: 1436587529}
   totalMoneyEarnedText: {fileID: 1099517475}
   totalMoneySpentText: {fileID: 1669657904}
   totalMoneyDifferenceText: {fileID: 384972318}
+  endOfDayScreen: 0
 --- !u!114 &190237886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6304,12 +6311,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: fd3150dc18716c04cbafa94805dc6038, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 120
+  - 10
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 121
+  - 20
   - 101
   - 81
   - 61
@@ -10852,6 +10859,76 @@ Light:
   m_CorrespondingSourceObject: {fileID: 4836467151687564960, guid: ca8e86907866e554c9a36cc3e5ea58eb, type: 3}
   m_PrefabInstance: {fileID: 904357484}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1016955605
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1016955607}
+  - component: {fileID: 1016955606}
+  - component: {fileID: 1016955608}
+  m_Layer: 0
+  m_Name: ShopCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1016955606
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016955605}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.6478851, z: 1.0095445}
+  m_Center: {x: 0, y: 0.17605741, z: 0.0047721495}
+--- !u!4 &1016955607
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016955605}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -162.47, y: 2.8, z: 86.7}
+  m_LocalScale: {x: 45.5, y: 21.6, z: 82.8}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1016955608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016955605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d708bca225d31488e1168151aeef55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isThereAnyNPC: 0
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 5120
 --- !u!1001 &1032708154
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22175,7 +22252,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58d7aa0f865b80c4db9e7fba9393691a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dayNightCycleControllerScript: {fileID: 190237885}
   garbageScript: {fileID: 4336574515676628822}
+  npcInShopScript: {fileID: 1016955608}
   playerCam: {fileID: 7493123988560986384}
   rayCastRange: 10
   isPicked: 0
@@ -22226,6 +22305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pauseMenuController: {fileID: 2034626286}
   adisyonScript: {fileID: 0}
+  dayNightScript: {fileID: 190237885}
   walkSpeed: 10
   runMultiply: 2
   cameraTransform: {fileID: 1329170500}
@@ -37171,3 +37251,4 @@ SceneRoots:
   - {fileID: 6858109683589571694}
   - {fileID: 1405085284}
   - {fileID: 5894100894157670472}
+  - {fileID: 1016955607}
