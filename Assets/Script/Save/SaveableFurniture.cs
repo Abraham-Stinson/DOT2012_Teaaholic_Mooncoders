@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public class SaveableFurniture : MonoBehaviour
 {
     [Tooltip("Bu tag'lere sahip objeler otomatik olarak kaydedilecek")]
-    [SerializeField] private string[] furnitureTags = { "Furniture", "Item", "Equipment" };
+    [SerializeField] private string[] furnitureTags = { };
     
     private void Start()
     {

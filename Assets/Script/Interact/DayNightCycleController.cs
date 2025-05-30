@@ -36,7 +36,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     public TextMeshProUGUI timeUIText;   // Separate UI element for time
     public Light sunLight;
     public NPCManager npcManager; // Reference to NPC Manager
-    
+
 
     [SerializeField] private int day = 1;
     [SerializeField] private int hour;
@@ -57,10 +57,11 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     private float finalMoney;
     private float finalWear;
-    
+
     public bool endOfDayScreen = false;
-    
-    
+
+
+
     private void Start()
     {
         // Zaman akışını başlat
@@ -227,6 +228,11 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
             Debug.Log("Gün bitmedi");
             return;
         }
+        if (endOfDayScreen)
+        {
+            Debug.Log("Gün sonu ekranı açık");
+            return;
+        }
 
         Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
         Cursor.visible = true; // Fare imlecini görünür yap
@@ -247,15 +253,18 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     }
     public void OnNextDayInteraction()
     {
+        SaveGame();
         UpdateNPCSpawnTime();
         day++;
         hour = startHour;
         minute = 0;
         timer = 0f;
+        if (day > howManyDaysPlayerPlay)
+        {
+            IsEndGame();
+            return;
+        }
 
-        IsEndGame();
-        
-        SaveGame();
         //Oyuncuyu gün başlatma pozisyonuna koy
         playerObject.transform.position = playerDayStartPosition.position;
         playerObject.transform.rotation = playerDayStartPosition.rotation;
@@ -280,7 +289,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         UpdateSunLight();
     }
 
-    
+
 
     public int GetCurrentDay()
     {
@@ -341,8 +350,8 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
             day = PlayerPrefs.GetInt("SavedDay");
             hour = PlayerPrefs.GetInt("SavedHour");
             minute = PlayerPrefs.GetInt("SavedMinute");
-            moneyManager.money= PlayerPrefs.GetFloat("SavedMoney");
-            wearManager.wear= PlayerPrefs.GetFloat("SavedWear");
+            moneyManager.money = PlayerPrefs.GetFloat("SavedMoney");
+            wearManager.wear = PlayerPrefs.GetFloat("SavedWear");
             isDayFinished = PlayerPrefs.GetInt("IsDayFinished", 0) == 1;
             npcSpawningDisabled = PlayerPrefs.GetInt("NPCSpawningDisabled", 0) == 1;
 
@@ -451,7 +460,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
         Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
     }
-    
+
     public bool IsThereAnyNPC()
     {
         bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
@@ -471,10 +480,12 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     {
         if (isMoneyGivenByChairTable)
         {
+            Debug.Log("Kadın hayatta yardımsever");
             SceneManager.LoadScene("FinalScene_2(happy)");
         }
         else
         {
+            Debug.Log("Kadın hayatta para yetti");
             SceneManager.LoadScene("FinalScene_1(happy)");
         }
 
@@ -484,18 +495,22 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     {
         if (endWays == 3)//Para var ama kadın öldü
         {
+            Debug.Log("Kadın öldü para yok");
             SceneManager.LoadScene("FinalScene_3(sad)");
         }
         else if (endWays == 4)//Para var ama çalındı ve kadın öldü
         {
+            Debug.Log("Kadın öldü para var ama çalındı");
             SceneManager.LoadScene("FinalScene_4(sad)");
         }
         else if (endWays == 5)//para yok ve kadın öldü
         {
+            Debug.Log("Para yok kadın öldü");
             SceneManager.LoadScene("FinalScene_5(sad)");
         }
         else if (endWays == 6)//para yok yardım edildi ama kadın öldü
         {
+            Debug.Log("Para yok yardim edildi ama kadın öldü");
             SceneManager.LoadScene("FinalScene_6(sad)");
         }
     }
@@ -508,83 +523,105 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     void IsEndGame()
     {
-        if(day<=howManyDaysPlayerPlay) return;
-        
-        if (day > howManyDaysPlayerPlay)
-        {
-            //Oyun burada bitiyor 
-            Debug.Log("[OYUN BITTI ALOOO]Oyun bitti");
-            finalMoney = moneyManager.GetMoney();
-            finalWear = wearManager.GetWear();
-            //1.son çürüme 50 den aşağı ise belli para yoksa birinin yardım etme şansı, çürüme yüksekse az, çürüme az ise çok şans tutarsa%70 ihtimalle karı hayatta 
-            //2.son çürüme 50 den düşükse ve para varsa, %70 ihtimal ile karı yaşar
-            //3.son çürüme 50 den yüksekse ve para varsa çürümenin yüksekliğine göre çürümeye göre o olasılıkla 100 99 olacak para çalınmazsa %40 ihtimalle karı yaşar
-            //4.son çürüme 50 den yüksek ve para yoksa direk karı ölür
+        SaveManager.DeleteAllSaveData();
+        //Oyun burada bitiyor 
+        Debug.Log("[OYUN BITTI ALOOO]Oyun bitti");
+        finalMoney = moneyManager.GetMoney();
+        finalWear = wearManager.GetWear();
+        //1.son çürüme 50 den aşağı ise belli para yoksa birinin yardım etme şansı, çürüme yüksekse az, çürüme az ise çok şans tutarsa%70 ihtimalle karı hayatta 
+        //2.son çürüme 50 den düşükse ve para varsa, %70 ihtimal ile karı yaşar
+        //3.son çürüme 50 den yüksekse ve para varsa çürümenin yüksekliğine göre çürümeye göre o olasılıkla 100 99 olacak para çalınmazsa %40 ihtimalle karı yaşar
+        //4.son çürüme 50 den yüksek ve para yoksa direk karı ölür
 
-            if (finalWear <= 50)
-            {//çürünürlük düşükse
-                if (finalMoney < surgeryMoney)//Amelyat Parası yoksa
+        if (finalWear <= 50)
+        {//çürünürlük düşükse
+            if (finalMoney < surgeryMoney)//Amelyat Parası yoksa
+            {
+                if (finalWear < 10 && UnityEngine.Random.Range(0, 100) < 50)
                 {
-                    if (finalWear < 10 && UnityEngine.Random.Range(0, 100) < 50)
+                    //Kadın Hayatta
+                    if (UnityEngine.Random.Range(0, 100) < 70)
                     {
-                        //Kadın Hayatta
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
+                        WomenSurvives(true);
                     }
-                    else if (finalWear < 20 && UnityEngine.Random.Range(0, 100) < 40)
+                    else
                     {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear < 30 && UnityEngine.Random.Range(0, 100) < 30)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear < 40 && UnityEngine.Random.Range(0, 100) < 20)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear <= 50 && UnityEngine.Random.Range(0, 100) < 10)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
+                        WomenDies(6);
                     }
                 }
-                else if (finalMoney >= surgeryMoney)
+                else if (finalWear < 20 && UnityEngine.Random.Range(0, 100) < 40)
                 {
                     if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear < 30 && UnityEngine.Random.Range(0, 100) < 30)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear < 40 && UnityEngine.Random.Range(0, 100) < 20)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear <= 50 && UnityEngine.Random.Range(0, 100) < 10)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else
+                {
+                    WomenDies(6);
+                }
+            }
+            else if (finalMoney >= surgeryMoney)
+            {
+                if (UnityEngine.Random.Range(0, 100) < 70)
+                {
+                    WomenSurvives(false);
+                }
+                else
+                {
+                    WomenDies(3);
+                }
+            }
+        }
+        else if (finalWear > 50)
+        {
+            if (finalMoney < surgeryMoney)
+            {
+                WomenDies(5);
+            }
+            else if (finalMoney >= surgeryMoney)
+            {
+                if (finalWear < 60 && UnityEngine.Random.Range(0, 100) < 50)
+                {
+                    //Kadın Hayatta
+                    if (UnityEngine.Random.Range(0, 100) < 40)
                     {
                         WomenSurvives(false);
                     }
@@ -593,93 +630,72 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
                         WomenDies(3);
                     }
                 }
-            }
-            else if (finalWear > 50)
-            {
-                if (finalMoney < surgeryMoney)
+                else//Para çalındı
                 {
-                    WomenDies(5);
+                    WomenDies(4);
                 }
-                else if (finalMoney >= surgeryMoney)
+                if (finalWear < 70 && UnityEngine.Random.Range(0, 100) < 40)
                 {
-                    if (finalWear < 60 && UnityEngine.Random.Range(0, 100) < 50)
+                    if (UnityEngine.Random.Range(0, 100) < 40)
                     {
-                        //Kadın Hayatta
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else//Para çalındı
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear < 70 && UnityEngine.Random.Range(0, 100) < 40)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
+                        WomenSurvives(false);
                     }
                     else
                     {
-                        WomenDies(4);
-                    }
-                    if (finalWear < 80 && UnityEngine.Random.Range(0, 100) < 30)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear < 90 && UnityEngine.Random.Range(0, 100) < 20)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear <= 100 && UnityEngine.Random.Range(0, 100) < 10)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
+                        WomenDies(3);
                     }
                 }
+                else
+                {
+                    WomenDies(4);
+                }
+                if (finalWear < 80 && UnityEngine.Random.Range(0, 100) < 30)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
+                if (finalWear < 90 && UnityEngine.Random.Range(0, 100) < 20)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
+                if (finalWear <= 100 && UnityEngine.Random.Range(0, 100) < 10)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
             }
+
 
             return;
         }

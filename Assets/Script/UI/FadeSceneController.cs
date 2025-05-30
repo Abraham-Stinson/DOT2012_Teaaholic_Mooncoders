@@ -12,10 +12,19 @@ public class FadeSceneController : MonoBehaviour
     public string nextSceneName;
 
     private PlayerMovementAndInteractionSystem inputActions;
+    [SerializeField] private GameObject pressButtonUI;
 
     private void Awake()
     {
         inputActions = new PlayerMovementAndInteractionSystem();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        if (pressButtonUI != null)
+        {
+            pressButtonUI.SetActive(false);
+        }
+        StartCoroutine(ShowPressButtonUI());
+
     }
 
     private void OnEnable()
@@ -60,12 +69,21 @@ public class FadeSceneController : MonoBehaviour
         {
             t += Time.deltaTime;
             fadeCanvasGroup.alpha = t / fadeDuration;
+
             yield return null;
         }
-
         fadeCanvasGroup.alpha = 1f;
 
         // Sahne ge�i�i
         SceneManager.LoadScene(nextSceneName);
+    }
+
+    IEnumerator ShowPressButtonUI()
+    {
+        yield return new WaitForSeconds(4f);
+        if (pressButtonUI != null)
+        {
+            pressButtonUI.SetActive(true);
+        }
     }
 }

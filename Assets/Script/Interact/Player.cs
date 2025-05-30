@@ -733,12 +733,12 @@ public class Player : MonoBehaviour
 
                     if (npc.isPaying)
                     {
-                        ShowUIMessage($"{npcType}\nÖdeme için F tuşuna basın", true);
+                        //ShowUIMessage($"{npcType}\nÖdeme için F tuşuna basın", true);
                         f_interact.SetActive(true);
                     }
                     else
                     {
-                        ShowUIMessage($"{npcType}\nDurum: {status}\nİstek: {request}\n{patience}", true);
+                        ShowUIMessage($"Müşteri\nDurum: {status}\nİstek: {request}\n{patience}", true);
                     }
 
                     return;
@@ -897,19 +897,13 @@ public class Player : MonoBehaviour
 
             else if (cachedHit.collider.CompareTag("Lamb_Switch"))
             {
+                Debug.Log("Lamba anahtarı ile etkileşime geçildi");
                 lastHighlightedObject = cachedHit.collider.gameObject;
                 ShowUIMessage("", true);
                 f_interact.SetActive(true);
                 return;
             }
 
-            else if (cachedHit.collider.CompareTag("Handbook"))
-            {
-                lastHighlightedObject = cachedHit.collider.gameObject;
-                ShowUIMessage("", true);
-                f_interact.SetActive(true);
-                return;
-            }
             else
             {
                 cachedHit.collider.GetComponent<HighLight>()?.ToggleHighLight(false);
@@ -918,6 +912,14 @@ public class Player : MonoBehaviour
                 f_interact.SetActive(true);
                 return;
             }
+        }
+
+        if (hitCacheValid && cachedHit.collider.CompareTag("Handbook"))
+        {
+            Debug.Log("Handbook ile etkileşime geçildi");
+            ShowUIMessage("", true);
+            f_interact.SetActive(true);
+            return;
         }
 
         if (hitCacheValid/*&&(inHandItem.tag=="Tea_Cup"/*BURAYA DİĞER BARDAKLARDA GELEBİLİR)*/&& isPicked)
@@ -955,10 +957,12 @@ public class Player : MonoBehaviour
                     f_interact.SetActive(true);
                     return;
                 }
+
+
             }
         }
 
-        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Kettle"/*&&hit.collider.gameObject.tag=="Tea_Cup"*/&& isPicked)
+        if (hitCacheValid && inHandItem != null && inHandItem.tag == "Kettle" && isPicked)
         {//KETTLE DAN ÇAY KOYMA UI
             if (Physics.Raycast(playerCam.position, playerCam.forward, out hit, rayCastRange))
             {
@@ -968,6 +972,15 @@ public class Player : MonoBehaviour
                     lastHighlightedObject = hit.collider.gameObject;
                     ShowUIMessage("", true);
                     f_interact.SetActive(true);
+                }
+
+                if (hit.collider.CompareTag("Hot_Water") && !inHandItem.GetComponent<Kettle>().isHaveHotWater)
+                {
+                    hit.collider.GetComponent<HighLight>()?.ToggleHighLight(true);
+                    lastHighlightedObject = hit.collider.gameObject;
+                    ShowUIMessage("", true);
+                    f_interact.SetActive(true);
+                    return;
                 }
             }
         }
