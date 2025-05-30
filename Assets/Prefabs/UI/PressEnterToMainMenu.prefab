@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 750, y: 150}
+  m_SizeDelta: {x: 750, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5170592655165505377
 CanvasRenderer:
@@ -110,7 +110,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 700, y: 100}
+  m_SizeDelta: {x: 700, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7959590292945399191
 CanvasRenderer:
@@ -153,9 +153,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Press Enter to  Main Menu
-
-'
+  m_Text: "Ana Men\xFCye D\xF6nmek \u0130\xE7in Enter Tu\u015Funa Bas\u0131n\n"
 --- !u!1 &8314495819307071025
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,6 +188,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -400, y: -100}
+  m_AnchoredPosition: {x: -450, y: -150}
   m_SizeDelta: {x: 700, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
