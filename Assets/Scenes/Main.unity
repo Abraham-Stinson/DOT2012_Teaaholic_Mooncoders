@@ -6094,12 +6094,12 @@ MonoBehaviour:
   - {fileID: 6127061639819842327, guid: db5255764953fd24e96249a914c34013, type: 3}
   spawnPoint: {fileID: 1288587128}
   minSpawnArray:
-  - 5
+  - 120
   - 100
   - 80
   - 60
   maxSpawnArray:
-  - 10
+  - 121
   - 101
   - 81
   - 61
