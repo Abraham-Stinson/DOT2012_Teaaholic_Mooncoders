@@ -7640,7 +7640,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -8055,7 +8055,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 87197b6ba6330a344a457554210ef8f9, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8393,10 +8393,18 @@ PrefabInstance:
       propertyPath: tableName
       value: Masa 4
       objectReference: {fileID: 0}
+    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
     - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: billManager
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
     - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Layer
       value: 9
@@ -8657,7 +8665,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2897e03e27a68c94c8a012eb847f2034, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9846,7 +9854,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2897e03e27a68c94c8a012eb847f2034, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10029,7 +10037,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6b303d6910b3913429e9bfa13357d0db, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10583,10 +10591,18 @@ PrefabInstance:
       propertyPath: tableName
       value: Masa 5
       objectReference: {fileID: 0}
+    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
     - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: billManager
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
     - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Layer
       value: 9
@@ -12030,10 +12046,18 @@ PrefabInstance:
       propertyPath: tableName
       value: Masa 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
     - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: billManager
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
     - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Layer
       value: 9
@@ -14648,10 +14672,18 @@ PrefabInstance:
       propertyPath: tableName
       value: Masa 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
     - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: billManager
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
     - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Layer
       value: 9
@@ -20727,6 +20759,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
+    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair

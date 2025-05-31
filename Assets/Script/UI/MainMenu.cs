@@ -7,6 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public GameObject NewGamePanel;
     public GameObject SettingsPanel;
+    public GameObject CreditsPanel;
     [SerializeField] private Button continueButton; // Devam Et butonu
     private PlayerMovementAndInteractionSystem inputActions;
     
@@ -18,6 +19,7 @@ public class MainMenu : MonoBehaviour
     {
         NewGamePanel.SetActive(false);
         SettingsPanel.SetActive(false);
+        CreditsPanel.SetActive(false);
         
         // Eğer kayıtlı oyun yoksa Devam Et butonunu devre dışı bırak
         if (continueButton != null)
@@ -52,6 +54,10 @@ public class MainMenu : MonoBehaviour
         if (SettingsPanel.activeSelf)
         {
             SettingsPanel.SetActive(false);
+        }
+        if (CreditsPanel.activeSelf)
+        {
+            CreditsPanel.SetActive(false);
         }
     }
 
