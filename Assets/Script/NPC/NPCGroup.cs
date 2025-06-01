@@ -164,7 +164,7 @@ public class NPCGroup : MonoBehaviour
 
         // Assign chairs to each NPC
         List<Chair> chairs = assignedTable.GetChairs();
-
+        Debug.Log($"({chairs.Count}) for group of {npcs.Count}");
         if (chairs.Count < npcs.Count)
         {
             Debug.LogError($"Not enough chairs ({chairs.Count}) for group of {npcs.Count}");
@@ -172,13 +172,49 @@ public class NPCGroup : MonoBehaviour
             yield break;
         }
 
-        // Shuffle chairs to randomize seating
-        chairs = ShuffleList(chairs);
-
-        // Assign each NPC to a chair
-        for (int i = 0; i < npcs.Count; i++)
+        // For 2-person groups, select chairs that are opposite to each other
+        if (npcs.Count == 2)
         {
-            npcs[i].AssignChair(chairs[i]);
+            Debug.Log("NPCler karsilikli oturacak");
+            // Find chairs that are opposite to each other
+            Chair chair1 = chairs[0];
+            Chair chair2 = null;
+            
+            // Find the chair that is most opposite to chair1
+            float maxDistance = 0f;
+            foreach (Chair chair in chairs)
+            {
+                if (chair == chair1) continue;
+                
+                float distance = Vector3.Distance(chair1.transform.position, chair.transform.position);
+                if (distance > maxDistance)
+                {
+                    maxDistance = distance;
+                    chair2 = chair;
+                }
+            }
+            
+            if (chair2 != null)
+            {
+                npcs[0].AssignChair(chair1);
+                npcs[1].AssignChair(chair2);
+            }
+            else
+            {
+                // Fallback to random chairs if we can't find opposite ones
+                chairs = ShuffleList(chairs);
+                npcs[0].AssignChair(chairs[0]);
+                npcs[1].AssignChair(chairs[1]);
+            }
+        }
+        else
+        {
+            // For other group sizes, use random seating
+            chairs = ShuffleList(chairs);
+            for (int i = 0; i < npcs.Count; i++)
+            {
+                npcs[i].AssignChair(chairs[i]);
+            }
         }
     }
     // Called when an NPC in the group sits down

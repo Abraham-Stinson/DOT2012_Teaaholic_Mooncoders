@@ -5751,7 +5751,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Erdal Bakkal
+  m_text: Tuncay Bakkal
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bbce31a09fcef6442963c5e562179407, type: 2}
   m_sharedMaterial: {fileID: 2225069836422177216, guid: bbce31a09fcef6442963c5e562179407, type: 2}
@@ -8381,53 +8381,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 668982947862882834, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1433434737131632906, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 1720564201175092108, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: tableName
       value: Masa 4
       objectReference: {fileID: 0}
-    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
-    - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: billManager
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
-    - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6554060662525416540, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6619279681259388687, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7263203530545578853, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair (3)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8435,7 +8395,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.33999863
+      value: 0.43
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10579,57 +10539,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 668982947862882834, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1433434737131632906, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 1720564201175092108, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: tableName
       value: Masa 5
       objectReference: {fileID: 0}
-    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
-    - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: billManager
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
-    - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6554060662525416540, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6619279681259388687, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6700225145719057288, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Extents.y
-      value: 2.42
-      objectReference: {fileID: 0}
-    - target: {fileID: 7263203530545578853, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair (4)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10637,7 +10553,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.33999863
+      value: 0.43
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12034,53 +11950,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 668982947862882834, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1433434737131632906, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 1720564201175092108, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: tableName
       value: Masa 2
       objectReference: {fileID: 0}
-    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
-    - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: billManager
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
-    - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6554060662525416540, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6619279681259388687, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7263203530545578853, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12088,7 +11964,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.55
+      value: 0.43
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12361,9 +12237,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Deve Tuncay
-
-'
+  m_text: Deve Erdal
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -14660,53 +14534,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 668982947862882834, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1433434737131632906, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 1720564201175092108, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: tableName
       value: Masa 3
       objectReference: {fileID: 0}
-    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
-    - target: {fileID: 5040112357436521981, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: billManager
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
-    - target: {fileID: 5446710663555510919, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6554060662525416540, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6619279681259388687, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7263203530545578853, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -14714,7 +14548,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.091219336
+      value: 0.43
       objectReference: {fileID: 0}
     - target: {fileID: 8265991815663040439, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_LocalPosition.z
@@ -20759,14 +20593,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1910219707696230618, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 97ef3ad16a60f3f499f6a8fd249dd04d, type: 2}
-    - target: {fileID: 5282958135060782994, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0c52a06425ab95a499d1e87e5f2cebe8, type: 2}
     - target: {fileID: 7905361117443920573, guid: 994e0e71d0c57c64cb42790cfbf99a90, type: 3}
       propertyPath: m_Name
       value: TableAndChair
