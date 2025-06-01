@@ -10,6 +10,7 @@ public class FadeSceneController : MonoBehaviour
     public CanvasGroup fadeCanvasGroup;
     public float fadeDuration = 1f;
     public string nextSceneName;
+    public bool inMainMenu;
 
     private PlayerMovementAndInteractionSystem inputActions;
     [SerializeField] private GameObject pressButtonUI;
@@ -29,12 +30,20 @@ public class FadeSceneController : MonoBehaviour
 
     private void OnEnable()
     {
+        if (inMainMenu)
+        {
+            return;
+        }
         inputActions.UI.Enable();
         inputActions.UI.Submit.performed += OnSubmit;
     }
 
     private void OnDisable()
     {
+        if (inMainMenu)
+        {
+            return;
+        }
         inputActions.UI.Submit.performed -= OnSubmit;
         inputActions.UI.Disable();
     }
@@ -46,6 +55,10 @@ public class FadeSceneController : MonoBehaviour
 
     private void OnSubmit(InputAction.CallbackContext context)
     {
+        if (inMainMenu)
+        {
+            return;
+        }
         StartCoroutine(FadeOutAndLoad());
     }
 

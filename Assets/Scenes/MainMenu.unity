@@ -3542,6 +3542,7 @@ MonoBehaviour:
   fadeCanvasGroup: {fileID: 2034129119}
   fadeDuration: 1
   nextSceneName: EntryScene_1
+  inMainMenu: 1
   pressButtonUI: {fileID: 0}
 --- !u!1 &953461702
 GameObject:
