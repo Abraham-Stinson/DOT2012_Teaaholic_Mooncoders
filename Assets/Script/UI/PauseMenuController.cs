@@ -7,198 +7,177 @@ public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private DayNightCycleController dayNightCycleControllerScript;
     public Adisyon adisyonScript;
+
     [Header("Menü Elemanları")]
     [SerializeField] private GameObject pauseMenuCanvas;
+    [SerializeField] private GameObject settingsPanel; // ✅ Yeni eklendi
     [SerializeField] private Button continueButton;
     [SerializeField] private Button exitButton;
-    
+    [SerializeField] private Button settingsButton; // ✅ Yeni eklendi
+    [SerializeField] private Button backFromSettingsButton; // ✅ Yeni eklendi
+
     [Header("Input Ayarları")]
     [SerializeField] private InputActionReference pauseAction;
-    [SerializeField] private InputActionReference[] gameplayActions; // Player hareket, bakış, etkileşim vs
+    [SerializeField] private InputActionReference[] gameplayActions;
     [SerializeField] private MonoBehaviour[] playerControlScripts;
-    [SerializeField] private PlayerInput playerInput; // Oyuncunun input sistemi
-    
-    // Kamera kontrolü için referans
+    [SerializeField] private PlayerInput playerInput;
+
     private Player playerController;
-    
     public bool isPaused = false;
-    
+
     private void Awake()
     {
-        // Canvas başlangıçta kapalı olmalı
         if (pauseMenuCanvas != null)
-        {
             pauseMenuCanvas.SetActive(false);
-        }
-        
-        // Player referansını bul
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // ✅ Ayarlar paneli başta kapalı
+
         playerController = FindObjectOfType<Player>();
-        
-        // PlayerInput referansı yoksa bul
+
         if (playerInput == null)
-        {
             playerInput = FindObjectOfType<PlayerInput>();
-        }
     }
-    
+
     private void OnEnable()
     {
-        // Input action'ları etkinleştir
         pauseAction.action.Enable();
         pauseAction.action.performed += TogglePauseMenu;
-        
-        // Buton click event'larını bağla
+
         if (continueButton != null)
             continueButton.onClick.AddListener(ContinueGame);
-        
-            
+
         if (exitButton != null)
             exitButton.onClick.AddListener(ToMainMenu);
+
+        if (settingsButton != null)
+            settingsButton.onClick.AddListener(OpenSettings); // ✅
+
+        if (backFromSettingsButton != null)
+            backFromSettingsButton.onClick.AddListener(CloseSettings); // ✅
     }
-    
+
     private void OnDisable()
     {
-        // Input action'ları devre dışı bırak
         pauseAction.action.performed -= TogglePauseMenu;
         pauseAction.action.Disable();
-        
-        // Buton click event'larını temizle
+
         if (continueButton != null)
             continueButton.onClick.RemoveListener(ContinueGame);
-        
-            
+
         if (exitButton != null)
             exitButton.onClick.RemoveListener(ToMainMenu);
+
+        if (settingsButton != null)
+            settingsButton.onClick.RemoveListener(OpenSettings); // ✅
+
+        if (backFromSettingsButton != null)
+            backFromSettingsButton.onClick.RemoveListener(CloseSettings); // ✅
     }
-    
+
     public void TogglePauseMenu(InputAction.CallbackContext context)
     {
-        // Market selection UI kontrolü ekle
-        if (MarketSystem.isMarketSelectionOpen)
+        if (MarketSystem.isMarketSelectionOpen || SpecialNPC.isInAnyDialogue ||
+            (adisyonScript != null && adisyonScript.isAdisyonOpen) ||
+            MarketSystem.isMarketOpen)
         {
-            Debug.Log("Market selection UI açık, pause menu açılmayacak");
+            Debug.Log("Menü gösterilemiyor, bir UI zaten açık.");
             return;
         }
 
         if (adisyonScript == null)
-        {
-            Debug.Log("Adisyon scripti bulunamadı, yeni bir referans alınıyor.");
             adisyonScript = FindObjectOfType<Adisyon>();
-        }
-
-        // Adisyon açıksa menüyü açma
-        if (adisyonScript != null && adisyonScript.isAdisyonOpen)
-        {
-            Debug.Log("Adisyon açık, menüyü açma");
-            return;
-        }
-
-        // SpecialNPC diyaloğu açıksa menüyü açma
-        if (SpecialNPC.isInAnyDialogue)
-        {
-            Debug.Log("NPC diyaloğu açık, menüyü açma");
-            return;
-        }
-
-        // Market UI açıksa menüyü açma
-        if (MarketSystem.isMarketOpen)
-        {
-            Debug.Log("Market UI açık, menüyü açma");
-            return;
-        }
 
         if (isPaused)
-        {
             ContinueGame();
-        }
         else
-        {
             PauseGame();
-        }
     }
-    
+
     public void PauseGame()
     {
-        
-        // Oyunu duraklat
         Time.timeScale = 0f;
         isPaused = true;
-        
-        // Mouse imlecini görünür yap ve kilidi kaldır
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        
-        // Oyuncu kontrollerini devre dışı bırak
+
         if (playerInput != null)
         {
-            // UI action map'i dışındaki tüm action map'leri devre dışı bırak
             playerInput.DeactivateInput();
-            // Sadece UI action map'ini etkinleştir (menü için)
             playerInput.actions.FindActionMap("UI").Enable();
         }
-        
-        // Menüyü göster
+
         if (pauseMenuCanvas != null)
-        {
             pauseMenuCanvas.SetActive(true);
-        }
-        
-        // Debug log
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // ✅ Pause menüdeyken settings kapalı kalmalı
+
         Debug.Log("Oyun duraklatıldı");
     }
-    
+
     public void ContinueGame()
     {
-        // Oyunu devam ettir
         Time.timeScale = 1f;
         isPaused = false;
-        
-        // Mouse imlecini gizle ve kilitle
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        
-        // Oyuncu kontrollerini tekrar etkinleştir
+
         if (playerInput != null)
-        {
             playerInput.ActivateInput();
-        }
-        
-        // Menüyü gizle
+
         if (pauseMenuCanvas != null)
-        {
             pauseMenuCanvas.SetActive(false);
-        }
-        
-        // Debug log
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // ✅ Settings de kapansın
+
         Debug.Log("Oyun devam ediyor");
     }
-    
+
     public void RestartGame()
     {
-        // Zaman ölçeğini normale döndür
         Time.timeScale = 1f;
         isPaused = false;
-        
-        // Mouse ayarlarını sıfırla
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        
-        // Aktif sahneyi yeniden yükle
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        
-        // Debug log
         Debug.Log("Oyun yeniden başlatılıyor");
     }
-    
+
     public void ToMainMenu()
     {
-        // Zaman ölçeğini normale döndür
         Time.timeScale = 1f;
-        
-        // Mouse ayarlarını sıfırla
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        
+
         SceneManager.LoadScene("MainMenu");
+    }
+
+    // ✅ Yeni eklenen ayarlar metodları:
+    public void OpenSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+
+        if (pauseMenuCanvas != null)
+            pauseMenuCanvas.SetActive(false);
+
+        Debug.Log("Ayarlar paneli açıldı");
+    }
+
+    public void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
+        if (pauseMenuCanvas != null)
+            pauseMenuCanvas.SetActive(true);
+
+        Debug.Log("Ayarlar paneli kapatıldı");
     }
 }
