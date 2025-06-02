@@ -1,51 +1,73 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SettingsManager : MonoBehaviour
 {
-    [Header("Audio")]
-    public Slider musicSlider;
-    public Slider sfxSlider;
+    public static SettingsManager Instance;
 
-    [Header("Display")]
-    public Toggle fullscreenToggle;
-    public Dropdown qualityDropdown;
+    public float MusicVolume { get; private set; }
+    public float SFXVolume { get; private set; }
+    public int QualityLevel { get; private set; }
+    public bool IsFullscreen { get; private set; }
 
-    void Start()
+    void Awake()
     {
-        // Load previously saved settings (optional)
-        musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 1f);
-        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
-        fullscreenToggle.isOn = Screen.fullScreen;
-        qualityDropdown.value = QualitySettings.GetQualityLevel();
-
-        ApplyVolume();
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Tüm sahnelerde ayný obje
+            LoadSettings();
+        }
+        else
+        {
+            Destroy(gameObject); // Sahneye yanlýþlýkla iki kere eklendiyse, ikincisini sil
+        }
     }
 
-    public void OnMusicVolumeChanged(float value)
+    public void LoadSettings()
     {
+        MusicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        QualityLevel = PlayerPrefs.GetInt("QualityLevel", QualitySettings.GetQualityLevel());
+        IsFullscreen = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
+
+        ApplySettings();
+    }
+
+    public void ApplySettings()
+    {
+        AudioListener.volume = MusicVolume;
+        Screen.fullScreen = IsFullscreen;
+        QualitySettings.SetQualityLevel(QualityLevel);
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        MusicVolume = value;
         PlayerPrefs.SetFloat("MusicVolume", value);
-        ApplyVolume();
+        ApplySettings();
+        PlayerPrefs.Save();
     }
 
-    public void OnSFXVolumeChanged(float value)
+    public void SetSFXVolume(float value)
     {
+        SFXVolume = value;
         PlayerPrefs.SetFloat("SFXVolume", value);
-        // Update your SFX audio sources here
+        PlayerPrefs.Save();
     }
 
-    void ApplyVolume()
+    public void SetFullscreen(bool isFullscreen)
     {
-        AudioListener.volume = musicSlider.value; // Replace with real mixer if needed
+        IsFullscreen = isFullscreen;
+        PlayerPrefs.SetInt("Fullscreen", isFullscreen ? 1 : 0);
+        ApplySettings();
+        PlayerPrefs.Save();
     }
 
-    public void OnFullscreenToggle(bool isFullscreen)
+    public void SetQuality(int level)
     {
-        Screen.fullScreen = isFullscreen;
-    }
-
-    public void OnQualityChanged(int index)
-    {
-        QualitySettings.SetQualityLevel(index);
+        QualityLevel = level;
+        PlayerPrefs.SetInt("QualityLevel", level);
+        ApplySettings();
+        PlayerPrefs.Save();
     }
 }
