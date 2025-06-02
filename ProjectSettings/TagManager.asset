@@ -32,6 +32,8 @@ TagManager:
   - NPC_Private
   - Handbook
   - Delivery_Box
+  - RadioPowerButton
+  - RadioChangeTrackButton
   layers:
   - Default
   - TransparentFX
