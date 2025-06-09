@@ -10,7 +10,6 @@ public class PauseMenuController : MonoBehaviour
     [Header("Menü Elemanları")]
     [SerializeField] private GameObject pauseMenuCanvas;
     [SerializeField] private Button continueButton;
-    [SerializeField] private Button restartButton;
     [SerializeField] private Button exitButton;
     
     [Header("Input Ayarları")]
@@ -51,9 +50,7 @@ public class PauseMenuController : MonoBehaviour
         // Buton click event'larını bağla
         if (continueButton != null)
             continueButton.onClick.AddListener(ContinueGame);
-            
-        if (restartButton != null)
-            restartButton.onClick.AddListener(RestartGame);
+        
             
         if (exitButton != null)
             exitButton.onClick.AddListener(ToMainMenu);
@@ -68,9 +65,7 @@ public class PauseMenuController : MonoBehaviour
         // Buton click event'larını temizle
         if (continueButton != null)
             continueButton.onClick.RemoveListener(ContinueGame);
-            
-        if (restartButton != null)
-            restartButton.onClick.RemoveListener(RestartGame);
+        
             
         if (exitButton != null)
             exitButton.onClick.RemoveListener(ToMainMenu);

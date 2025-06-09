@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 5443423945904821114}
   - component: {fileID: 3131990906599982657}
   - component: {fileID: 3448268632576714831}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8159252265900355605
 Transform:
@@ -124,7 +124,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8428870065092940300
 Transform:
@@ -206,12 +206,12 @@ GameObject:
   - component: {fileID: 4212670112388356681}
   - component: {fileID: 4973081362406945704}
   - component: {fileID: 348989802102754529}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.009
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5055553683557482192
 Transform:
@@ -314,12 +314,12 @@ GameObject:
   - component: {fileID: 32572187693463242}
   - component: {fileID: 794173799736430683}
   - component: {fileID: 7681343154107307929}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5716517152240954881
 Transform:
@@ -422,12 +422,12 @@ GameObject:
   - component: {fileID: 3622284480419096514}
   - component: {fileID: 2098358691485941045}
   - component: {fileID: 6091696004120155161}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7862256800130696631
 Transform:
@@ -530,12 +530,12 @@ GameObject:
   - component: {fileID: 6242309101157612983}
   - component: {fileID: 4011476639115408440}
   - component: {fileID: 4334321113555507808}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5044923316324205839
 Transform:
@@ -638,12 +638,12 @@ GameObject:
   - component: {fileID: 4621554136544499641}
   - component: {fileID: 7016591880944782467}
   - component: {fileID: 4438794683439679786}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1663960656367642811
 Transform:
@@ -746,12 +746,12 @@ GameObject:
   - component: {fileID: 1811582636668592192}
   - component: {fileID: 4641765289306674536}
   - component: {fileID: 5046239591932008204}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6776126031817934866
 Transform:
@@ -854,12 +854,12 @@ GameObject:
   - component: {fileID: 7268133708251086333}
   - component: {fileID: 1917897494020914881}
   - component: {fileID: 8513814709633042610}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2974887354812023706
 Transform:
@@ -964,7 +964,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3516258287003145082
 Transform:
@@ -1003,12 +1003,12 @@ GameObject:
   - component: {fileID: 361909358739800925}
   - component: {fileID: 4155897930787603718}
   - component: {fileID: 314041052694089937}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WoodenShelf.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4670572518269513642
 Transform:

@@ -56,6 +56,7 @@ public class Kettle : MonoBehaviour
             return;
         }
         
+        
         // Check if we have brewed tea to pour
         if (currentKettleMagazine > 0 && isBrewed)
         {
@@ -95,6 +96,14 @@ public class Kettle : MonoBehaviour
     /// </summary>
     public bool AddTea()
     {
+        // Check if kettle is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Çaydanlık kirli, önce yıkamalısın!");
+            return false;
+        }
+        
         // Only add tea if we don't already have tea
         if (!isHaveTea)
         {
@@ -121,6 +130,14 @@ public class Kettle : MonoBehaviour
     /// </summary>
     public bool AddHotWater()
     {
+        // Check if kettle is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Çaydanlık kirli, önce yıkamalısın!");
+            return false;
+        }
+        
         // Only add hot water if we don't already have hot water
         if (!isHaveHotWater)
         {

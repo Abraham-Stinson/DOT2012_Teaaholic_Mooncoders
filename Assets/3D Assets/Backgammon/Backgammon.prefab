@@ -83,6 +83,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 60cf1bf98f4e45e4992cf41375aa208d, type: 2}
+  - {fileID: 2100000, guid: 6ab96a57d149c6544a88164a7776daf7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -117,6 +118,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   saveKey: 
+  savePosition: 1
+  saveRotation: 0
+  saveScale: 0
+  saveActiveState: 1
+  saveLightSettings: 1
+  saveRendererSettings: 1
 --- !u!54 &1666967071621467308
 Rigidbody:
   m_ObjectHideFlags: 0

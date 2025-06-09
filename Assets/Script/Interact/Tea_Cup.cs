@@ -32,6 +32,7 @@ public class Tea_Cup : MonoBehaviour
     [SerializeField] GameObject[] strawberryOraletObjects;
     [SerializeField] GameObject[] bananaOraletObjects;
 
+    private Coroutine dirtyCheckCoroutine;
 
     void Start()
     {
@@ -45,39 +46,43 @@ public class Tea_Cup : MonoBehaviour
             dirtyOverlay.SetActive(false);
         }
         
-        // Subscribe to dirty status change
+        // Dirty status için coroutine yerine event kullan
         DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
-        if (dirtyStatus != null)
+        if (dirtyStatus != null && dirtyOverlay != null)
         {
-            // Check every frame
-            StartCoroutine(CheckDirtyStatus());
+            // İlk durumu ayarla
+            dirtyOverlay.SetActive(dirtyStatus.isDirty);
         }
     }
 
-    // Check if cup is dirty and update visuals
-    private IEnumerator CheckDirtyStatus()
+    private void OnDestroy()
     {
-        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
-        if (dirtyStatus == null) yield break;
-        
-        while (true)
+        if (dirtyCheckCoroutine != null)
         {
-            if (dirtyOverlay != null)
-            {
-                dirtyOverlay.SetActive(dirtyStatus.isDirty);
-            }
-            yield return new WaitForSeconds(0.5f);
+            StopCoroutine(dirtyCheckCoroutine);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        // Check and update dirty status visualization
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyOverlay != null)
+        {
+            dirtyOverlay.SetActive(dirtyStatus.isDirty);
+        }
     }
 
     public void AddTea()
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
         
         if (!isFillOraletorCoffee && !isFillTea)
         {
@@ -100,6 +105,14 @@ public class Tea_Cup : MonoBehaviour
 
     public void AddOraletOrCoffee(string product)
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
+        
         Debug.Log(product + " tozu eklendi eklendi");
         productType = product;
         ChangeMeshOraletorCoffee(product, 0, false);
@@ -109,6 +122,14 @@ public class Tea_Cup : MonoBehaviour
 
     public void FillHotWaterToTea()
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
+        
         currentTeaCupMagazine = currentTeaCupMagazine + (maxTeaCupMagazine - currentTeaCupMagazine);
         isFullTea = true;
         ChangeMeshTea();
@@ -116,6 +137,14 @@ public class Tea_Cup : MonoBehaviour
 
     public void FillHotWaterToCoffeeOrOralet()
     {
+        // Check if cup is dirty
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus != null && dirtyStatus.isDirty)
+        {
+            Debug.Log("Bardak kirli, önce yıkamalısın!");
+            return;
+        }
+        
         ChangeMeshOraletorCoffee(productType, 1, true);
         isFullOraletorCoffee = true;
     }
@@ -308,5 +337,24 @@ public class Tea_Cup : MonoBehaviour
         inCup="Empty";
         ChangeMeshTea();
         ChangeMeshOraletorCoffee("Clear", 0, false);
+        
+        // Update dirty visual status after emptying
+        ChangeMeshOfDirtyTea();
+    }
+
+    public void ChangeMeshOfDirtyTea()
+    {
+        DirtyStatus dirtyStatus = GetComponent<DirtyStatus>();
+        if (dirtyStatus == null && dirtyOverlay == null)
+        {
+            Debug.Log("Kirlilik durumu yok ya da kirlilik görünümü yok");
+            return;
+        }
+        
+        if (dirtyStatus != null && dirtyOverlay != null)
+        {
+            Debug.Log("Kirli seviyesi düzenlendi");
+            dirtyOverlay.SetActive(dirtyStatus.isDirty);
+        }
     }
 }

@@ -273,10 +273,10 @@ public class TableController : MonoBehaviour, IInteractable
         if (string.IsNullOrEmpty(gameType) && !string.IsNullOrEmpty(currentGameType))
         {
             gameType = currentGameType;
-            Debug.Log($"[TABLE] Grup üzerinden oyun tipi alınamadı, currentGameType kullanılıyor: {currentGameType}");
+            //Debug.Log($"[TABLE] Grup üzerinden oyun tipi alınamadı, currentGameType kullanılıyor: {currentGameType}");
         }
         
-        Debug.Log($"[TABLE] Masa {name} için istenen oyun tipi: {gameType}");
+        //Debug.Log($"[TABLE] Masa {name} için istenen oyun tipi: {gameType}");
         return gameType;
     }
     

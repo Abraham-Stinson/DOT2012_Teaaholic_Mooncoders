@@ -1,52 +1,63 @@
-# NPC System Fixes for Tea Shop Game
+# A Teapot of Hope ☕ | DOT2012 - Game Development II
 
-This document outlines the implemented fixes for the NPC interaction system in the tea shop game.
+**A Teapot of Hope** is a management simulation game developed by the team **Teaholic MoonCoders** as part of the DOT2012 - Game Development II course. The game delivers a strong narrative experience exploring themes of social decay and personal struggle.
 
-## Fixes Implemented
+## 🎮 About the Game
 
-### 1. Player Interaction After Placing Game on Table
-- Modified `TableController.cs` to reset player state after placing a game on a table
-- Added a `SetPickedStatus` method to `Player.cs` to properly control the player's pickup state
-- This ensures the player can pick up new items immediately after placing a game
+You play as Ahmet, a retired literature teacher living with his wife Leyla (battling cancer), daughter İpek, and elderly mother Hacer. Struggling with financial hardship, Ahmet opens a small teahouse using his last savings—his wife’s gold. As the days pass, you must manage the teahouse, serve customers, keep the environment clean, and survive in a crumbling society under an oppressive regime.
 
-### 2. Cup Placement on Tables
-- Enhanced `PlaceCupOnTable` method in `NPC.cs` to better position cups on tables
-- Added a reference to the current cup to track it after placing
-- Reset player state properly after placing a cup to ensure continued interaction
+## 🧠 Core Concept
 
-### 3. Dirty Cup System
-- Modified `NPC.DrinkBeverage` method to mark cups as dirty when NPCs finish drinking
-- Changed the cup layer back to "Interactable" after NPCs finish, making them pickable again
-- Enhanced `DirtyStatus.cs` to visually indicate when cups are dirty
-- Added material change functionality to show dirty status on cups
-- Added a dirty overlay visual option to the Tea_Cup class
+- **Genre:** Management Simulator  
+- **Perspective:** First-Person  
+- **Theme:** Social Decay  
+- **Platform:** PC  
+- **Engine & Tools:** Unity (6000.0.41f1), Blender, Photoshop, Visual Studio, Audacity, GitHub
 
-### 4. Player Pickup of Dirty Cups
-- Updated `Player.PickAndPut` method to handle dirty cups
-- Added notification when player picks up dirty cups
-- Ensure cups can be cleaned at the sink using the existing cleaning system
+## 🎯 Target Audience
 
-## How the System Works
+Players aged **14 and up** who enjoy story-driven simulation games with deep emotional impact and societal themes.
 
-1. **Player places drink for NPC**
-   - Cup is positioned on the table
-   - NPC drinks after a delay
+## 🌟 Key Features
 
-2. **NPC finishes drink**
-   - Cup is marked as dirty
-   - Cup becomes interactable again
-   - Visual indication shows the cup is dirty
+- Atmospheric, low-poly 3D art style  
+- Rich storytelling with multiple endings  
+- Unique **"Decay Bar"** that reflects the social and moral state of your surroundings  
+- NPC interaction, daily cycles, and financial management  
+- Emotional and ethical decision-making  
+- Hidden Easter Eggs, including a tribute to Mustafa Kemal Atatürk
 
-3. **Player picks up dirty cup**
-   - Message indicates the cup needs cleaning
-   - Player can take cup to sink
-   - Using the Water tag will clean the cup
+## 🔚 Endings
 
-## Testing the System
+The game features **6 possible endings** based on:
+- The level of social decay
+- The amount of money saved for your wife's surgery
+- Randomized chances affected by the game state
 
-To test the implemented functionality:
-1. Place a game on a table - you should be able to pick up other items immediately
-2. Serve tea to NPCs - cups should stay properly positioned
-3. Wait for NPCs to finish drinking - cups should become dirty
-4. Pick up dirty cups - you should see a message about cleaning them
-5. Take cups to sink - they should become clean again 
+## 🧩 Easter Egg
+
+One of the okey racks in the game includes the license plate numbers of team members' hometowns. Another rack displays the years **1881 - 1938** in honor of Mustafa Kemal Atatürk, with the number 8 rotated sideways to represent infinity (♾), symbolizing his everlasting legacy.
+
+## 🧪 How to Run
+
+1. Clone or download the project repository.
+2. Open the project using **Unity 6000.0.41f1**.
+3. Press **Play** in the Unity Editor to start the game.
+4. For best experience, use mouse and keyboard on PC.
+
+## 👥 Team - Teaholic MoonCoders
+
+- **Adnaner Doydu** – Game Programming, Music Design  
+- **İbrahim Gümüşdal** – Game Programming  
+- **Batuhan Kaykan** – Art Design  
+- **Muhammet Yusuf Anık** – Art Design  
+- **Mustafa Çağrı Yıldırır** – Game Design, Project Management
+
+
+## 🤝 Contributions
+
+Feel free to fork the repo, report issues, or suggest improvements via pull requests!
+
+---
+
+**“Sometimes, a cup of tea is all you have left between survival and despair.”**

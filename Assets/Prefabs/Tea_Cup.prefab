@@ -961,7 +961,7 @@ GameObject:
   - component: {fileID: 5260086454622867352}
   - component: {fileID: 2058097271620688908}
   - component: {fileID: 4668842817109215040}
-  - component: {fileID: -5844100704421607613}
+  - component: {fileID: -5754088906500832980}
   m_Layer: 6
   m_Name: Tea_Cup
   m_TagString: Tea_Cup
@@ -1070,7 +1070,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3685608, y: 0.5714736, z: 0.37747192}
+  m_Size: {x: 0.53, y: 0.5714736, z: 0.53}
   m_Center: {x: -0.0016021729, y: 0.2367003, z: 0.00047302246}
 --- !u!114 &5260086454622867352
 MonoBehaviour:
@@ -1136,7 +1136,7 @@ MonoBehaviour:
   dirtyMaterial: {fileID: 2100000, guid: 04112c48bef28ee408361a67d523e3a7, type: 2}
   cleanMaterial: {fileID: 2100000, guid: 9d2126d0d8d484781bf9fe54b03fe18b, type: 2}
   cupRenderer: {fileID: 5679336104027026938}
---- !u!114 &-5844100704421607613
+--- !u!114 &-5754088906500832980
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1151,8 +1151,10 @@ MonoBehaviour:
   saveKey: 
   savePosition: 1
   saveRotation: 1
-  saveScale: 0
+  saveScale: 1
   saveActiveState: 1
+  saveLightSettings: 0
+  saveRendererSettings: 1
 --- !u!1 &4913923278085300774
 GameObject:
   m_ObjectHideFlags: 0

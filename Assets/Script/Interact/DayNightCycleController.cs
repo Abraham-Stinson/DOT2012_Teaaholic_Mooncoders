@@ -8,12 +8,10 @@ using UnityEngine.UI;
 
 public class DayNightCycleController : MonoBehaviour, ICanSave
 {
-    [SerializeField]
-    private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
-    [SerializeField] NPCManager npcManagerScript; // Reference to NPC Manager
-    [SerializeField] WearManager wearManager; // Reference to NPC Manager
+    [SerializeField] private PauseMenuController pauseMenuControllerScript; // Reference to the PauseMenuController script
+    [SerializeField] private NPCManager npcManagerScript; // Reference to NPC Manager
+    [SerializeField] private WearManager wearManager; // Reference to NPC Manager
     [SerializeField] float surgeryMoney = 20000; // Reference to NPC Manager
-
     [Header("Player")]
     [SerializeField] private int howManyDaysPlayerPlay = 30;
     [SerializeField] private Player player;
@@ -39,17 +37,12 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     public Light sunLight;
     public NPCManager npcManager; // Reference to NPC Manager
 
-    [Header("NPC Spawn Delay Settings")]
-    [Tooltip("Minimum spawn delay in seconds for NPCs")]
-    [SerializeField] private float npcMinSpawnDelaySeconds = 60f;
-    [Tooltip("Maximum spawn delay in seconds for NPCs")]
-    [SerializeField] private float npcMaxSpawnDelaySeconds = 180f;
 
     [SerializeField] private int day = 1;
     [SerializeField] private int hour;
     [SerializeField] private int minute;
     private float timer = 0f;
-    private bool isDayFinished = false;
+    public bool isDayFinished = false;
     private bool npcSpawningDisabled = false; // Track if NPC spawning is disabled
 
     private const float sunrise = 6f;
@@ -64,6 +57,10 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     private float finalMoney;
     private float finalWear;
+
+    public bool endOfDayScreen = false;
+
+
 
     private void Start()
     {
@@ -114,11 +111,6 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
     private void Update()
     {
-        // Debug kontrolü
-        if (Time.frameCount % 300 == 0) // 300 frame'de bir log yaz
-        {
-            Debug.Log($"Update çalışıyor - TimeScale: {Time.timeScale}, isDayFinished: {isDayFinished}, isPaused: {pauseMenuControllerScript?.isPaused}");
-        }
 
         if (isDayFinished || (pauseMenuControllerScript != null && pauseMenuControllerScript.isPaused))
         {
@@ -131,7 +123,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         {
             timer -= minuteDurationSeconds;
             IncrementTimeByOneMinute();
-            Debug.Log($"Zaman arttırıldı - Saat: {hour}:{minute}");
+            //Debug.Log($"Zaman arttırıldı - Saat: {hour}:{minute}");
         }
     }
 
@@ -148,20 +140,13 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
             }
         }
 
-        // Saat 12'den sonra müşteri spawning'i durdur
-        if (hour >= 12)
-        {
-
-        }
 
         // Gece yarısında (00:00) zamanı durdur
         if (hour == 22 && minute == 0 && !npcSpawningDisabled && npcManager != null)
         {
             npcSpawningDisabled = true;
             npcManager.enabled = false; // NPCManager'ı devre dışı bırak
-            Debug.Log($"Saat {hour} : {minute} oldu - Müşteri spawning durduruldu");
-
-            Debug.Log("Gün sonu - Zaman durduruldu");
+            Debug.Log($"[NPC SPAWNING]Saat {hour} : {minute} oldu - Müşteri spawning durduruldu");
         }
         if (hour == 0 && minute == 0)
         {
@@ -233,28 +218,26 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     // Kapı ile etkileşim olduğunda çağrılacak
     public void OnDoorInteraction()
     {
-        if (!isDayFinished)
-        {
-            Debug.Log("Gün bitmedi");
-            return;
-        }
         if (IsThereAnyNPC())
         {
             Debug.Log("NPC var");
             return;
         }
-
-        UpdateNPCSpawnTime();
-        SaveGame();
-        day++;
-        hour = startHour;
-        minute = 0;
-        timer = 0f;
-
+        if (!isDayFinished)
+        {
+            Debug.Log("Gün bitmedi");
+            return;
+        }
+        if (endOfDayScreen)
+        {
+            Debug.Log("Gün sonu ekranı açık");
+            return;
+        }
 
         Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
         Cursor.visible = true; // Fare imlecini görünür yap
         Time.timeScale = 0f; // Zamanı durdur
+        endOfDayScreen = true;//disable control
         endOfDayScreenUI.SetActive(true);
         totalMoneyEarnedText.color = Color.green;
         totalMoneySpentText.color = Color.red;
@@ -265,186 +248,23 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
 
         //Gün sonu ekranı gelsin ve toplam kazanılan para ve toplam harcanan para gösterilsin ve farkı alınsın
 
-
+        return;
 
     }
     public void OnNextDayInteraction()
     {
+        SaveGame();
+        UpdateNPCSpawnTime();
+        day++;
+        hour = startHour;
+        minute = 0;
+        timer = 0f;
         if (day > howManyDaysPlayerPlay)
         {
-            //Oyun burada bitiyor 
-            Debug.Log("[OYUN BITTI ALOOO]Oyun bitti");
-            finalMoney = moneyManager.GetMoney();
-            finalWear = wearManager.GetWear();
-            //1.son çürüme 50 den aşağı ise belli para yoksa birinin yardım etme şansı, çürüme yüksekse az, çürüme az ise çok şans tutarsa%70 ihtimalle karı hayatta 
-            //2.son çürüme 50 den düşükse ve para varsa, %70 ihtimal ile karı yaşar
-            //3.son çürüme 50 den yüksekse ve para varsa çürümenin yüksekliğine göre çürümeye göre o olasılıkla 100 99 olacak para çalınmazsa %40 ihtimalle karı yaşar
-            //4.son çürüme 50 den yüksek ve para yoksa direk karı ölür
-
-            if (finalWear <= 50)
-            {//çürünürlük düşükse
-                if (finalMoney < surgeryMoney)//Amelyat Parası yoksa
-                {
-                    if (finalWear < 10 && UnityEngine.Random.Range(0, 100) < 50)
-                    {
-                        //Kadın Hayatta
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear < 20 && UnityEngine.Random.Range(0, 100) < 40)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear < 30 && UnityEngine.Random.Range(0, 100) < 30)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear < 40 && UnityEngine.Random.Range(0, 100) < 20)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                    else if (finalWear <= 50 && UnityEngine.Random.Range(0, 100) < 10)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 70)
-                        {
-                            WomenSurvives(true);
-                        }
-                        else
-                        {
-                            WomenDies(6);
-                        }
-                    }
-                }
-                else if (finalMoney >= surgeryMoney)
-                {
-                    if (UnityEngine.Random.Range(0, 100) < 70)
-                    {
-                        WomenSurvives(false);
-                    }
-                    else
-                    {
-                        WomenDies(3);
-                    }
-                }
-            }
-            else if (finalWear > 50)
-            {
-                if (finalMoney < surgeryMoney)
-                {
-                    WomenDies(5);
-                }
-                else if (finalMoney >= surgeryMoney)
-                {
-                    if (finalWear < 60 && UnityEngine.Random.Range(0, 100) < 50)
-                    {
-                        //Kadın Hayatta
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else//Para çalındı
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear < 70 && UnityEngine.Random.Range(0, 100) < 40)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear < 80 && UnityEngine.Random.Range(0, 100) < 30)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear < 90 && UnityEngine.Random.Range(0, 100) < 20)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
-                    }
-                    if (finalWear <= 100 && UnityEngine.Random.Range(0, 100) < 10)
-                    {
-                        if (UnityEngine.Random.Range(0, 100) < 40)
-                        {
-                            WomenSurvives(false);
-                        }
-                        else
-                        {
-                            WomenDies(3);
-                        }
-                    }
-                    else
-                    {
-                        WomenDies(4);
-                    }
-                }
-            }
-
+            IsEndGame();
             return;
         }
 
-        SaveGame();
         //Oyuncuyu gün başlatma pozisyonuna koy
         playerObject.transform.position = playerDayStartPosition.position;
         playerObject.transform.rotation = playerDayStartPosition.rotation;
@@ -456,7 +276,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         Cursor.visible = false;
         Mouse.current.WarpCursorPosition(Vector2.zero);
         endOfDayScreenUI.SetActive(false);
-
+        endOfDayScreen = false;//disable control
         // Yeni gün başladığında müşteri spawning'i tekrar aktif et
         if (npcSpawningDisabled && npcManager != null)
         {
@@ -469,20 +289,7 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         UpdateSunLight();
     }
 
-    bool IsThereAnyNPC()
-    {
-        bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
-        bool hasPrivateNPCs = GameObject.FindGameObjectsWithTag("NPC_Private").Length > 0;
 
-        if (hasCustomers || hasPrivateNPCs)
-        {
-            Debug.Log("NPC var");
-            return true;
-        }
-
-        Debug.Log("NPC yok");
-        return false;
-    }
 
     public int GetCurrentDay()
     {
@@ -500,6 +307,8 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         PlayerPrefs.SetInt("SavedDay", day);
         PlayerPrefs.SetInt("SavedHour", hour);
         PlayerPrefs.SetInt("SavedMinute", minute);
+        PlayerPrefs.SetFloat("SavedMoney", moneyManager.GetMoney());
+        PlayerPrefs.SetFloat("SavedWear", wearManager.GetWear());
 
         // Oyuncu pozisyonu
         if (playerObject != null)
@@ -541,6 +350,8 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
             day = PlayerPrefs.GetInt("SavedDay");
             hour = PlayerPrefs.GetInt("SavedHour");
             minute = PlayerPrefs.GetInt("SavedMinute");
+            moneyManager.money = PlayerPrefs.GetFloat("SavedMoney");
+            wearManager.wear = PlayerPrefs.GetFloat("SavedWear");
             isDayFinished = PlayerPrefs.GetInt("IsDayFinished", 0) == 1;
             npcSpawningDisabled = PlayerPrefs.GetInt("NPCSpawningDisabled", 0) == 1;
 
@@ -650,20 +461,31 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
         Debug.Log($"Oyun kaydedildi - Gün: {day} Saat: {hour}:{minute}");
     }
 
-    private void OnApplicationQuit()
+    public bool IsThereAnyNPC()
     {
-        SaveGame();
-        Debug.Log("Oyundan çıkış yapıldı - Oyun kaydedildi");
+        bool hasCustomers = GameObject.FindGameObjectsWithTag("NPC_Customer").Length > 0;
+        bool hasPrivateNPCs = GameObject.FindGameObjectsWithTag("NPC_Private").Length > 0;
+
+        if (hasCustomers || hasPrivateNPCs)
+        {
+            Debug.Log("NPC var");
+            return true;
+        }
+
+        Debug.Log("NPC yok");
+        return false;
     }
 
     private void WomenSurvives(bool isMoneyGivenByChairTable)
     {
         if (isMoneyGivenByChairTable)
         {
+            Debug.Log("Kadın hayatta yardımsever");
             SceneManager.LoadScene("FinalScene_2(happy)");
         }
         else
         {
+            Debug.Log("Kadın hayatta para yetti");
             SceneManager.LoadScene("FinalScene_1(happy)");
         }
 
@@ -673,20 +495,209 @@ public class DayNightCycleController : MonoBehaviour, ICanSave
     {
         if (endWays == 3)//Para var ama kadın öldü
         {
+            Debug.Log("Kadın öldü para yok");
             SceneManager.LoadScene("FinalScene_3(sad)");
         }
         else if (endWays == 4)//Para var ama çalındı ve kadın öldü
         {
+            Debug.Log("Kadın öldü para var ama çalındı");
             SceneManager.LoadScene("FinalScene_4(sad)");
         }
         else if (endWays == 5)//para yok ve kadın öldü
         {
+            Debug.Log("Para yok kadın öldü");
             SceneManager.LoadScene("FinalScene_5(sad)");
         }
         else if (endWays == 6)//para yok yardım edildi ama kadın öldü
         {
+            Debug.Log("Para yok yardim edildi ama kadın öldü");
             SceneManager.LoadScene("FinalScene_6(sad)");
         }
     }
 
+    // Added public getter for npcSpawningDisabled flag
+    public bool IsNPCSpawningDisabled()
+    {
+        return npcSpawningDisabled;
+    }
+
+    void IsEndGame()
+    {
+        SaveManager.DeleteAllSaveData();
+        //Oyun burada bitiyor 
+        Debug.Log("[OYUN BITTI ALOOO]Oyun bitti");
+        finalMoney = moneyManager.GetMoney();
+        finalWear = wearManager.GetWear();
+        //1.son çürüme 50 den aşağı ise belli para yoksa birinin yardım etme şansı, çürüme yüksekse az, çürüme az ise çok şans tutarsa%70 ihtimalle karı hayatta 
+        //2.son çürüme 50 den düşükse ve para varsa, %70 ihtimal ile karı yaşar
+        //3.son çürüme 50 den yüksekse ve para varsa çürümenin yüksekliğine göre çürümeye göre o olasılıkla 100 99 olacak para çalınmazsa %40 ihtimalle karı yaşar
+        //4.son çürüme 50 den yüksek ve para yoksa direk karı ölür
+
+        if (finalWear <= 50)
+        {//çürünürlük düşükse
+            if (finalMoney < surgeryMoney)//Amelyat Parası yoksa
+            {
+                if (finalWear < 10 && UnityEngine.Random.Range(0, 100) < 50)
+                {
+                    //Kadın Hayatta
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear < 20 && UnityEngine.Random.Range(0, 100) < 40)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear < 30 && UnityEngine.Random.Range(0, 100) < 30)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear < 40 && UnityEngine.Random.Range(0, 100) < 20)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else if (finalWear <= 50 && UnityEngine.Random.Range(0, 100) < 10)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 70)
+                    {
+                        WomenSurvives(true);
+                    }
+                    else
+                    {
+                        WomenDies(6);
+                    }
+                }
+                else
+                {
+                    WomenDies(6);
+                }
+            }
+            else if (finalMoney >= surgeryMoney)
+            {
+                if (UnityEngine.Random.Range(0, 100) < 70)
+                {
+                    WomenSurvives(false);
+                }
+                else
+                {
+                    WomenDies(3);
+                }
+            }
+        }
+        else if (finalWear > 50)
+        {
+            if (finalMoney < surgeryMoney)
+            {
+                WomenDies(5);
+            }
+            else if (finalMoney >= surgeryMoney)
+            {
+                if (finalWear < 60 && UnityEngine.Random.Range(0, 100) < 50)
+                {
+                    //Kadın Hayatta
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else//Para çalındı
+                {
+                    WomenDies(4);
+                }
+                if (finalWear < 70 && UnityEngine.Random.Range(0, 100) < 40)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
+                if (finalWear < 80 && UnityEngine.Random.Range(0, 100) < 30)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
+                if (finalWear < 90 && UnityEngine.Random.Range(0, 100) < 20)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
+                if (finalWear <= 100 && UnityEngine.Random.Range(0, 100) < 10)
+                {
+                    if (UnityEngine.Random.Range(0, 100) < 40)
+                    {
+                        WomenSurvives(false);
+                    }
+                    else
+                    {
+                        WomenDies(3);
+                    }
+                }
+                else
+                {
+                    WomenDies(4);
+                }
+            }
+
+
+            return;
+        }
+    }
 }

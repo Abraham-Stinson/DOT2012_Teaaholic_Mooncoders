@@ -42,6 +42,9 @@ public class SpecialNPC : MonoBehaviour
     public bool hasReachedWaitingPosition = false;
     public bool hasInteracted = false; // Yeni değişken
 
+    private Coroutine waitForExitCoroutine;
+    private Coroutine delayedSpawnCoroutine;
+
     private void Start()
     {
         if (dialogueUI != null)
@@ -367,12 +370,13 @@ public class SpecialNPC : MonoBehaviour
         // Çıkış animasyonu için 2 saniye bekle
         yield return new WaitForSeconds(endDialogueEndDestroyDelay);
 
-        // NPC'yi yok et
-        Debug.Log($"NPC {npcName} çıkış noktasına ulaştı ve yok ediliyor");
         if (SpecialNPCManager.Instance != null)
         {
             SpecialNPCManager.Instance.RemoveNPC(npcName);
         }
+        
+        // Self-destroy yerine manager'a bildir
+        Destroy(gameObject);
     }
 
     public string GetNPCName()
@@ -445,6 +449,28 @@ public class SpecialNPC : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Coroutine'leri durdur
+        if (waitForExitCoroutine != null) StopCoroutine(waitForExitCoroutine);
+        if (delayedSpawnCoroutine != null) StopCoroutine(delayedSpawnCoroutine);
+
+        // NavMeshAgent'ı temizle
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.enabled = false;
+        }
+
+        // Button listener'larını temizle
+        if (dialogueButtons != null)
+        {
+            foreach (var button in dialogueButtons)
+            {
+                if (button != null)
+                {
+                    button.onClick.RemoveAllListeners();
+                }
+            }
+        }
+
         // Manager'dan kendini kaldır
         if (SpecialNPCManager.Instance != null)
         {

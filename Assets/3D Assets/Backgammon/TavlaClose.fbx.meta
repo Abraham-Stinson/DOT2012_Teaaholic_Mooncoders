@@ -7,8 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Dama
+    second: {fileID: 2100000, guid: 6ab96a57d149c6544a88164a7776daf7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Tavla
     second: {fileID: 2100000, guid: 60cf1bf98f4e45e4992cf41375aa208d, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Dama
+    second: {fileID: 2800000, guid: bb2da7b1a85ce374cab3b592334479d9, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

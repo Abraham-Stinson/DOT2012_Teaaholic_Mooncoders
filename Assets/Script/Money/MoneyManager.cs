@@ -6,7 +6,7 @@ public class MoneyManager : MonoBehaviour, ICanSave
 {
     [SerializeField] private float dayTotalMoney = 0;
     [SerializeField] private float dayTotalSpendMoney = 0;
-    [SerializeField][Min(1f)] private float money = 0;
+    [SerializeField][Min(1f)] public float money = 0;
     [SerializeField] private float totalEarnedMoney = 0;
     [SerializeField] private float totalSpentMoney = 0;
     [Header("UI Settings")]

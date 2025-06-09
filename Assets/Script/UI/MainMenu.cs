@@ -7,16 +7,19 @@ public class MainMenu : MonoBehaviour
 {
     public GameObject NewGamePanel;
     public GameObject SettingsPanel;
+    public GameObject CreditsPanel;
     [SerializeField] private Button continueButton; // Devam Et butonu
     private PlayerMovementAndInteractionSystem inputActions;
     
     [Header("---------- Scene Names ----------")]
     public string MainScene;
+    public string MainGame;
 
     private void Start()
     {
         NewGamePanel.SetActive(false);
         SettingsPanel.SetActive(false);
+        CreditsPanel.SetActive(false);
         
         // Eğer kayıtlı oyun yoksa Devam Et butonunu devre dışı bırak
         if (continueButton != null)
@@ -52,6 +55,10 @@ public class MainMenu : MonoBehaviour
         {
             SettingsPanel.SetActive(false);
         }
+        if (CreditsPanel.activeSelf)
+        {
+            CreditsPanel.SetActive(false);
+        }
     }
 
     public void LoadSceneNewGame()
@@ -68,7 +75,7 @@ public class MainMenu : MonoBehaviour
         // Eğer kayıt varsa, devam et
         if (PlayerPrefs.HasKey("SavedDay"))
         {
-            SceneManager.LoadScene(MainScene);
+            SceneManager.LoadScene(MainGame);
         }
         else
         {

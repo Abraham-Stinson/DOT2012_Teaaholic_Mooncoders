@@ -31,6 +31,7 @@ TagManager:
   - NPC_Customer
   - NPC_Private
   - Handbook
+  - Delivery_Box
   layers:
   - Default
   - TransparentFX

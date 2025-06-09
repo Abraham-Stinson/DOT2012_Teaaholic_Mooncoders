@@ -6,6 +6,14 @@ using UnityEngine.AI;
 
 public class NPC : MonoBehaviour, IInteractable
 {
+    private Coroutine currentMovementCoroutine;
+    private Coroutine currentDrinkingCoroutine;
+    private Coroutine currentSittingCoroutine;
+    private Coroutine currentGetUpCoroutine;
+    private Coroutine currentPatienceCoroutine;
+    private Coroutine exitTimeoutCoroutine; // Yeni coroutine referansı
+
+    [SerializeField] private float minusWear = 1; // Doğru hesap verdiğinde azalacak wear miktarı
     [Header("NPC Settings")]
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float sitOffset = 0.5f; // How much to offset when sitting
@@ -24,6 +32,18 @@ public class NPC : MonoBehaviour, IInteractable
     private float[] drinkPrices = new float[] { 15f, 25f, 20f, 30f, 20f, 20f, 20f, 20f }; // Her içeceğin fiyatı
     private Dictionary<string, float> drinkPriceMap = new Dictionary<string, float>();
     private float totalBill = 0f; // Grup için toplam hesap
+    // İçecek isimlerinin Türkçe karşılıkları
+    private Dictionary<string, string> drinkNameTranslations = new Dictionary<string, string>()
+    {
+        { "Light_Tea", "Açık Çay" },
+        { "Rabbit_Blood_Tea", "Tavşan Kanı Çay" },
+        { "Brewed_Tea", "Demli Çay" },
+        { "Coffee_Drink", "Kahve" },
+        { "Banana_Oralet", "Muzlu Oralet" },
+        { "Kiwi_Oralet", "Kivi Oralet" },
+        { "Orange_Oralet", "Portakallı Oralet" },
+        { "Strawberry_Oralet", "Çilekli Oralet" }
+    };
 
     // State fields
     private NavMeshAgent navAgent;
@@ -102,10 +122,16 @@ public class NPC : MonoBehaviour, IInteractable
     {
         if (!isReady || navAgent == null || destination == null) return;
 
-        targetPosition = destination;
+        // Önceki movement coroutine'ini durdur
+        if (currentMovementCoroutine != null)
+        {
+            StopCoroutine(currentMovementCoroutine);
+        }
 
-        StartCoroutine(MoveToDestination(destination.position, onComplete));
+        targetPosition = destination;
+        currentMovementCoroutine = StartCoroutine(MoveToDestination(destination.position, onComplete));
     }
+
 
     private IEnumerator MoveToDestination(Vector3 destination, Action onComplete)
     {
@@ -130,6 +156,13 @@ public class NPC : MonoBehaviour, IInteractable
 
     private IEnumerator SitOnChair()
     {
+        // Önceki sitting coroutine'ini durdur
+        if (currentSittingCoroutine != null)
+        {
+            StopCoroutine(currentSittingCoroutine);
+        }
+        yield return null;
+
         if (assignedChair == null) yield break;
         animator?.SetBool(IsWalking, true);// First, move to the chair
         navAgent.SetDestination(assignedChair.GetSitPosition().position);
@@ -180,20 +213,6 @@ public class NPC : MonoBehaviour, IInteractable
             table = assignedChair.GetTable();
             table.UpdateNPCRequest(this, requestedDrink);
         }
-
-        // Tazeleme için de ücret ekle (aynı içeceğin ücreti)
-        if (drinkPriceMap.TryGetValue(baseDrink, out float price))
-        {
-            if (group != null)
-            {
-                group.AddToBill(price);
-            }
-            else
-            {
-                totalBill += price;
-            }
-            Debug.Log($"NPC ordered refresh {baseDrink} for {price} TL");
-        }
     }
     public void SetCashierPosition(Transform cashier)
     {
@@ -213,6 +232,12 @@ public class NPC : MonoBehaviour, IInteractable
     // Drink the beverage served to this NPC
     public IEnumerator DrinkBeverage()
     {
+        // Önceki drinking coroutine'ini durdur
+        if (currentDrinkingCoroutine != null)
+        {
+            StopCoroutine(currentDrinkingCoroutine);
+        }
+
         if (!hasDrink) yield break;
 
         animator?.SetBool(IsDrinking, true);
@@ -249,12 +274,21 @@ public class NPC : MonoBehaviour, IInteractable
                 teaCup.inCup = "Empty";
 
                 teaCup.EmptyCup();
+                
+                // Call ChangeMeshOfDirtyTea to update the dirty visual overlay
+                teaCup.ChangeMeshOfDirtyTea();
             }
 
             // Make sure the dirty status is maintained after EmptyCup
             if (dirtyStatus != null && !dirtyStatus.isDirty && wasDirty)
             {
                 dirtyStatus.isDirty = true;
+                
+                // Make sure visual is updated if status was reset
+                if (teaCup != null)
+                {
+                    teaCup.ChangeMeshOfDirtyTea();
+                }
             }
 
             // Change cup layer back to interactable so player can pick it up
@@ -278,10 +312,7 @@ public class NPC : MonoBehaviour, IInteractable
         {
             group.OnNPCFinishedDrinking(this);
         }
-        else
-        {
-
-        }
+        yield return null;
     }
     // Makes the NPC start playing a game
     public void StartPlaying()
@@ -304,28 +335,31 @@ public class NPC : MonoBehaviour, IInteractable
         Debug.Log($"[NPC] {gameObject.name} için ExitShop çağrıldı");
         isExiting = true;
 
+        // Clear any pending requests when exiting
+        requestedDrink = "";
+        if (assignedChair != null && assignedChair.GetTable() != null)
+        {
+            table = assignedChair.GetTable();
+            table.UpdateNPCRequest(this, "");
+        }
+
         if (isSeated)
         {
-            // First, stand up from the chair
             StartCoroutine(GetUpProcess(() =>
             {
-                // After getting up, decide where to go
                 if (isGroupLeader && cashierPosition != null && !_isPaying)
                 {
                     Debug.Log($"[NPC] {gameObject.name} (lider) kasaya gidiyor");
-                    ShowMessageAboveNPC("Kasaya gidiyor");
                     MoveTo(cashierPosition, OnArrivedAtCashier);
                 }
                 else if (exitPosition != null)
                 {
                     Debug.Log($"[NPC] {gameObject.name} çıkışa gidiyor");
-                    ShowMessageAboveNPC("Dükkandan çıkıyor");
                     MoveTo(exitPosition, OnArrivedAtExit);
                 }
                 else
                 {
                     Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu bulunamadı!");
-                    // Doğrudan grubu bilgilendir
                     group.OnNPCLeft(this);
                     Destroy(gameObject, 0.5f);
                 }
@@ -333,24 +367,19 @@ public class NPC : MonoBehaviour, IInteractable
         }
         else
         {
-            Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan gidebilir");
-            // Already standing, decide where to go
             if (isGroupLeader && cashierPosition != null && !_isPaying)
             {
                 Debug.Log($"[NPC] {gameObject.name} (lider) kasaya gidiyor");
-                ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
             }
             else if (exitPosition != null)
             {
                 Debug.Log($"[NPC] {gameObject.name} çıkışa gidiyor");
-                ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
             }
             else
             {
                 Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu bulunamadı!");
-                // Doğrudan grubu bilgilendir
                 group.OnNPCLeft(this);
                 Destroy(gameObject, 0.5f);
             }
@@ -385,7 +414,7 @@ public class NPC : MonoBehaviour, IInteractable
             StartCoroutine(GetUpProcess(() =>
             {
                 Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi kasaya gidiyor");
-                ShowMessageAboveNPC("Kasaya gidiyor");
+                //ShowMessageAboveNPC("Kasaya gidiyor");
                 MoveTo(cashierPosition, OnArrivedAtCashier);
             }));
         }
@@ -393,7 +422,7 @@ public class NPC : MonoBehaviour, IInteractable
         {
             // Already standing
             Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan kasaya gidebilir");
-            ShowMessageAboveNPC("Kasaya gidiyor");
+            //ShowMessageAboveNPC("Kasaya gidiyor");
             MoveTo(cashierPosition, OnArrivedAtCashier);
         }
     }
@@ -421,18 +450,31 @@ public class NPC : MonoBehaviour, IInteractable
             StartCoroutine(GetUpProcess(() =>
             {
                 Debug.Log($"[NPC] {gameObject.name} kalktı, şimdi çıkışa gidiyor");
-                ShowMessageAboveNPC("Dükkandan çıkıyor");
+                //ShowMessageAboveNPC("Dükkandan çıkıyor");
                 MoveTo(exitPosition, OnArrivedAtExit);
+                // Çıkış timeout'unu başlat
+                if (exitTimeoutCoroutine != null)
+                {
+                    StopCoroutine(exitTimeoutCoroutine);
+                }
+                exitTimeoutCoroutine = StartCoroutine(ExitTimeout());
             }));
         }
         else
         {
             // Already standing
             Debug.Log($"[NPC] {gameObject.name} zaten ayakta, doğrudan çıkışa gidebilir");
-            ShowMessageAboveNPC("Dükkandan çıkıyor");
+            //ShowMessageAboveNPC("Dükkandan çıkıyor");
             MoveTo(exitPosition, OnArrivedAtExit);
+            // Çıkış timeout'unu başlat
+            if (exitTimeoutCoroutine != null)
+            {
+                StopCoroutine(exitTimeoutCoroutine);
+            }
+            exitTimeoutCoroutine = StartCoroutine(ExitTimeout());
         }
     }
+    
     // Display a message above the NPC
     private void ShowMessageAboveNPC(string message)
     {
@@ -440,9 +482,10 @@ public class NPC : MonoBehaviour, IInteractable
         Player player = FindObjectOfType<Player>();
         if (player != null)
         {
-            player.ShowUIMessage(message);
+            player.ShowUIMessage(message, false); // Not a contextual message - will auto-hide
         }
     }
+    
     // Called when the NPC arrives at the cashier
     private void OnArrivedAtCashier()
     {
@@ -450,7 +493,6 @@ public class NPC : MonoBehaviour, IInteractable
         _isPaying = true;
 
         // Make NPC face the cashier (assuming cashier is facing -Z direction)
-        // Look at the cashier (get position but ignore Y to keep NPC upright)
         if (cashierPosition != null)
         {
             Vector3 directionToCashier = cashierPosition.position - transform.position;
@@ -466,9 +508,13 @@ public class NPC : MonoBehaviour, IInteractable
         animator?.SetBool(IsWalking, false);
         animator?.SetBool(IsIdle, true);
 
-        // Toplam hesabı göster
-        float finalBill = group != null ? group.GetTotalBill() : totalBill;
-        ShowMessageAboveNPC($"{finalBill} TL ödeme yapıyor");
+        // Clear any pending drink requests when arriving at cashier
+        requestedDrink = "";
+        if (assignedChair != null && assignedChair.GetTable() != null)
+        {
+            table = assignedChair.GetTable();
+            table.UpdateNPCRequest(this, "");
+        }
 
         // Start patience timer for payment - give a longer timeout for payment
         StartCoroutine(PatienceCountdown(() =>
@@ -477,7 +523,6 @@ public class NPC : MonoBehaviour, IInteractable
             Debug.Log($"[NPC] {gameObject.name} için ödeme süresi doldu, ödemeden çıkıyor");
             _isPaying = false;
             animator?.SetBool(IsIdle, false);
-            ShowMessageAboveNPC("Ödemeden vazgeçti");
             MoveTo(exitPosition, OnArrivedAtExit);
         }, 40f)); // 40 saniye - ödemede daha uzun sabır süresi
     }
@@ -485,7 +530,7 @@ public class NPC : MonoBehaviour, IInteractable
     private void OnArrivedAtExit()
     {
         Debug.Log($"[NPC] {gameObject.name} çıkış noktasına vardı");
-        ShowMessageAboveNPC("Dükkandan çıktı");
+        //ShowMessageAboveNPC("Dükkandan çıktı");
 
         // Çıkış noktasında görsel bir efekt (fade-out) uygula
         StartCoroutine(FadeOutAndDestroy());
@@ -570,140 +615,133 @@ public class NPC : MonoBehaviour, IInteractable
     // Process payment when player interacts with NPC at cashier
     private void ProcessPayment()
     {
-        if(adisyonFee <= 0)
-        {
-            _isPaying = false;
-            Debug.Log($"[NPC] {gameObject.name}: Ödeme yapılacak bir hesap yok, direkt çıkışa gidiyor!");
-            ShowMessageAboveNPC("Hesap yok, çıkıyor");
-            
-            // Direkt çıkışa git
-            if (exitPosition != null)
-            {
-                ShowMessageAboveNPC("Dükkandan çıkıyor");
-                MoveTo(exitPosition, OnArrivedAtExit);
-            }
-            else
-            {
-                Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu tanımlanmamış! NPC çıkamıyor.");
-                group.OnNPCLeft(this);
-                Destroy(gameObject, 0.5f);
-            }
-            return;
-        }
-        
         float finalBill = group != null ? group.GetTotalBill() : totalBill;
         Debug.Log($"[NPC] {gameObject.name}: {finalBill} TL ödeme işlemi tamamlandı!");
-        ShowMessageAboveNPC($"{finalBill} TL ödeme tamamlandı");
         _isPaying = false;
+        
         // Reset idle animation
         animator?.SetBool(IsIdle, false);
 
         // Calculate the percentage difference between adisyonFee and finalBill
         float percentageDifference = ((adisyonFee - finalBill) / finalBill) * 100f;
         float randomChance = UnityEngine.Random.Range(0f, 100f);
+        Debug.Log($"[NPC] Adisyon: {adisyonFee} TL, Final Bill: {finalBill} TL, Fark: %{percentageDifference}");
 
+        // Process payment based on the difference
         if (adisyonFee <= finalBill)
         {
-            moneyManager.AddMoney(adisyonFee);
-            wearManager.AddWear(0);
+            moneyManager.AddMoney(finalBill);
+            wearManager.AddWear(-minusWear);
         }
-        else if (percentageDifference > 0 && percentageDifference <= 20)
+        else
         {
-            if (randomChance <= 80)
+            if (percentageDifference > 0 && percentageDifference <= 20)
             {
-                moneyManager.AddMoney(adisyonFee);
-                wearManager.AddWear(2);
+                if (randomChance <= 80)
+                {
+                    moneyManager.AddMoney(adisyonFee);
+                    wearManager.AddWear(2);
+                }
+                else
+                {
+                    moneyManager.AddMoney(finalBill);
+                    wearManager.AddWear(4);
+                }
             }
-            else
+            else if (percentageDifference > 20 && percentageDifference <= 40)
             {
-                moneyManager.AddMoney(finalBill);
-                wearManager.AddWear(4);
+                if (randomChance <= 60)
+                {
+                    moneyManager.AddMoney(adisyonFee);
+                    wearManager.AddWear(4);
+                }
+                else
+                {
+                    moneyManager.AddMoney(finalBill);
+                    wearManager.AddWear(8);
+                }
             }
-        }
-        else if (percentageDifference > 20 && percentageDifference <= 40)
-        {
-            if (randomChance <= 60)
+            else if (percentageDifference > 40 && percentageDifference <= 60)
             {
-                moneyManager.AddMoney(adisyonFee);
-                wearManager.AddWear(4);
+                if (randomChance <= 40)
+                {
+                    moneyManager.AddMoney(adisyonFee);
+                    wearManager.AddWear(6);
+                }
+                else
+                {
+                    moneyManager.AddMoney(finalBill);
+                    wearManager.AddWear(12);
+                }
             }
-            else
+            else if (percentageDifference > 60 && percentageDifference <= 80)
             {
-                moneyManager.AddMoney(finalBill);
-                wearManager.AddWear(8);
+                if (randomChance <= 20)
+                {
+                    moneyManager.AddMoney(adisyonFee);
+                    wearManager.AddWear(8);
+                }
+                else
+                {
+                    moneyManager.AddMoney(finalBill);
+                    wearManager.AddWear(16);
+                }
             }
-        }
-        else if (percentageDifference > 40 && percentageDifference <= 60)
-        {
-            if (randomChance <= 40)
+            else if (percentageDifference > 80 && percentageDifference <= 100)
             {
-                moneyManager.AddMoney(adisyonFee);
-                wearManager.AddWear(6);
+                if (randomChance <= 10)
+                {
+                    moneyManager.AddMoney(adisyonFee);
+                    wearManager.AddWear(10);
+                }
+                else
+                {
+                    moneyManager.AddMoney(finalBill);
+                    wearManager.AddWear(20);
+                }
             }
-            else
+            else // percentageDifference > 100
             {
-                moneyManager.AddMoney(finalBill);
-                wearManager.AddWear(12);
-            }
-        }
-        else if (percentageDifference > 60 && percentageDifference <= 80)
-        {
-            if (randomChance <= 20)
-            {
-                moneyManager.AddMoney(adisyonFee);
-                wearManager.AddWear(8);
-            }
-            else
-            {
-                moneyManager.AddMoney(finalBill);
-                wearManager.AddWear(16);
-            }
-        }
-        else if (percentageDifference > 80 && percentageDifference <= 100)
-        {
-            if (randomChance <= 10)
-            {
-                moneyManager.AddMoney(adisyonFee);
-                wearManager.AddWear(10);
-            }
-            else
-            {
-                moneyManager.AddMoney(finalBill);
-                wearManager.AddWear(20);
-            }
-        }
-        else // percentageDifference > 100
-        {
-            if (randomChance <= 0) // This will never happen, but included for completeness
-            {
-                moneyManager.AddMoney(adisyonFee);
-                wearManager.AddWear(12);
-            }
-            else
-            {
-                moneyManager.AddMoney(finalBill);
-                wearManager.AddWear(25);
+                if (randomChance <= 0) // This will never happen, but included for completeness
+                {
+                    moneyManager.AddMoney(adisyonFee);
+                    wearManager.AddWear(12);
+                }
+                else
+                {
+                    moneyManager.AddMoney(finalBill);
+                    wearManager.AddWear(25);
+                }
             }
         }
 
-        // Hesabı sıfırla
+        // Clear all requests and bills
+        requestedDrink = "";
         if (group != null)
         {
             group.ResetBill();
         }
-        tableAdisyon.ResetAdisyon();
+        if (tableAdisyon != null)
+        {
+            tableAdisyon.ResetAdisyon();
+        }
         totalBill = 0f;
+
+        // Update UI one last time before leaving
+        if (assignedChair != null && assignedChair.GetTable() != null)
+        {
+            table = assignedChair.GetTable();
+            table.UpdateNPCRequest(this, "");
+        }
 
         // Go to exit
         if (exitPosition != null)
         {
-            ShowMessageAboveNPC("Dükkandan çıkıyor");
             MoveTo(exitPosition, OnArrivedAtExit);
         }
         else
         {
             Debug.LogError($"[NPC] {gameObject.name}: Çıkış pozisyonu tanımlanmamış! NPC çıkamıyor.");
-            // Fallback - doğrudan grup bilgilendirme
             group.OnNPCLeft(this);
             Destroy(gameObject, 0.5f);
         }
@@ -753,8 +791,9 @@ public class NPC : MonoBehaviour, IInteractable
             {
                 Transform child = player.inHandItem.transform.GetChild(i);
                 Tea_Cup childTeaCup = child.GetComponent<Tea_Cup>();
+                bool isDirty = child.GetComponent<DirtyStatus>().isDirty;
 
-                if (childTeaCup != null && childTeaCup.inCup == actualRequestedDrink)
+                if (childTeaCup != null && childTeaCup.inCup == actualRequestedDrink && !isDirty)
                 {
                     Debug.Log($"[NPC] Tepsideki {childTeaCup.inCup} içecek bulundu!");
                     teaCup = childTeaCup;
@@ -786,7 +825,21 @@ public class NPC : MonoBehaviour, IInteractable
             // Correct drink served
             Debug.Log("[NPC] DOĞRU İÇECEK SERVISI BAŞARILI!");
             hasDrink = true;
-            player.ShowUIMessage("İçecek başarıyla servis edildi!");
+            //ShowMessageAboveNPC("İçecek başarıyla servis edildi!");
+
+
+            // İçecek ücretini ekle
+            float drinkPrice = GetDrinkPrice(actualRequestedDrink);
+            if (group != null)
+            {
+                group.AddToBill(drinkPrice);
+            }
+            else
+            {
+                AddToBill(drinkPrice);
+            }
+            Debug.Log($"[NPC] {gameObject.name}: {drinkPrice} TL içecek ücreti eklendi");
+
 
             // Müşteri içeceği aldığında UI'dan isteği kaldırmak için requestedDrink'i temizle
             string servedDrink = requestedDrink;
@@ -824,7 +877,7 @@ public class NPC : MonoBehaviour, IInteractable
         {
             // Wrong drink
             Debug.Log($"[NPC] YANLIŞ İÇECEK! İstenilen: {requestedDrink}, Verilen: {teaCup.inCup}");
-            player.ShowUIMessage($"Yanlış içecek - müşteri {requestedDrink} istiyor");
+            //ShowMessageAboveNPC($"Yanlış içecek - müşteri {requestedDrink} istiyor");
         }
     }
     // Place the cup on the table in front of the NPC
@@ -964,8 +1017,24 @@ public class NPC : MonoBehaviour, IInteractable
     /// </summary>
     public string GetRequestedDrink()
     {
-        Debug.Log($"NPC requested drink: {requestedDrink}");
-        return requestedDrink;
+        string displayName = requestedDrink;
+
+        // Eğer "Tazele:" prefix'i varsa, onu kaldır ve Türkçe ismi bul
+        if (displayName.StartsWith("Tazele:"))
+        {
+            string baseDrink = displayName.Substring(7);
+            if (drinkNameTranslations.TryGetValue(baseDrink, out string translatedName))
+            {
+                displayName = "Tazele: " + translatedName;
+            }
+        }
+        else if (drinkNameTranslations.TryGetValue(displayName, out string translatedName))
+        {
+            displayName = translatedName;
+        }
+
+        Debug.Log($"NPC requested drink: {displayName}");
+        return displayName;
     }
 
     /// <summary>
@@ -1002,6 +1071,12 @@ public class NPC : MonoBehaviour, IInteractable
     // Coroutine to handle patience countdown
     private IEnumerator PatienceCountdown(Action onExpired, float waitTime = 20f)
     {
+        // Önceki patience coroutine'ini durdur
+        if (currentPatienceCoroutine != null)
+        {
+            StopCoroutine(currentPatienceCoroutine);
+        }
+
         isWaiting = true;
 
         // Belirtilen süre kadar bekle - varsayılan 20 saniye, ama ödemede daha uzun
@@ -1009,6 +1084,7 @@ public class NPC : MonoBehaviour, IInteractable
 
         isWaiting = false;
         onExpired?.Invoke();
+        yield return null;
     }
     // Handles getting up from the chair
     public void GetUpFromChair(System.Action onComplete = null)
@@ -1025,7 +1101,13 @@ public class NPC : MonoBehaviour, IInteractable
     //Coroutine to handle getting up process
     private IEnumerator GetUpProcess(System.Action onComplete = null)
     {
-        ShowMessageAboveNPC("Kalkıyor");
+        // Önceki get up coroutine'ini durdur
+        if (currentGetUpCoroutine != null)
+        {
+            StopCoroutine(currentGetUpCoroutine);
+        }
+
+        //ShowMessageAboveNPC("Kalkıyor");
         // Play getting up animation
         animator?.SetBool(IsSitting, false);
 
@@ -1051,6 +1133,7 @@ public class NPC : MonoBehaviour, IInteractable
 
         group.OnNPCGotUp(this);
         onComplete?.Invoke();
+        yield return null;
     }
 
     // Get drink price by name
@@ -1115,5 +1198,39 @@ public class NPC : MonoBehaviour, IInteractable
 
         adisyonFee = tableAdisyon.GetTotalPrice();
         Debug.Log($"[AdisyonÜcreti] {gameObject.name} için adisyon güncellendi - Tutar: {adisyonFee} TL");
+    }
+    private void OnDestroy()
+    {
+        // Tüm coroutine'leri durdur
+        if (currentMovementCoroutine != null) StopCoroutine(currentMovementCoroutine);
+        if (currentDrinkingCoroutine != null) StopCoroutine(currentDrinkingCoroutine);
+        if (currentSittingCoroutine != null) StopCoroutine(currentSittingCoroutine);
+        if (currentGetUpCoroutine != null) StopCoroutine(currentGetUpCoroutine);
+        if (currentPatienceCoroutine != null) StopCoroutine(currentPatienceCoroutine);
+        if (exitTimeoutCoroutine != null) StopCoroutine(exitTimeoutCoroutine);
+
+        // NavMeshAgent'ı temizle
+        if (navAgent != null)
+        {
+            navAgent.enabled = false;
+        }
+    }
+
+    // Yeni timeout coroutine'i
+    private IEnumerator ExitTimeout()
+    {
+        Debug.Log($"[NPC] {gameObject.name} için 30 saniyelik çıkış timeout'u başlatıldı");
+        yield return new WaitForSeconds(30f);
+
+        // Eğer NPC hala sahnede ise ve çıkış noktasına ulaşmamışsa
+        if (gameObject != null && isExiting)
+        {
+            Debug.Log($"[NPC] {gameObject.name} için çıkış timeout'u doldu, NPC yok ediliyor");
+            if (group != null)
+            {
+                group.OnNPCLeft(this);
+            }
+            Destroy(gameObject);
+        }
     }
 }
