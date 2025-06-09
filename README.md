@@ -34,16 +34,10 @@ The game features **6 possible endings** based on:
 - The amount of money saved for your wife's surgery
 - Randomized chances affected by the game state
 
-## 🧩 Easter Egg
-
-One of the okey racks in the game includes the license plate numbers of team members' hometowns. Another rack displays the years **1881 - 1938** in honor of Mustafa Kemal Atatürk, with the number 8 rotated sideways to represent infinity (♾), symbolizing his everlasting legacy.
-
 ## 🧪 How to Run
 
-1. Clone or download the project repository.
-2. Open the project using **Unity 6000.0.41f1**.
-3. Press **Play** in the Unity Editor to start the game.
-4. For best experience, use mouse and keyboard on PC.
+If you are looking for the game of the game .exe extension, you can download it from our Itchio page.
+Link: https://teaholic-mooncoders.itch.io/bir-demlik-umut
 
 ## 👥 Team - Teaholic MoonCoders
 
@@ -52,7 +46,6 @@ One of the okey racks in the game includes the license plate numbers of team mem
 - **Batuhan Kaykan** – Art Design  
 - **Muhammet Yusuf Anık** – Art Design  
 - **Mustafa Çağrı Yıldırır** – Game Design, Project Management
-
 
 ## 🤝 Contributions
 
